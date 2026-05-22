@@ -113,10 +113,10 @@ controls.maxDistance = 100;
 controls.minDistance = 3;
 
 // --- 光照系统 ---
-const ambientLight = new THREE.AmbientLight(0x333355, 0.35);
+const ambientLight = new THREE.AmbientLight(0x334466, 0.6);
 ambientLight.intensity = 0.35;
 scene.add(ambientLight);
-const sunLight = new THREE.PointLight(0xffaa66, 3.5, 100);
+const sunLight = new THREE.PointLight(0xffcc88, 4.5, 100);
 sunLight.position.set(0, 0, 0);
 sunLight.castShadow = true;
 sunLight.shadow.mapSize.width = 1024;
