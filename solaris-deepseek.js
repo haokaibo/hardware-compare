@@ -458,8 +458,10 @@ const resetViewBtn = document.getElementById('resetViewBtn'), closeInfoBtn = doc
 function showPlanetInfo(planetNameZh, realData) {
     currentInfoPlanetZh = planetNameZh;
     radiusValueSpan.textContent = realData.realRadius.toLocaleString();
-    distanceValueSpan.textContent = realData.realDistance.toLocaleString();
-    periodValueSpan.textContent = realData.realPeriod.toLocaleString();
+    // 太阳显示N/A，其他行星显示真实数据
+    const isSun = planetNameZh === '太阳';
+    distanceValueSpan.textContent = isSun ? 'N/A' : realData.realDistance.toLocaleString();
+    periodValueSpan.textContent = isSun ? 'N/A' : realData.realPeriod.toLocaleString();
     infoPanel.style.display = 'block';
     updateInfoPanelLanguage();
 }
