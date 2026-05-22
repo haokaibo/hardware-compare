@@ -237,7 +237,7 @@ const sunDiv = document.createElement('div');
 sunDiv.textContent = '太阳';
 sunDiv.style.cssText = `color:#ffeecc;font-size:16px;font-weight:bold;background:rgba(80,30,0,0.6);padding:4px 12px;border-radius:24px;border:1px solid #ffaa44;backdrop-filter:blur(4px);pointer-events:none;transition:opacity 0.2s`;
 const sunLabel = new CSS2DObject(sunDiv);
-sunLabel.position.set(0, 3.2, 0);
+sunLabel.position.set(0, 4.5, 0);
 sunMesh.add(sunLabel);
 labelItems.push({ nameZh: '太阳', css2d: sunLabel, dom: sunDiv });
 const sunRealData = { name: '太阳', realRadius: 696340, realDistance: 0, realPeriod: 0 };
@@ -307,8 +307,9 @@ planetsData.forEach((data, idx) => {
     const div = document.createElement('div');
     div.textContent = data.name;
     div.style.cssText = `color:#f0f0f0;font-size:13px;font-weight:500;background:rgba(20,20,40,0.7);padding:2px 10px;border-radius:20px;border:1px solid ${new THREE.Color(data.color).getStyle()};backdrop-filter:blur(4px);pointer-events:none;transition:opacity 0.2s`;
+    const labelYOffset = data.name === '水星' ? -0.3 : (data.name === '金星' || data.name === '地球' || data.name === '火星' ? data.radius + 0.4 : data.radius + 0.3);
     const label = new CSS2DObject(div);
-    label.position.set(0, data.radius + 0.3, 0);
+    label.position.set(0, labelYOffset, 0);
     planetMesh.add(label);
     labelItems.push({ nameZh: data.name, css2d: label, dom: div });
     
@@ -336,51 +337,32 @@ const moonRealData = { name: '月球', realRadius: 1737, realDistance: 0.384, re
 
 switchableObjects.push({ nameZh: '太阳', mesh: sunMesh, type: 'sun', extra: { glow: sunGlow }, label: sunLabel });
 
-// 小行星带 — 大小不均的粒子，多层叠加增强自然感
+// 小行星带 — 均匀分布的粒子，多层叠加增强自然感
 function createAsteroidBelt() {
     const group = new THREE.Group();
 
+    // 使用均匀角度分布+随机微调确保粒子密度均匀
+    function generateBeltLayer(count, rMin, rMax, yRange, size, color) {
+        const geo = new THREE.BufferGeometry();
+        const pos = new Float32Array(count * 3);
+        for (let i = 0; i < count; i++) {
+            // 均匀角度步长 + 随机微调
+            const a = (i / count) * Math.PI * 2 + (Math.random() - 0.5) * 0.08;
+            const r = rMin + Math.random() * (rMax - rMin);
+            pos[i*3] = Math.cos(a) * r;
+            pos[i*3+1] = (Math.random() - 0.5) * yRange;
+            pos[i*3+2] = Math.sin(a) * r;
+        }
+        geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+        group.add(new THREE.Points(geo, new THREE.PointsMaterial({ color, size, sizeAttenuation: true })));
+    }
+
     // 大粒子（数量少，尺寸大）
-    const largeCount = 250;
-    const lgGeo = new THREE.BufferGeometry();
-    const lgPos = new Float32Array(largeCount * 3);
-    for (let i = 0; i < largeCount; i++) {
-        const r = 14.0 + Math.random() * 1.0;
-        const a = Math.random() * Math.PI * 2;
-        lgPos[i*3] = Math.cos(a) * r;
-        lgPos[i*3+1] = (Math.random() - 0.5) * 0.6;
-        lgPos[i*3+2] = Math.sin(a) * r;
-    }
-    lgGeo.setAttribute('position', new THREE.BufferAttribute(lgPos, 3));
-    group.add(new THREE.Points(lgGeo, new THREE.PointsMaterial({ color: 0xbbaa88, size: 0.06, sizeAttenuation: true })));
-
+    generateBeltLayer(250, 14.0, 15.0, 0.6, 0.06, 0xbbaa88);
     // 中粒子（主体）
-    const midCount = 800;
-    const mdGeo = new THREE.BufferGeometry();
-    const mdPos = new Float32Array(midCount * 3);
-    for (let i = 0; i < midCount; i++) {
-        const r = 14.1 + Math.random() * 0.9;
-        const a = Math.random() * Math.PI * 2;
-        mdPos[i*3] = Math.cos(a) * r;
-        mdPos[i*3+1] = (Math.random() - 0.5) * 0.5;
-        mdPos[i*3+2] = Math.sin(a) * r;
-    }
-    mdGeo.setAttribute('position', new THREE.BufferAttribute(mdPos, 3));
-    group.add(new THREE.Points(mdGeo, new THREE.PointsMaterial({ color: 0xaa9977, size: 0.035, sizeAttenuation: true })));
-
+    generateBeltLayer(800, 14.1, 14.9, 0.5, 0.035, 0xaa9977);
     // 小粒子（数量多，尺寸小）
-    const smallCount = 1200;
-    const smGeo = new THREE.BufferGeometry();
-    const smPos = new Float32Array(smallCount * 3);
-    for (let i = 0; i < smallCount; i++) {
-        const r = 14.2 + Math.random() * 0.8;
-        const a = Math.random() * Math.PI * 2;
-        smPos[i*3] = Math.cos(a) * r;
-        smPos[i*3+1] = (Math.random() - 0.5) * 0.4;
-        smPos[i*3+2] = Math.sin(a) * r;
-    }
-    smGeo.setAttribute('position', new THREE.BufferAttribute(smPos, 3));
-    group.add(new THREE.Points(smGeo, new THREE.PointsMaterial({ color: 0x998866, size: 0.015, sizeAttenuation: true })));
+    generateBeltLayer(1200, 14.2, 14.8, 0.4, 0.015, 0x998866);
 
     return group;
 }
