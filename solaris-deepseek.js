@@ -84,7 +84,7 @@ function createRealisticSaturnRing(planetRadius) {
 // --- 初始化场景 ---
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x010118);
-scene.fog = new THREE.FogExp2(0x010118, 0.0002);
+scene.fog = new THREE.FogExp2(0x010118, 0.00015);
 const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
 camera.position.set(0, 12, 30);
 const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
@@ -109,14 +109,14 @@ controls.panSpeed = 0.8;
 controls.enableZoom = true;
 controls.enablePan = true;
 controls.target.set(0, 0, 0);
-controls.maxDistance = 65;
+controls.maxDistance = 100;
 controls.minDistance = 3;
 
 // --- 光照系统 ---
 const ambientLight = new THREE.AmbientLight(0x333355, 0.35);
 ambientLight.intensity = 0.35;
 scene.add(ambientLight);
-const sunLight = new THREE.PointLight(0xffaa66, 3.5, 70);
+const sunLight = new THREE.PointLight(0xffaa66, 3.5, 100);
 sunLight.position.set(0, 0, 0);
 sunLight.castShadow = true;
 sunLight.shadow.mapSize.width = 1024;
@@ -242,30 +242,41 @@ sunMesh.add(sunLabel);
 labelItems.push({ nameZh: '太阳', css2d: sunLabel, dom: sunDiv });
 const sunRealData = { name: '太阳', realRadius: 696340, realDistance: 0, realPeriod: 0 };
 
-// 行星数据
+// 轨道距离缩放：基于天文单位(AU)用对数映射到场景单位
+// 使用 ln(AU+1) 缩放，平衡内外行星视觉比例
+// 地球 1AU -> 7.5 场景单位
+const EARTH_AU = 1.0;
+const EARTH_SCENE_DIST = 7.5;
+function realToSceneDist(realDistMkm) {
+    const au = realDistMkm / 149.6; // 百万km转AU
+    return Math.log(au + 1) * (EARTH_SCENE_DIST / Math.log(EARTH_AU + 1));
+}
 
-
-
-function getRotatedPosition(distance, angle, inclination) {
-    const x0 = Math.cos(angle) * distance;
-    const z0 = Math.sin(angle) * distance;
+// 椭圆轨道：给定半长轴a、离心率e、角度θ（近心点角），返回半径 r = a(1-e²)/(1+e·cosθ)
+function getEllipticalPosition(a, e, angle, inclination) {
+    const r = a * (1 - e * e) / (1 + e * Math.cos(angle));
+    const x0 = Math.cos(angle) * r;
+    const z0 = Math.sin(angle) * r;
     const y0 = 0;
     const cos = Math.cos(inclination), sin = Math.sin(inclination);
     return new THREE.Vector3(x0, y0 * cos - z0 * sin, y0 * sin + z0 * cos);
 }
 
-function createOrbitWithInclination(radius, inclination, color = 0x88aaff) {
+function createOrbitWithInclination(a, e, inclination, color = 0x88aaff) {
     const points = [];
     for (let i = 0; i <= 200; i++) {
         const angle = (i / 200) * Math.PI * 2;
-        points.push(getRotatedPosition(radius, angle, inclination));
+        points.push(getEllipticalPosition(a, e, angle, inclination));
     }
     const geometry = new THREE.BufferGeometry().setFromPoints(points);
     scene.add(new THREE.LineLoop(geometry, new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.35 })));
 }
 
 planetsData.forEach((data, idx) => {
-    createOrbitWithInclination(data.distance, data.inclination, idx % 2 === 0 ? 0x77aaff : 0x88bbff);
+    const a = realToSceneDist(data.realDistance); // 半长轴（场景单位）
+    const e = data.eccentricity || 0;
+    
+    createOrbitWithInclination(a, e, data.inclination, idx % 2 === 0 ? 0x77aaff : 0x88bbff);
     
     let material;
     if (data.useCdn) {
@@ -279,7 +290,7 @@ planetsData.forEach((data, idx) => {
     
     const planetMesh = new THREE.Mesh(new THREE.SphereGeometry(data.radius, 128, 128), material);
     planetMesh.castShadow = true;
-    planetMesh.userData = { speed: data.speed, angle: Math.random() * Math.PI * 2, inclination: data.inclination, realData: data };
+    planetMesh.userData = { speed: data.speed, angle: Math.random() * Math.PI * 2, inclination: data.inclination, realData: data, semiMajor: a, eccentricity: e };
 
     if (data.hasRing) {
         const ringGroup = createRealisticSaturnRing(data.radius);
@@ -301,7 +312,7 @@ planetsData.forEach((data, idx) => {
     planetMesh.add(label);
     labelItems.push({ nameZh: data.name, css2d: label, dom: div });
     
-    planets.push({ mesh: planetMesh, distance: data.distance, baseSpeed: data.speed, angle: planetMesh.userData.angle, inclination: data.inclination, name: data.name, hasRing: data.hasRing, ringGroup: planetMesh.userData.ringGroup, label, realData: data });
+    planets.push({ mesh: planetMesh, baseSpeed: data.speed, angle: planetMesh.userData.angle, inclination: data.inclination, name: data.name, hasRing: data.hasRing, ringGroup: planetMesh.userData.ringGroup, label, realData: data, semiMajor: a, eccentricity: e });
     if (data.name === '地球') earthMesh = planetMesh;
     switchableObjects.push({ nameZh: data.name, mesh: planetMesh, type: 'planet', extra: null, label });
 });
@@ -334,7 +345,7 @@ function createAsteroidBelt() {
     const lgGeo = new THREE.BufferGeometry();
     const lgPos = new Float32Array(largeCount * 3);
     for (let i = 0; i < largeCount; i++) {
-        const r = 10.6 + Math.random() * 1.8;
+        const r = 12.5 + Math.random() * 3.5;
         const a = Math.random() * Math.PI * 2;
         lgPos[i*3] = Math.cos(a) * r;
         lgPos[i*3+1] = (Math.random() - 0.5) * 0.8;
@@ -348,7 +359,7 @@ function createAsteroidBelt() {
     const mdGeo = new THREE.BufferGeometry();
     const mdPos = new Float32Array(midCount * 3);
     for (let i = 0; i < midCount; i++) {
-        const r = 10.7 + Math.random() * 1.6;
+        const r = 12.8 + Math.random() * 3.0;
         const a = Math.random() * Math.PI * 2;
         mdPos[i*3] = Math.cos(a) * r;
         mdPos[i*3+1] = (Math.random() - 0.5) * 0.7;
@@ -362,7 +373,7 @@ function createAsteroidBelt() {
     const smGeo = new THREE.BufferGeometry();
     const smPos = new Float32Array(smallCount * 3);
     for (let i = 0; i < smallCount; i++) {
-        const r = 10.9 + Math.random() * 1.4;
+        const r = 13.0 + Math.random() * 2.5;
         const a = Math.random() * Math.PI * 2;
         smPos[i*3] = Math.cos(a) * r;
         smPos[i*3+1] = (Math.random() - 0.5) * 0.5;
@@ -614,7 +625,15 @@ function animate() {
     planets.forEach(p => {
         p.angle += p.baseSpeed * orbitSpeedFactor * 0.6;
         if (p.angle > Math.PI*2) p.angle -= Math.PI*2;
-        p.mesh.position.copy(getRotatedPosition(p.distance, p.angle, p.inclination));
+        // 椭圆轨道：r = a(1-e²)/(1+e·cosθ)，θ为近心点角
+        const a = p.semiMajor;
+        const e = p.eccentricity;
+        const r = a * (1 - e * e) / (1 + e * Math.cos(p.angle));
+        const x0 = Math.cos(p.angle) * r;
+        const z0 = Math.sin(p.angle) * r;
+        const y0 = 0;
+        const cosI = Math.cos(p.inclination), sinI = Math.sin(p.inclination);
+        p.mesh.position.set(x0, y0 * cosI - z0 * sinI, y0 * sinI + z0 * cosI);
         if (p.mesh.visible) {
             // 真实自转：rotPeriod为地球日，负值表示逆向自转
             // 角速度 ω ∝ 1/T。添加视觉下限 minFactor 防止极慢行星完全静止
