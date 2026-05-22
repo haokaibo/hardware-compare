@@ -324,9 +324,9 @@ moonMesh.castShadow = true;
 scene.add(moonMesh);
 const moonDiv = document.createElement('div');
 moonDiv.textContent = '月球';
-moonDiv.style.cssText = 'color:#ddddff;font-size:12px;background:rgba(0,0,0,0.6);padding:2px 8px;border-radius:16px;border:1px solid #aaaaff';
+moonDiv.style.cssText = 'color:#ccdaff;font-size:9px;font-weight:300;background:rgba(0,0,0,0.4);padding:1px 5px;border-radius:10px;border:1px solid #8888cc;opacity:0.6';
 const moonLabel = new CSS2DObject(moonDiv);
-moonLabel.position.set(0, 0.18, 0);
+moonLabel.position.set(0, -0.18, 0);
 moonMesh.add(moonLabel);
 labelItems.push({ nameZh: '月球', css2d: moonLabel, dom: moonDiv });
 switchableObjects.push({ nameZh: '月球', mesh: moonMesh, type: 'moon', extra: null, label: moonLabel });
@@ -341,46 +341,46 @@ function createAsteroidBelt() {
     const group = new THREE.Group();
 
     // 大粒子（数量少，尺寸大）
-    const largeCount = 400;
+    const largeCount = 250;
     const lgGeo = new THREE.BufferGeometry();
     const lgPos = new Float32Array(largeCount * 3);
     for (let i = 0; i < largeCount; i++) {
-        const r = 12.5 + Math.random() * 3.5;
+        const r = 14.0 + Math.random() * 1.0;
         const a = Math.random() * Math.PI * 2;
         lgPos[i*3] = Math.cos(a) * r;
-        lgPos[i*3+1] = (Math.random() - 0.5) * 0.8;
+        lgPos[i*3+1] = (Math.random() - 0.5) * 0.6;
         lgPos[i*3+2] = Math.sin(a) * r;
     }
     lgGeo.setAttribute('position', new THREE.BufferAttribute(lgPos, 3));
-    group.add(new THREE.Points(lgGeo, new THREE.PointsMaterial({ color: 0xbbaa88, size: 0.07, sizeAttenuation: true })));
+    group.add(new THREE.Points(lgGeo, new THREE.PointsMaterial({ color: 0xbbaa88, size: 0.06, sizeAttenuation: true })));
 
     // 中粒子（主体）
-    const midCount = 1200;
+    const midCount = 800;
     const mdGeo = new THREE.BufferGeometry();
     const mdPos = new Float32Array(midCount * 3);
     for (let i = 0; i < midCount; i++) {
-        const r = 12.8 + Math.random() * 3.0;
+        const r = 14.1 + Math.random() * 0.9;
         const a = Math.random() * Math.PI * 2;
         mdPos[i*3] = Math.cos(a) * r;
-        mdPos[i*3+1] = (Math.random() - 0.5) * 0.7;
+        mdPos[i*3+1] = (Math.random() - 0.5) * 0.5;
         mdPos[i*3+2] = Math.sin(a) * r;
     }
     mdGeo.setAttribute('position', new THREE.BufferAttribute(mdPos, 3));
-    group.add(new THREE.Points(mdGeo, new THREE.PointsMaterial({ color: 0xaa9977, size: 0.045, sizeAttenuation: true })));
+    group.add(new THREE.Points(mdGeo, new THREE.PointsMaterial({ color: 0xaa9977, size: 0.035, sizeAttenuation: true })));
 
     // 小粒子（数量多，尺寸小）
-    const smallCount = 2000;
+    const smallCount = 1200;
     const smGeo = new THREE.BufferGeometry();
     const smPos = new Float32Array(smallCount * 3);
     for (let i = 0; i < smallCount; i++) {
-        const r = 13.0 + Math.random() * 2.5;
+        const r = 14.2 + Math.random() * 0.8;
         const a = Math.random() * Math.PI * 2;
         smPos[i*3] = Math.cos(a) * r;
-        smPos[i*3+1] = (Math.random() - 0.5) * 0.5;
+        smPos[i*3+1] = (Math.random() - 0.5) * 0.4;
         smPos[i*3+2] = Math.sin(a) * r;
     }
     smGeo.setAttribute('position', new THREE.BufferAttribute(smPos, 3));
-    group.add(new THREE.Points(smGeo, new THREE.PointsMaterial({ color: 0x998866, size: 0.02, sizeAttenuation: true })));
+    group.add(new THREE.Points(smGeo, new THREE.PointsMaterial({ color: 0x998866, size: 0.015, sizeAttenuation: true })));
 
     return group;
 }
