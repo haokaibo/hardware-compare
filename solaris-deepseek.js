@@ -527,8 +527,12 @@ window.addEventListener('click', (event) => {
         if (planetNameZh) { showPlanetInfo(planetNameZh, realData); startTracking(hit); }
     }
 });
-resetViewBtn.addEventListener('click', () => { stopTracking(); hideInfoPanel(); if (!tourActive) startTour(); });
-closeInfoBtn.addEventListener('click', () => hideInfoPanel());
+resetViewBtn.addEventListener('click', (e) => { e.stopPropagation(); stopTracking(); hideInfoPanel(); if (!tourActive) startTour(); });
+closeInfoBtn.addEventListener('click', (e) => { e.stopPropagation(); hideInfoPanel(); });
+  
+// 阻止信息面板和控制面板上的点击冒泡到window，避免触发星球选中
+infoPanel.addEventListener('click', (e) => e.stopPropagation());
+document.getElementById('controlPanel').addEventListener('click', (e) => e.stopPropagation());
 
 const raycasterOcc = new THREE.Raycaster();
 function updateLabelsOcclusion() {
