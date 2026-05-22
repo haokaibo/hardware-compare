@@ -149,7 +149,7 @@ scene.add(stars2);
 
 const loadingTip = document.getElementById('loadingTip');
 let loadedCount = 0;
-const totalTextures = 18;
+const totalTextures = 17;
 const texLoader = new THREE.TextureLoader();
 function textureLoaded() { 
     loadedCount++; 
@@ -158,20 +158,19 @@ function textureLoaded() {
         setTimeout(() => loadingTip.style.display = 'none', 500); 
     } 
 }
-texLoader.crossOrigin = "Anonymous";
 
-const sunTextureUrl = 'https://upload.wikimedia.org/wikipedia/commons/c/cb/Solarsystemscope_texture_2k_sun.jpg';
-const earthMap = 'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/earthmap1k.jpg';
-const earthNormal = 'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/earthbump1k.jpg';
-const moonMap = 'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/moonmap1k.jpg';
+const sunTextureUrl = './solar_textures/Solarsystemscope_texture_2k_sun.jpg';
+const earthMap = './solar_textures/2k_earth_daymap.jpg';
+const earthNormal = './solar_textures/2k_earth_normal_map.jpg';
+const moonMap = './solar_textures/2k_moon.jpg';
 
 const cdnTextures = {
-  mercury: { map: 'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/mercurymap.jpg', normal: 'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/mercurybump.jpg' },
-  venus:   { map: 'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/venusmap.jpg',   normal: 'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/venusbump.jpg' },
-  mars:    { map: 'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/marsmap1k.jpg',  normal: 'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/marsbump1k.jpg' },
-  jupiter: { map: 'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/jupitermap.jpg', normal: null },
-  uranus:  { map: 'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/uranusmap.jpg',  normal: null },
-  neptune: { map: 'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/neptunemap.jpg', normal: null }
+  mercury: { map: './solar_textures/2k_mercury.jpg', normal: null },
+  venus:   { map: './solar_textures/2k_venus_surface.jpg', normal: null },
+  mars:    { map: './solar_textures/2k_mars.jpg', normal: null },
+  jupiter: { map: './solar_textures/2k_jupiter.jpg', normal: null },
+  uranus:  { map: './solar_textures/2k_uranus.jpg', normal: null },
+  neptune: { map: './solar_textures/2k_neptune.jpg', normal: null }
 };
 
 function loadCdnMaterial(mapUrl, normalUrl, color, roughness=0.6, metalness=0.1, emissive=0x000000, emissiveIntensity=0) {
@@ -325,18 +324,55 @@ const moonRealData = { name: '月球', realRadius: 1737, realDistance: 0.384, re
 
 switchableObjects.push({ nameZh: '太阳', mesh: sunMesh, type: 'sun', extra: { glow: sunGlow }, label: sunLabel });
 
-// 小行星带
-const asteroidGeo = new THREE.BufferGeometry();
-const asteroidPos = new Float32Array(3000 * 3);
-for (let i = 0; i < 3000 * 3; i += 3) {
-    const r = 10.8 + Math.random() * 1.5;
-    const a = Math.random() * Math.PI * 2;
-    asteroidPos[i] = Math.cos(a) * r;
-    asteroidPos[i+1] = (Math.random() - 0.5) * 0.6;
-    asteroidPos[i+2] = Math.sin(a) * r;
+// 小行星带 — 大小不均的粒子，多层叠加增强自然感
+function createAsteroidBelt() {
+    const group = new THREE.Group();
+
+    // 大粒子（数量少，尺寸大）
+    const largeCount = 400;
+    const lgGeo = new THREE.BufferGeometry();
+    const lgPos = new Float32Array(largeCount * 3);
+    for (let i = 0; i < largeCount; i++) {
+        const r = 10.6 + Math.random() * 1.8;
+        const a = Math.random() * Math.PI * 2;
+        lgPos[i*3] = Math.cos(a) * r;
+        lgPos[i*3+1] = (Math.random() - 0.5) * 0.8;
+        lgPos[i*3+2] = Math.sin(a) * r;
+    }
+    lgGeo.setAttribute('position', new THREE.BufferAttribute(lgPos, 3));
+    group.add(new THREE.Points(lgGeo, new THREE.PointsMaterial({ color: 0xbbaa88, size: 0.07, sizeAttenuation: true })));
+
+    // 中粒子（主体）
+    const midCount = 1200;
+    const mdGeo = new THREE.BufferGeometry();
+    const mdPos = new Float32Array(midCount * 3);
+    for (let i = 0; i < midCount; i++) {
+        const r = 10.7 + Math.random() * 1.6;
+        const a = Math.random() * Math.PI * 2;
+        mdPos[i*3] = Math.cos(a) * r;
+        mdPos[i*3+1] = (Math.random() - 0.5) * 0.7;
+        mdPos[i*3+2] = Math.sin(a) * r;
+    }
+    mdGeo.setAttribute('position', new THREE.BufferAttribute(mdPos, 3));
+    group.add(new THREE.Points(mdGeo, new THREE.PointsMaterial({ color: 0xaa9977, size: 0.045, sizeAttenuation: true })));
+
+    // 小粒子（数量多，尺寸小）
+    const smallCount = 2000;
+    const smGeo = new THREE.BufferGeometry();
+    const smPos = new Float32Array(smallCount * 3);
+    for (let i = 0; i < smallCount; i++) {
+        const r = 10.9 + Math.random() * 1.4;
+        const a = Math.random() * Math.PI * 2;
+        smPos[i*3] = Math.cos(a) * r;
+        smPos[i*3+1] = (Math.random() - 0.5) * 0.5;
+        smPos[i*3+2] = Math.sin(a) * r;
+    }
+    smGeo.setAttribute('position', new THREE.BufferAttribute(smPos, 3));
+    group.add(new THREE.Points(smGeo, new THREE.PointsMaterial({ color: 0x998866, size: 0.02, sizeAttenuation: true })));
+
+    return group;
 }
-asteroidGeo.setAttribute('position', new THREE.BufferAttribute(asteroidPos, 3));
-const asteroidField = new THREE.Points(asteroidGeo, new THREE.PointsMaterial({ color: 0xaa9977, size: 0.045 }));
+const asteroidField = createAsteroidBelt();
 scene.add(asteroidField);
 
 const dustGeo = new THREE.BufferGeometry();
