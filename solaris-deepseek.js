@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 import { planetsData, totalTextures, sunTextureUrl, moonTextureUrl } from './solaris-data.js';
-import { generateSaturnBodyTexture, generateSaturnRingTexture } from './solaris-textures.js';
+import { generateSaturnRingTexture } from './solaris-textures.js';
 import TWEEN from 'https://unpkg.com/@tweenjs/tween.js@23.1.1/dist/tween.esm.js';
 
 // =====================================================
@@ -159,20 +159,7 @@ function textureLoaded() {
 }
 
 // 通用纹理材质加载：根据行星数据加载 map 和 normal 纹理
-function loadPlanetMaterial(data, isSaturnCustom) {
-    if (isSaturnCustom) {
-        // 土星使用 canvas 生成的纹理
-        const saturnTex = generateSaturnBodyTexture();
-        const material = new THREE.MeshStandardMaterial({
-            map: saturnTex,
-            roughness: 0.70,
-            metalness: 0.05,
-            emissive: new THREE.Color(0x1a0f00),
-            emissiveIntensity: 0.03,
-        });
-        textureLoaded();
-        return material;
-    }
+function loadPlanetMaterial(data) {
     const material = new THREE.MeshStandardMaterial({
         color: data.color,
         roughness: data.roughness,
@@ -268,9 +255,8 @@ planetsData.forEach((data, idx) => {
     
     createOrbitWithInclination(a, e, data.inclination, idx % 2 === 0 ? 0x77aaff : 0x88bbff);
     
-    // 土星使用自定义 canvas 纹理，其他行星使用通用加载
-    const isSaturn = data.name === 'Saturn';
-    const material = loadPlanetMaterial(data, isSaturn);
+    // 通用材质加载
+    const material = loadPlanetMaterial(data);
     
     const planetMesh = new THREE.Mesh(new THREE.SphereGeometry(data.radius, 128, 128), material);
     planetMesh.castShadow = true;
