@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 生产力显卡排行榜 2026年5月 - GPURank.ai</title>
+    <style>
+        :root {
+            --primary-bg: #FFFFFF;
+            --secondary-bg: #F8F9FA;
+            --border-color: #E2E8F0;
+            --text-main: #1A202C;
+            --text-secondary: #718096;
+            --accent-color: #2D68D9;
+            --oom-color: #DC2626;
+            
+            /* 排行榜进度条颜色精准匹配 */
+            --color-blue: #2D68D9;
+            --color-teal: #319795;
+            --color-green: #38A169;
+            --color-orange: #DD6B20;
+            --color-gray: #A0AEC0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            background-color: var(--primary-bg);
+            color: var(--text-main);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 40px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 20px;
+            font-weight: 700;
+            color: #0F172A;
+            user-select: none;
+        }
+
+        .logo-dot {
+            width: 10px;
+            height: 10px;
+            background-color: var(--accent-color);
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            font-size: 15px;
+            color: var(--text-secondary);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        /* 导航栏点击激活状态 */
+        .nav-btn.active {
+            background-color: #EDF2F7;
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        /* 导航栏鼠标悬停状态 */
+        .nav-btn:hover:not(.active) {
+            background-color: #F7FAFC;
+            color: var(--text-main);
+        }
+
+        main {
+            padding: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .title-section {
+            margin-bottom: 32px;
+        }
+
+        h1 {
+            font-size: 26px;
+            font-weight: 700;
+            margin: 0 0 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .title-date {
+            font-size: 16px;
+            color: var(--text-secondary);
+            font-weight: normal;
+        }
+
+        .sub-title {
+            color: var(--text-secondary);
+            font-size: 15px;
+        }
+
+        /* --- 冠军看板卡片 --- */
+        .champion-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .champion-card {
+            background-color: var(--secondary-bg);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid transparent;
+            transition: border-color 0.2s ease;
+        }
+
+        .champion-card:hover {
+            border-color: #CBD5E0;
+        }
+
+        .champ-header {
+            display: flex;
+            align-items: center;
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            gap: 6px;
+        }
+
+        .gpu-model {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .model-details {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .highlight-data {
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .recommend-tag {
+            background-color: #E6FFFA;
+            color: #234E52;
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* --- 筛选器标签组 --- */
+        .filter-section {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            width: 80px;
+            user-select: none;
+        }
+
+        .filter-chip {
+            padding: 6px 16px;
+            background-color: var(--primary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            font-size: 14px;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            user-select: none;
+        }
+
+        /* 筛选器标签悬停 */
+        .filter-chip:hover:not(.selected) {
+            background-color: var(--secondary-bg);
+            border-color: #CBD5E0;
+        }
+
+        /* 筛选器标签选中激活 */
+        .filter-chip.selected {
+            background-color: var(--primary-bg);
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+            font-weight: 600;
+            box-shadow: 0 0 0 1px var(--accent-color);
+        }
+
+        /* --- 排行榜数据表格 --- */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        th, td {
+            padding: 14px 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+        }
+
+        th {
+            color: var(--text-secondary);
+            font-weight: 500;
+            padding-bottom: 12px;
+            user-select: none;
+        }
+
+        .th-sort {
+            cursor: pointer;
+        }
+        .th-sort:hover {
+            color: var(--text-main);
+        }
+        .th-sort::after {
+            content: ' ↓';
+            color: var(--accent-color);
+        }
+
+        .gpu-col-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .gpu-main-name {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .gpu-sub-desc {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        /* 进度条与数值单元格组件 */
+        .progress-cell {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 190px;
+        }
+
+        .bar-bg {
+            height: 6px;
+            background-color: #EDF2F7;
+            border-radius: 3px;
+            flex-grow: 1;
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 3px;
+        }
+
+        .bar-val {
+            width: 40px;
+            text-align: right;
+            font-weight: 500;
+        }
+
+        .oom-text {
+            color: var(--oom-color);
+            font-weight: 600;
+        }
+
+        .rank-badge {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            font-weight: 700;
+            font-size: 12px;
+        }
+        
+        .badge-s { color: #2B6CB0; background-color: #EBF8FF; }
+        .badge-a { color: #2F855A; background-color: #E6FFFA; }
+        .badge-b { color: #B7791F; background-color: #FEFCBF; }
+        .badge-c { color: #4A5568; background-color: #EDF2F7; }
+
+        /* --- 列表行交互逻辑 --- */
+        tr {
+            transition: background-color 0.15s ease;
+        }
+
+        /* 普通数据行鼠标悬停 */
+        tr:hover:not(.highlight-row) {
+            background-color: #F7FAFC;
+        }
+
+        /* 核心推荐行（RTX 3090）默认带淡蓝色高亮背景 */
+        tr.highlight-row {
+            background-color: rgba(45, 104, 217, 0.05);
+        }
+
+        /* 核心推荐行鼠标悬停时展现更深一层的叠加视觉反馈 */
+        tr.highlight-row:hover {
+            background-color: rgba(45, 104, 217, 0.1);
+        }
+
+        footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            color: var(--text-secondary);
+            font-size: 12px;
+            border-top: 1px solid var(--border-color);
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo"><div class="logo-dot"></div>GPURank.ai</div>
+    <nav>
+        <ul id="main-nav">
+            <li><button class="nav-btn active">排行榜</button></li>
+            <li><button class="nav-btn">性价比</button></li>
+            <li><button class="nav-btn">AI 攒机助手 ↗</button></li>
+            <li><button class="nav-btn">兼容性</button></li>
+            <li><button class="nav-btn">···</button></li>
+        </ul>
+    </nav>
+</header>
+
+<main>
+    <div class="title-section">
+        <h1>AI 生产力显卡排行榜 <span class="title-date">2026 年 5 月</span></h1>
+        <div class="sub-title">基于文生图 / 文生视频 / LLM 推理实测数据，非游戏帧数</div>
+    </div>
+
+    <div class="champion-grid">
+        <div class="champion-card">
+            <div class="champ-header">🖼️ 文生图冠军</div>
+            <div class="gpu-model">RTX 5090</div>
+            <div class="model-details">Flux.1 Dev · 1024px · <span class="highlight-data">4.8 it/s</span></div>
+        </div>
+        <div class="champion-card">
+            <div class="champ-header">📹 文生视频冠军</div>
+            <div class="gpu-model">RTX 5090</div>
+            <div class="model-details">5s 720p · <span class="highlight-data">38s</span> 生成时间</div>
+        </div>
+        <div class="champion-card">
+            <div class="champ-header">💬 LLM 推理冠军</div>
+            <div class="gpu-model">RTX 5090</div>
+            <div class="model-details">Llama 4 70B · <span class="highlight-data">68 tok/s</span></div>
+        </div>
+        <div class="champion-card" style="grid-column: span 3; background-color: var(--primary-bg); border: 1px solid var(--border-color);">
+            <div class="champ-header">🏆 性价比之王</div>
+            <div class="gpu-model">RTX 3090 <span class="recommend-tag">💎 推荐</span></div>
+            <div class="model-details">24GB GDDR6X · <span class="highlight-data">~$499 二手均价</span></div>
+        </div>
+    </div>
+
+    <div class="filter-section">
+        <div class="filter-group">
+            <div class="filter-label">任务类型</div>
+            <button class="filter-chip selected">全部</button>
+            <button class="filter-chip">文生图</button>
+            <button class="filter-chip">文生视频</button>
+            <button class="filter-chip">LLM 推理</button>
+        </div>
+        <div class="filter-group">
+            <div class="filter-label">显存</div>
+            <button class="filter-chip">8GB+</button>
+            <button class="filter-chip">16GB+</button>
+            <button class="filter-chip selected">24GB+</button>
+        </div>
+        <div class="filter-group">
+            <div class="filter-label">预算 (CAD)</div>
+            <button class="filter-chip">≤$800</button>
+            <button class="filter-chip selected">≤$1500</button>
+            <button class="filter-chip">不限</button>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 40px;">#</th>
+                <th style="width: 220px;">显卡型号</th>
+                <th class="th-sort" style="width: 210px;">文生图 (it/s)</th>
+                <th style="width: 210px;">文生视频 (5s/720p)</th>
+                <th style="width: 210px;">LLM 推理 (tok/s)</th>
+                <th style="width: 120px;">参考价 (CAD)</th>
+                <th style="width: 90px;">性价比分</th>
+                <th style="width: 60px;">等级</th>
+            </tr>
+        </thead>
+        <tbody id="table-content">
+            </tbody>
+    </table>
+
+    <footer>
+        测试环境：Ubuntu 24.04 · CUDA 12.8 · PyTorch 2.6 · 模型 Flux.1 Dev / GenVideoX-5B / Llama 4 70B-Q4 · 2026.05 实测
+    </footer>
+</main>
+
+<script>
+    // 严格闭环的完整 Mock 性能数据配置
+    const mockData = [
+        { rank: 1, name: "RTX 5090", desc: "32GB GDDR7 · 575W", imgVal: 4.8, imgMax: 5.0, imgColor: "var(--color-blue)", vidText: "38s", vidPct: 90, vidColor: "var(--color-blue)", llmVal: 68, llmMax: 70, llmColor: "var(--color-blue)", price: "$2,999", ratio: 72, grade: "S", isHigh: false },
+        { rank: 2, name: "RTX 5080", desc: "16GB GDDR7 · 360W", imgVal: 3.5, imgMax: 5.0, imgColor: "var(--color-teal)", vidText: "58s", vidPct: 70, vidColor: "var(--color-teal)", llmVal: 49, llmMax: 70, llmColor: "var(--color-teal)", price: "$1,499", ratio: 81, grade: "A", isHigh: false },
+        { rank: 3, name: "RX 9070 XT", desc: "16GB GDDR6 · 304W", imgVal: 2.8, imgMax: 5.0, imgColor: "var(--color-teal)", vidText: "74s", vidPct: 55, vidColor: "var(--color-teal)", llmVal: 31, llmMax: 70, llmColor: "var(--color-orange)", price: "$799", ratio: 88, grade: "A", isHigh: false },
+        { rank: 4, name: "RTX 3090", desc: "24GB GDDR6X · 350W", imgVal: 2.6, imgMax: 5.0, imgColor: "var(--color-green)", vidText: "82s", vidPct: 48, vidColor: "var(--color-green)", llmVal: 38, llmMax: 70, llmColor: "var(--color-green)", price: "~$499 二手", ratio: 96, grade: "A", isHigh: true, hasTag: true },
+        { rank: 5, name: "RTX 4070 Ti Super", desc: "16GB GDDR6X · 285W", imgVal: 2.2, imgMax: 5.0, imgColor: "var(--color-orange)", vidText: "96s", vidPct: 35, vidColor: "var(--color-orange)", llmVal: 27, llmMax: 70, llmColor: "var(--color-orange)", price: "$899", ratio: 74, grade: "B", isHigh: false },
+        { rank: 6, name: "RTX 4060 Ti", desc: "16GB GDDR6 · 165W", imgVal: 1.6, imgMax: 5.0, imgColor: "var(--color-gray)", vidText: "133s", vidPct: 15, vidColor: "var(--color-gray)", llmVal: 19, llmMax: 70, llmColor: "var(--color-gray)", price: "$599", ratio: 62, grade: "B", isHigh: false },
+        { rank: 7, name: "RTX 4060", desc: "8GB GDDR6 · 115W", imgVal: 1.1, imgMax: 5.0, imgColor: "var(--color-gray)", vidText: "显存不足", vidPct: 0, vidColor: "var(--color-gray)", llmVal: 15, llmMax: 70, llmColor: "var(--color-gray)", price: "$399", ratio: 41, grade: "C", isHigh: false }
+    ];
+
+    const tbody = document.getElementById('table-content');
+
+    function renderTable() {
+        tbody.innerHTML = mockData.map(row => {
+            // 1. 文生图进度条计算
+            const imgPercent = (row.imgVal / row.imgMax) * 100;
+            
+            // 2. 文生视频状态判断
+            let videoHTML = '';
+            if (row.get_personal_context_or_null_if_not_present_in_context_datavidText === "显存不足" || row.vidText === "显存不足") {
+                videoHTML = `
+                    <div class="progress-cell">
+                        <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div>
+                        <div class="oom-text">显存不足</div>
+                    </div>`;
+            } else {
+                videoHTML = `
+                    <div class="progress-cell">
+                        <div class="bar-bg"><div class="bar-fill" style="width: ${row.vidPct}%; background-color: ${row.vidColor};"></div></div>
+                        <div class="bar-val">${row.vidText}</div>
+                    </div>`;
+            }
+
+            // 3. LLM 推理进度条与数值精准绑定 (严格修正为 row.llmVal)
+            const llmPercent = (row.llmVal / row.llmMax) * 100;
+            const llmHTML = `
+                <div class="progress-cell">
+                    <div class="bar-bg"><div class="bar-fill" style="width: ${llmPercent}%; background-color: ${row.llmColor};"></div></div>
+                    <div class="bar-val">${row.llmVal}</div>
+                </div>`;
+
+            // 4. 推荐行高亮逻辑与标志标签
+            const rowClass = row.isHigh ? 'class="highlight-row"' : '';
+            const tagHTML = row.hasTag ? '<span class="recommend-tag" style="padding:1px 4px; font-size:11px;">核心推荐💎</span>' : '';
+
+            return `
+                <tr ${rowClass}>
+                    <td>${row.rank}</td>
+                    <td>
+                        <div class="gpu-col-info">
+                            <div class="gpu-main-name">${row.name} ${tagHTML}</div>
+                            <div class="gpu-sub-desc">${row.desc}</div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="progress-cell">
+                            <div class="bar-bg"><div class="bar-fill" style="width: ${imgPercent}%; background-color: ${row.imgColor};"></div></div>
+                            <div class="bar-val">${row.imgVal.toFixed(1)}</div>
+                        </div>
+                    </td>
+                    <td>${videoHTML}</td>
+                    <td>${llmHTML}</td>
+                    <td>${row.price}</td>
+                    <td style="font-weight: 600;">${row.ratio}</td>
+                    <td><span class="rank-badge badge-${row.grade.toLowerCase()}">${row.grade}</span></td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    // 导航栏按钮点击 Active 切换逻辑
+    document.getElementById('main-nav').addEventListener('click', function(e) {
+        if(e.target.classList.contains('nav-btn')) {
+            this.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            e.target.classList.add('active');
+        }
+    });
+
+    // 筛选器组过滤标签点击 Active 切换逻辑
+    document.querySelectorAll('.filter-group').forEach(group => {
+        group.addEventListener('click', function(e) {
+            if(e.target.classList.contains('filter-chip')) {
+                this.querySelectorAll('.filter-chip').forEach(chip => chip.classList.remove('selected'));
+                e.target.classList.add('selected');
+            }
+        });
+    });
+
+    // 运行初始完整渲染
+    renderTable();
+</script>
+</body>
+</html>

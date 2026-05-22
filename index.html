@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>消费级 AI 硬件基准测试 - GPURank.ai</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-main: #FFFFFF;
+            --bg-sub: #F8FAFC;
+            --border: #E2E8F0;
+            --text-main: #0F172A;
+            --text-muted: #64748B;
+            --brand-blue: #2D68D9;
+            --accent-green: #10B981;
+            
+            /* 进度条颜色群 */
+            --bar-img: #3B82F6;
+            --bar-vid: #06B6D4;
+            --bar-llm: #6366F1;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 40px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            font-size: 20px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .logo-icon {
+            width: 12px;
+            height: 12px;
+            background-color: var(--brand-blue);
+            border-radius: 3px;
+            margin-right: 8px;
+        }
+
+        nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            gap: 4px;
+        }
+
+        .nav-link {
+            background: none;
+            border: none;
+            font-size: 14px;
+            color: var(--text-muted);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.15s ease;
+        }
+
+        .nav-link.active {
+            background-color: #F1F5F9;
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        .nav-link:hover:not(.active) {
+            background-color: var(--bg-sub);
+            color: var(--text-main);
+        }
+
+        main {
+            padding: 40px;
+            max-width: 1260px;
+            margin: 0 auto;
+        }
+
+        .header-headline {
+            margin-bottom: 32px;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 800;
+            margin: 0 0 8px 0;
+        }
+
+        .headline-tag {
+            font-size: 14px;
+            background-color: #EFF6FF;
+            color: var(--brand-blue);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-weight: 600;
+            margin-left: 12px;
+            vertical-align: middle;
+        }
+
+        .desc-text {
+            color: var(--text-muted);
+            font-size: 15px;
+        }
+
+        /* --- 模仿 Artificial Analysis 的双视窗切换 --- */
+        .view-switcher {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 12px;
+        }
+
+        .view-tab {
+            background: none;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-muted);
+            padding: 8px 4px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .view-tab.active {
+            color: var(--brand-blue);
+        }
+
+        .view-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -13px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--brand-blue);
+        }
+
+        .content-panel {
+            display: none;
+        }
+
+        .content-panel.active {
+            display: block;
+        }
+
+        /* 图表面板布局 */
+        .chart-wrapper {
+            background-color: var(--bg-sub);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 32px;
+            height: 450px;
+        }
+
+        /* --- 核心大表样式 --- */
+        .table-container {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            background-color: #FFFFFF;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--bg-sub);
+            color: var(--text-muted);
+            font-weight: 600;
+            padding: 16px 16px;
+            border-bottom: 1px solid var(--border);
+            user-select: none;
+        }
+
+        td {
+            padding: 16px 16px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+
+        tr {
+            transition: background-color 0.15s ease;
+        }
+
+        tr:hover:not(.highlight-row) {
+            background-color: #F8FAFC;
+        }
+
+        tr.highlight-row {
+            background-color: rgba(45, 104, 217, 0.04);
+        }
+
+        tr.highlight-row:hover {
+            background-color: rgba(45, 104, 217, 0.08);
+        }
+
+        .gpu-name-main {
+            font-weight: 700;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .gpu-spec-sub {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* 完美闭环的进度条组件 */
+        .metric-cell {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 200px;
+        }
+
+        .cell-bar-container {
+            height: 6px;
+            background-color: #E2E8F0;
+            border-radius: 3px;
+            flex-grow: 1;
+        }
+
+        .cell-bar-fill {
+            height: 100%;
+            border-radius: 3px;
+        }
+
+        .cell-number-label {
+            width: 45px;
+            text-align: right;
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .oom-label {
+            color: #EF4444;
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        .tag-badge {
+            background-color: #ECFDF5;
+            color: #065F46;
+            font-size: 11px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .badge-index {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background-color: #E2E8F0;
+            color: var(--text-main);
+            font-weight: 700;
+            font-size: 11px;
+        }
+
+        .badge-s { background-color: #DBEAFE; color: #1E40AF; }
+        .badge-a { background-color: #D1FAE5; color: #065F46; }
+        .badge-b { background-color: #FEF3C7; color: #92400E; }
+        .badge-c { background-color: #F1F5F9; color: #475569; }
+
+        footer {
+            margin-top: 48px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo-area"><div class="logo-icon"></div>GPURank.ai</div>
+    <nav>
+        <ul id="top-nav">
+            <li><button class="nav-link active">消费级 GPU 矩阵</button></li>
+            <li><button class="nav-link">性价比象限</button></li>
+            <li><button class="nav-link">LLM 推理延迟</button></li>
+            <li><button class="nav-link">关于测试方法</button></li>
+        </ul>
+    </nav>
+</header>
+
+<main>
+    <div class="header-headline">
+        <h1>消费级显卡 AI 生产力跑分榜 <span class="headline-tag">非企业级数据中心显卡</span></h1>
+        <div class="desc-text">针对独立开发者、炼丹师及本地部署用户。实测运行端侧大模型与多模态生成架构的真实表现。</div>
+    </div>
+
+    <div class="view-switcher">
+        <button class="view-tab active" onclick="switchView('table-panel', this)">📊 性能指标总览大表</button>
+        <button class="view-tab" onclick="switchView('chart-panel', this)">📈 象限分析图 (模仿 Artificial Analysis)</button>
+    </div>
+
+    <div id="table-panel" class="content-panel active">
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 40px;">#</th>
+                        <th style="width: 24px;">级别</th>
+                        <th style="width: 220px;">硬件型号</th>
+                        <th>文生图 (it/s)</th>
+                        <th>文生视频 (5s/720p 耗时)</th>
+                        <th>LLM 推理速度 (tok/s)</th>
+                        <th>市场参考价 (CAD)</th>
+                        <th style="font-weight: 700; color: var(--text-main);">性价比得分</th>
+                    </tr>
+                </thead>
+                <tbody id="gpu-rows-target">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="chart-panel" class="content-panel">
+        <div class="chart-wrapper">
+            <canvas id="analysisChart"></canvas>
+        </div>
+    </div>
+
+    <footer>
+        <strong>测算规格与基准说明：</strong><br>
+        测试日期：2026年5月 | 宿主机环境：Ubuntu 24.04, CUDA 12.8, PyTorch 2.6<br>
+        • <strong>文生图</strong>：基于 Flux.1-Dev (FP8 精度) 测算每秒迭代次数 (it/s) | • <strong>文生视频</strong>：基于 GenVideoX-5B 渲染一段 5秒 720p 视频的完整执行耗时 (越小越好) | • <strong>LLM推理</strong>：基于 Llama-4-70B-Q4_K_M 测算首字输出后的持续生成速度 (tok/s)。
+    </footer>
+</main>
+
+<script>
+    // 闭环定义全量数据集，绝无任何缺失键名
+    const gpuDataset = [
+        { rank: 1, name: "RTX 5090", vram: "32GB GDDR7 · 575W", imgVal: 4.8, imgMax: 5.0, imgColor: "var(--bar-img)", vidText: "38s", vidPct: 90, vidColor: "var(--bar-vid)", llmVal: 68, llmMax: 70, llmColor: "var(--bar-llm)", price: "$2,999", ratio: 72, grade: "S", isPick: false },
+        { rank: 2, name: "RTX 5080", vram: "16GB GDDR7 · 360W", imgVal: 3.5, imgMax: 5.0, imgColor: "var(--bar-img)", vidText: "58s", vidPct: 70, vidColor: "var(--bar-vid)", llmVal: 49, llmMax: 70, llmColor: "var(--bar-llm)", price: "$1,499", ratio: 81, grade: "A", isPick: false },
+        { rank: 3, name: "RX 9070 XT", vram: "16GB GDDR6 · 304W", imgVal: 2.8, imgMax: 5.0, imgColor: "var(--bar-img)", vidText: "74s", vidPct: 55, vidColor: "var(--bar-vid)", llmVal: 31, llmMax: 70, llmColor: "var(--bar-llm)", price: "$799", ratio: 88, grade: "A", isPick: false },
+        { rank: 4, name: "RTX 3090", vram: "24GB GDDR6X · 350W", imgVal: 2.6, imgMax: 5.0, imgColor: "var(--bar-img)", vidText: "82s", vidPct: 48, vidColor: "var(--bar-vid)", llmVal: 38, llmMax: 70, llmColor: "var(--bar-llm)", price: "~$499 二手", ratio: 96, grade: "A", isPick: true },
+        { rank: 5, name: "RTX 4070 Ti Super", vram: "16GB GDDR6X · 285W", imgVal: 2.2, imgMax: 5.0, imgColor: "var(--bar-img)", vidText: "96s", vidPct: 35, vidColor: "var(--bar-vid)", llmVal: 27, llmMax: 70, llmColor: "var(--bar-llm)", price: "$899", ratio: 74, grade: "B", isPick: false },
+        { rank: 6, name: "RTX 4060 Ti", vram: "16GB GDDR6 · 165W", imgVal: 1.6, imgMax: 5.0, imgColor: "var(--bar-img)", vidText: "133s", vidPct: 15, vidColor: "var(--bar-vid)", llmVal: 19, llmMax: 70, llmColor: "var(--bar-llm)", price: "$599", ratio: 62, grade: "B", isPick: false },
+        { rank: 7, name: "RTX 4060", vram: "8GB GDDR6 · 115W", imgVal: 1.1, imgMax: 5.0, imgColor: "var(--bar-img)", vidText: "显存不足", vidPct: 0, vidColor: "var(--bar-vid)", llmVal: 15, llmMax: 70, llmColor: "var(--bar-llm)", price: "$399", ratio: 41, grade: "C", isPick: false }
+    ];
+
+    // 渲染动态表格逻辑
+    function populateTable() {
+        const container = document.getElementById('gpu-rows-target');
+        container.innerHTML = gpuDataset.map(item => {
+            const imgPct = (item.imgVal / item.imgMax) * 100;
+            const llmPct = (item.llmVal / item.llmMax) * 100;
+
+            // 文生视频 OOM 安全分支隔离
+            let videoBlock = '';
+            if (item.vidText === "显存不足") {
+                videoBlock = `<div class="metric-cell"><div class="cell-bar-container"><div class="cell-bar-fill" style="width:0%"></div></div><span class="oom-label">显存不足(OOM)</span></div>`;
+            } else {
+                videoBlock = `<div class="metric-cell"><div class="cell-bar-container"><div class="cell-bar-fill" style="background-color:${item.vidColor}; width:${item.vidPct}%"></div></div><span class="cell-number-label">${item.vidText}</span></div>`;
+            }
+
+            const rowClass = item.isPick ? 'class="highlight-row"' : '';
+            const tagHTML = item.isPick ? '<span class="tag-badge">核心推荐 💎</span>' : '';
+
+            return `
+                <tr ${rowClass}>
+                    <td style="color:var(--text-muted); font-weight:600;">${item.rank}</td>
+                    <td><span class="badge-index badge-${item.grade.toLowerCase()}">${item.grade}</span></td>
+                    <td>
+                        <div class="gpu-name-main">${item.name} ${tagHTML}</div>
+                        <div class="gpu-spec-sub">${item.vram}</div>
+                    </td>
+                    <td>
+                        <div class="metric-cell">
+                            <div class="cell-bar-container"><div class="cell-bar-fill" style="background-color:${item.imgColor}; width:${imgPct}%"></div></div>
+                            <span class="cell-number-label">${item.imgVal.toFixed(1)}</span>
+                        </div>
+                    </td>
+                    <td>${videoBlock}</td>
+                    <td>
+                        <div class="metric-cell">
+                            <div class="cell-bar-container"><div class="cell-bar-fill" style="background-color:${item.llmColor}; width:${llmPct}%"></div></div>
+                            <span class="cell-number-label">${item.llmVal}</span>
+                        </div>
+                    </td>
+                    <td style="font-weight:500;">${item.price}</td>
+                    <td style="font-weight:700; color:var(--brand-blue);">${item.ratio}</td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    // 选项卡无缝视窗切换逻辑
+    function switchView(panelId, tabButton) {
+        document.querySelectorAll('.content-panel').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'));
+        
+        document.getElementById(panelId).classList.add('active');
+        tabButton.classList.add('active');
+        
+        // 如果切换到图表面板，触发 Chart.js 重绘渲染
+        if (panelId === 'chart-panel') {
+            initChart();
+        }
+    }
+
+    // 头部导航按钮交互反馈
+    document.getElementById('top-nav').addEventListener('click', function(e) {
+        if (e.target.classList.contains('nav-link')) {
+            this.querySelectorAll('.nav-link').forEach(btn => btn.classList.remove('active'));
+            e.target.classList.add('active');
+        }
+    });
+
+    // 完美模仿 Artificial Analysis 经典的“性能 vs 价格”散点象限分析图
+    let chartInstance = null;
+    function initChart() {
+        if (chartInstance) return; // 避免重复创建引发内存泄漏
+        
+        const ctx = document.getElementById('analysisChart').getContext('2d');
+        
+        // 过滤提取真实价格和吞吐量作为坐标轴
+        const scatterData = [
+            { x: 2999, y: 68, label: "RTX 5090" },
+            { x: 1499, y: 49, label: "RTX 5080" },
+            { x: 799, y: 31, label: "RX 9070 XT" },
+            { x: 499, y: 38, label: "RTX 3090 (二手价格之王)" },
+            { x: 899, y: 27, label: "RTX 4070 Ti Super" },
+            { x: 599, y: 19, label: "RTX 4060 Ti" },
+            { x: 399, y: 15, label: "RTX 4060" }
+        ];
+
+        chartInstance = new Chart(ctx, {
+            type: 'scatter',
+            data: {
+                datasets: [{
+                    label: '消费级 GPU (2026年5月)',
+                    data: scatterData,
+                    backgroundColor: '#2D68D9',
+                    pointRadius: 8,
+                    pointHoverRadius: 12
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(ctx) {
+                                return `${ctx.raw.label}: 价格 $${ctx.raw.x} CAD, 推理速度 ${ctx.raw.y} tok/s`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        title: { display: true, text: '市场参考价格 (CAD) - 越左越划算', font: { weight: 'bold' } },
+                        min: 200,
+                        max: 3200
+                    },
+                    y: {
+                        title: { display: true, text: 'LLM 推理速度 (tokens每秒) - 越上越强劲', font: { weight: 'bold' } },
+                        min: 0,
+                        max: 80
+                    }
+                }
+            }
+        });
+    }
+
+    // 初始化渲染
+    populateTable();
+</script>
+</body>
+</html>
