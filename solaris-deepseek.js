@@ -149,7 +149,7 @@ scene.add(stars2);
 
 const loadingTip = document.getElementById('loadingTip');
 let loadedCount = 0;
-const totalTextures = 17;
+const totalTextures = 18;
 const texLoader = new THREE.TextureLoader();
 function textureLoaded() { 
     loadedCount++; 
@@ -169,6 +169,7 @@ const cdnTextures = {
   venus:   { map: './solar_textures/2k_venus_surface.jpg', normal: null },
   mars:    { map: './solar_textures/2k_mars.jpg', normal: null },
   jupiter: { map: './solar_textures/2k_jupiter.jpg', normal: null },
+  saturn:  { map: './solar_textures/2k_saturn.jpg', normal: null },
   uranus:  { map: './solar_textures/2k_uranus.jpg', normal: null },
   neptune: { map: './solar_textures/2k_neptune.jpg', normal: null }
 };
@@ -267,11 +268,11 @@ planetsData.forEach((data, idx) => {
     createOrbitWithInclination(data.distance, data.inclination, idx % 2 === 0 ? 0x77aaff : 0x88bbff);
     
     let material;
-    if (data.customMaterial) {
-        material = loadSaturnMaterial();
-    } else if (data.useCdn) {
+    if (data.useCdn) {
         const cdn = cdnTextures[data.cdnKey];
         material = loadCdnMaterial(cdn.map, cdn.normal, data.color, data.roughness, data.metalness, data.emissive, data.emissiveIntensity);
+    } else if (data.customMaterial) {
+        material = loadSaturnMaterial();
     } else {
         material = loadEarthMaterial();
     }
@@ -599,23 +600,35 @@ document.getElementById('minimizeBtn').addEventListener('click', () => document.
 document.getElementById('panelMiniLogo').addEventListener('click', () => document.getElementById('controlPanel').classList.remove('minimized'));
 
 let time = 0;
-const basePlanetRotSpeed = 0.0024, baseMoonRotSpeed = 0.003;
+// 视觉自转基准：以地球自转速度为基础，调整整体缩放使视觉效果适中
+// 真实自转周期（地球日）: 水星58.6, 金星-243, 地球1.0, 火星1.025,
+// 木星0.4135, 土星0.444, 天王星-0.718, 海王星0.671, 月球27.3
+// 角速度与周期成反比：ω = 1/T
+// 设置地球自转速度使所有行星运动可见
+const earthRotSpeed = 0.0015; // 基准
 function animate() {
     requestAnimationFrame(animate);
     TWEEN.update();
     time += 0.008;
-    if (sunMesh.visible) { sunMesh.rotation.y += 0.003; sunGlow.rotation.y += 0.001; }
+    if (sunMesh.visible) { sunMesh.rotation.y += 0.0001 * rotationSpeedFactor; sunGlow.rotation.y += 0.00005; }
     planets.forEach(p => {
         p.angle += p.baseSpeed * orbitSpeedFactor * 0.6;
         if (p.angle > Math.PI*2) p.angle -= Math.PI*2;
         p.mesh.position.copy(getRotatedPosition(p.distance, p.angle, p.inclination));
-        if (p.mesh.visible) p.mesh.rotation.y += basePlanetRotSpeed * rotationSpeedFactor;
+        if (p.mesh.visible) {
+            // 真实自转：rotPeriod为地球日，负值表示逆向自转
+            // 角速度 ω ∝ 1/T。添加视觉下限 minFactor 防止极慢行星完全静止
+            const rawFactor = 1 / Math.abs(p.realData.rotPeriod || 1);
+            const minFactor = 0.03; // 视觉保底：最慢的行星也能看到转动
+            const rotFactor = Math.max(rawFactor, minFactor);
+            p.mesh.rotation.y += earthRotSpeed * rotFactor * rotationSpeedFactor * Math.sign(p.realData.rotPeriod || 1);
+        }
     });
     if (earthMesh) {
         moonAngle += moonBaseSpeed * orbitSpeedFactor * 0.6;
         if (moonAngle > Math.PI*2) moonAngle -= Math.PI*2;
         moonMesh.position.set(earthMesh.position.x + Math.cos(moonAngle)*moonDistance, Math.sin(moonAngle*2)*0.05, earthMesh.position.z + Math.sin(moonAngle)*moonDistance);
-        if (moonMesh.visible) moonMesh.rotation.y += baseMoonRotSpeed * rotationSpeedFactor;
+        if (moonMesh.visible) moonMesh.rotation.y += (earthRotSpeed / 27.3) * rotationSpeedFactor;
     }
     asteroidField.rotation.y += 0.001;
     stars.rotation.y += 0.0003;
