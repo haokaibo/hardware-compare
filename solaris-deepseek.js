@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
-import { planetsData } from './solaris-data.js';
+import { planetsData, totalTextures, sunTextureUrl, moonTextureUrl } from './solaris-data.js';
 import { generateSaturnBodyTexture, generateSaturnRingTexture } from './solaris-textures.js';
 import TWEEN from 'https://unpkg.com/@tweenjs/tween.js@23.1.1/dist/tween.esm.js';
 
@@ -149,62 +149,52 @@ scene.add(stars2);
 
 const loadingTip = document.getElementById('loadingTip');
 let loadedCount = 0;
-const totalTextures = 18;
 const texLoader = new THREE.TextureLoader();
 function textureLoaded() { 
     loadedCount++; 
-    if (loadedCount >= totalTextures - 4) { 
+    if (loadedCount >= totalTextures) { 
         loadingTip.style.opacity = '0'; 
         setTimeout(() => loadingTip.style.display = 'none', 500); 
     } 
 }
 
-const sunTextureUrl = './solar_textures/Solarsystemscope_texture_2k_sun.jpg';
-const earthMap = './solar_textures/2k_earth_daymap.jpg';
-const earthNormal = './solar_textures/2k_earth_normal_map.jpg';
-const moonMap = './solar_textures/2k_moon.jpg';
-
-const cdnTextures = {
-  mercury: { map: './solar_textures/2k_mercury.jpg', normal: null },
-  venus:   { map: './solar_textures/2k_venus_surface.jpg', normal: null },
-  mars:    { map: './solar_textures/2k_mars.jpg', normal: null },
-  jupiter: { map: './solar_textures/2k_jupiter.jpg', normal: null },
-  saturn:  { map: './solar_textures/2k_saturn.jpg', normal: null },
-  uranus:  { map: './solar_textures/2k_uranus.jpg', normal: null },
-  neptune: { map: './solar_textures/2k_neptune.jpg', normal: null }
-};
-
-function loadCdnMaterial(mapUrl, normalUrl, color, roughness=0.6, metalness=0.1, emissive=0x000000, emissiveIntensity=0) {
-    const material = new THREE.MeshStandardMaterial({ color, roughness, metalness, emissive, emissiveIntensity });
-    if (mapUrl) texLoader.load(mapUrl, (t) => { material.map = t; material.needsUpdate = true; textureLoaded(); }, undefined, () => textureLoaded());
-    else textureLoaded();
-    if (normalUrl) texLoader.load(normalUrl, (t) => { material.normalMap = t; material.needsUpdate = true; textureLoaded(); }, undefined, () => textureLoaded());
-    else textureLoaded();
-    return material;
-}
-function loadEarthMaterial() {
-    const material = new THREE.MeshStandardMaterial({ roughness: 0.45, metalness: 0.1, emissive: 0x001133, emissiveIntensity: 0.002 });
-    texLoader.load(earthMap, (t) => { material.map = t; material.needsUpdate = true; textureLoaded(); });
-    texLoader.load(earthNormal, (t) => { material.normalMap = t; material.needsUpdate = true; textureLoaded(); });
+// 通用纹理材质加载：根据行星数据加载 map 和 normal 纹理
+function loadPlanetMaterial(data, isSaturnCustom) {
+    if (isSaturnCustom) {
+        // 土星使用 canvas 生成的纹理
+        const saturnTex = generateSaturnBodyTexture();
+        const material = new THREE.MeshStandardMaterial({
+            map: saturnTex,
+            roughness: 0.70,
+            metalness: 0.05,
+            emissive: new THREE.Color(0x1a0f00),
+            emissiveIntensity: 0.03,
+        });
+        textureLoaded();
+        return material;
+    }
+    const material = new THREE.MeshStandardMaterial({
+        color: data.color,
+        roughness: data.roughness,
+        metalness: data.metalness,
+        emissive: data.emissive || 0x000000,
+        emissiveIntensity: data.emissiveIntensity || 0
+    });
+    if (data.textureMap) {
+        texLoader.load(data.textureMap, (t) => { material.map = t; material.needsUpdate = true; textureLoaded(); }, undefined, () => textureLoaded());
+    } else {
+        textureLoaded();
+    }
+    if (data.textureNormal) {
+        texLoader.load(data.textureNormal, (t) => { material.normalMap = t; material.needsUpdate = true; textureLoaded(); }, undefined, () => textureLoaded());
+    } else {
+        textureLoaded();
+    }
     return material;
 }
 function loadMoonMaterial() {
     const material = new THREE.MeshStandardMaterial({ roughness: 0.8, metalness: 0.05, emissive: 0x111122, emissiveIntensity: 0.01 });
-    texLoader.load(moonMap, (t) => { material.map = t; material.needsUpdate = true; textureLoaded(); });
-    return material;
-}
-
-// 土星本体材质 —— 使用 canvas 生成纹理
-function loadSaturnMaterial() {
-    const saturnTex = generateSaturnBodyTexture();
-    const material = new THREE.MeshStandardMaterial({
-        map: saturnTex,
-        roughness: 0.70,
-        metalness: 0.05,
-        emissive: new THREE.Color(0x1a0f00),
-        emissiveIntensity: 0.03,   // 极低，不自发光
-    });
-    textureLoaded();
+    texLoader.load(moonTextureUrl, (t) => { material.map = t; material.needsUpdate = true; textureLoaded(); });
     return material;
 }
 
@@ -278,15 +268,9 @@ planetsData.forEach((data, idx) => {
     
     createOrbitWithInclination(a, e, data.inclination, idx % 2 === 0 ? 0x77aaff : 0x88bbff);
     
-    let material;
-    if (data.useCdn) {
-        const cdn = cdnTextures[data.cdnKey];
-        material = loadCdnMaterial(cdn.map, cdn.normal, data.color, data.roughness, data.metalness, data.emissive, data.emissiveIntensity);
-    } else if (data.customMaterial) {
-        material = loadSaturnMaterial();
-    } else {
-        material = loadEarthMaterial();
-    }
+    // 土星使用自定义 canvas 纹理，其他行星使用通用加载
+    const isSaturn = data.name === 'Saturn';
+    const material = loadPlanetMaterial(data, isSaturn);
     
     const planetMesh = new THREE.Mesh(new THREE.SphereGeometry(data.radius, 128, 128), material);
     planetMesh.castShadow = true;
