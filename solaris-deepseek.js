@@ -214,14 +214,14 @@ const switchableObjects = [];
 const labelItems = [];
 
 // --- 太阳 ---
-const sunGeometry = new THREE.SphereGeometry(2.4, 128, 128);
+const sunGeometry = new THREE.SphereGeometry(1.2, 128, 128);
 const sunTexture = texLoader.load(sunTextureUrl, () => { textureLoaded(); });
 const sunMat = new THREE.MeshStandardMaterial({
     map: sunTexture,
     color: 0xffaa66,
     emissive: 0xff6633,
     emissiveMap: sunTexture,
-    emissiveIntensity: 0.9,
+    emissiveIntensity: 1.5,
     metalness: 0.1,
     roughness: 0.4,
     toneMapped: false
@@ -230,14 +230,14 @@ const sunMesh = new THREE.Mesh(sunGeometry, sunMat);
 sunMesh.castShadow = false;
 scene.add(sunMesh);
 const sunGlowMat = new THREE.MeshBasicMaterial({ color: 0xff8844, transparent: true, opacity: 0.2, side: THREE.BackSide });
-const sunGlow = new THREE.Mesh(new THREE.SphereGeometry(2.68, 32, 32), sunGlowMat);
+const sunGlow = new THREE.Mesh(new THREE.SphereGeometry(1.4, 32, 32), sunGlowMat);
 scene.add(sunGlow);
 
 const sunDiv = document.createElement('div');
 sunDiv.textContent = '太阳';
 sunDiv.style.cssText = `color:#ffeecc;font-size:16px;font-weight:bold;background:rgba(80,30,0,0.6);padding:4px 12px;border-radius:24px;border:1px solid #ffaa44;backdrop-filter:blur(4px);pointer-events:none;transition:opacity 0.2s`;
 const sunLabel = new CSS2DObject(sunDiv);
-sunLabel.position.set(0, 4.5, 0);
+sunLabel.position.set(0, 2.0, 0);
 sunMesh.add(sunLabel);
 labelItems.push({ nameZh: '太阳', css2d: sunLabel, dom: sunDiv });
 const sunRealData = { name: '太阳', realRadius: 696340, realDistance: 0, realPeriod: 0 };
