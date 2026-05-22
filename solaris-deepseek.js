@@ -8,80 +8,67 @@ import TWEEN from 'https://unpkg.com/@tweenjs/tween.js@23.1.1/dist/tween.esm.js'
 // 参考真实土星：奶油黄底色 + 多条褐/棕横带 + 极区略暗
 // =====================================================
 function generateSaturnBodyTexture() {
-    const w = 2048, h = 1024;
+    const w = 1024, h = 512;
     const canvas = document.createElement('canvas');
     canvas.width = w; canvas.height = h;
     const ctx = canvas.getContext('2d');
 
-    // ── 底色：卡西尼实景配色 ──
-    // 北极冷青灰绿 → 中纬黄绿灰 → 赤道暖黄 → 南半球橄榄黄绿 → 南极灰绿
+    // 底色：更亮的暖奶油黄
     const baseGrad = ctx.createLinearGradient(0, 0, 0, h);
-    baseGrad.addColorStop(0.00, '#6a7a6a');
-    baseGrad.addColorStop(0.08, '#8a9878');
-    baseGrad.addColorStop(0.18, '#b0b888');
-    baseGrad.addColorStop(0.28, '#ccc890');
-    baseGrad.addColorStop(0.38, '#ddd090');
-    baseGrad.addColorStop(0.46, '#e8d898');
-    baseGrad.addColorStop(0.54, '#dfd090');
-    baseGrad.addColorStop(0.64, '#cec080');
-    baseGrad.addColorStop(0.74, '#bab070');
-    baseGrad.addColorStop(0.84, '#a09868');
-    baseGrad.addColorStop(0.92, '#888060');
-    baseGrad.addColorStop(1.00, '#706858');
+    baseGrad.addColorStop(0,   '#a08858');   // 北极偏暗
+    baseGrad.addColorStop(0.1, '#dfc07e');
+    baseGrad.addColorStop(0.2, '#f0d890');
+    baseGrad.addColorStop(0.35,'#faeaaa');   // 赤道亮带
+    baseGrad.addColorStop(0.5, '#f2dc96');
+    baseGrad.addColorStop(0.65,'#faeaaa');
+    baseGrad.addColorStop(0.8, '#eecf7e');
+    baseGrad.addColorStop(0.9, '#d4a858');
+    baseGrad.addColorStop(1,   '#a08040');   // 南极偏暗
     ctx.fillStyle = baseGrad;
     ctx.fillRect(0, 0, w, h);
 
-    // ── 辅助函数：绘制一条水平软带 ──
-    function softBand(yC, hw, r, g, b, a) {
-        const cy = yC * h;
-        const halfH = Math.max(1.5, hw * h);
-        const grad = ctx.createLinearGradient(0, cy - halfH, 0, cy + halfH);
-        grad.addColorStop(0,   `rgba(${r},${g},${b},0)`);
-        grad.addColorStop(0.35,`rgba(${r},${g},${b},${a})`);
-        grad.addColorStop(0.65,`rgba(${r},${g},${b},${a})`);
-        grad.addColorStop(1,   `rgba(${r},${g},${b},0)`);
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, cy - halfH, w, halfH * 2);
-    }
+    // 横向条带：用水平渐变方式绘制，边缘用极小透明度羽化，不用逐像素偏移
+    // [y比例, 高度比例, 颜色, 透明度]
+    const bands = [
+        [0.07, 0.014, '#7a5228', 0.45],
+        [0.13, 0.022, '#a87840', 0.38],
+        [0.18, 0.010, '#c09060', 0.28],
+        [0.23, 0.026, '#9a6830', 0.42],
+        [0.28, 0.016, '#d4a860', 0.25],
+        [0.33, 0.036, '#8a5228', 0.50],  // 北赤道主带
+        [0.385,0.013, '#e8c870', 0.35],  // 赤道亮带
+        [0.42, 0.007, '#fff8d0', 0.55],  // 赤道白亮带
+        [0.455,0.013, '#e8c870', 0.35],
+        [0.50, 0.034, '#8a5228', 0.48],  // 南赤道主带
+        [0.555,0.018, '#b88040', 0.32],
+        [0.61, 0.022, '#9a6830', 0.38],
+        [0.67, 0.013, '#c49858', 0.25],
+        [0.73, 0.018, '#a07038', 0.35],
+        [0.79, 0.010, '#7a5228', 0.42],
+        [0.85, 0.016, '#9a6830', 0.32],
+    ];
 
-    // ── 细密条带（参照卡西尼照片，细、多、低对比度）──
-    softBand(0.06, 0.008, 60, 70, 55, 0.30);
-    softBand(0.10, 0.006, 80, 85, 65, 0.22);
-    softBand(0.14, 0.010, 100,105,78, 0.28);
-    softBand(0.18, 0.007, 130,132,95, 0.20);
-    softBand(0.21, 0.005, 170,165,118,0.18);
-    softBand(0.24, 0.009, 110,112,82, 0.25);
-    softBand(0.27, 0.006, 145,140,100,0.20);
-    softBand(0.30, 0.008, 105,105,75, 0.28);
-    softBand(0.33, 0.010, 125,122,88, 0.22);
-    softBand(0.36, 0.007, 155,150,108,0.18);
-    softBand(0.395,0.012, 98, 98, 70, 0.30);  // 北赤道暗带
-    softBand(0.425,0.006, 175,170,125,0.25);  // 赤道亮带
-    softBand(0.46, 0.008, 168,162,118,0.20);
-    softBand(0.50, 0.010, 95, 95, 68, 0.28);  // 南赤道暗带
-    softBand(0.535,0.007, 165,158,112,0.22);
-    softBand(0.565,0.009, 108,108,78, 0.26);
-    softBand(0.595,0.006, 148,142,102,0.20);
-    softBand(0.625,0.008, 112,110,80, 0.25);
-    softBand(0.655,0.007, 135,130,95, 0.20);
-    softBand(0.685,0.009, 105,102,74, 0.28);
-    softBand(0.715,0.006, 128,124,90, 0.22);
-    softBand(0.745,0.008, 98, 95, 68, 0.25);
-    softBand(0.775,0.007, 118,115,82, 0.20);
-    softBand(0.805,0.009, 90, 88, 62, 0.28);
-    softBand(0.835,0.006, 108,105,75, 0.22);
-    softBand(0.865,0.008, 85, 82, 58, 0.25);
-    softBand(0.895,0.007, 78, 75, 54, 0.22);
-    softBand(0.925,0.009, 72, 70, 50, 0.20);
-    // 赤道微亮提升
-    softBand(0.46, 0.04, 230, 220, 160, 0.06);
+    bands.forEach(([yRatio, heightRatio, color, alpha]) => {
+        const y = yRatio * h;
+        const bh = Math.max(2, heightRatio * h);
+        // 用垂直渐变羽化边缘，让条带平整但过渡自然
+        const bandGrad = ctx.createLinearGradient(0, y, 0, y + bh);
+        const [r, g, b] = color.match(/[\da-f]{2}/gi).map(x => parseInt(x, 16));
+        bandGrad.addColorStop(0,   `rgba(${r},${g},${b},0)`);
+        bandGrad.addColorStop(0.2, `rgba(${r},${g},${b},${alpha})`);
+        bandGrad.addColorStop(0.8, `rgba(${r},${g},${b},${alpha})`);
+        bandGrad.addColorStop(1,   `rgba(${r},${g},${b},0)`);
+        ctx.fillStyle = bandGrad;
+        ctx.fillRect(0, y, w, bh);
+    });
+    ctx.globalAlpha = 1;
 
-    // 细颗粒噪点
-    for (let i = 0; i < 20000; i++) {
+    // 细噪点增加颗粒感
+    for (let i = 0; i < 8000; i++) {
         const px = Math.random() * w;
         const py = Math.random() * h;
         const bright = Math.random() > 0.5;
-        ctx.fillStyle = bright ? 'rgba(220,218,185,0.03)' : 'rgba(60,58,40,0.03)';
+        ctx.fillStyle = bright ? 'rgba(255,245,190,0.05)' : 'rgba(90,50,10,0.04)';
         ctx.fillRect(px, py, 1.5, 1);
     }
 
@@ -115,68 +102,63 @@ function generateSaturnRingTexture() {
         ctx.fillRect(xStart * w, 0, (xEnd - xStart) * w, h);
     }
 
-    // C环（内环，半透明冷灰棕）
+    // C环（内环，半透明，带棕灰色调）
     paintRing(0.0, 0.22, [
-        [0,   40, 38, 32, 0],
-        [0.3, 72, 68, 58, 0.35],
-        [0.7, 85, 80, 68, 0.45],
-        [1,   70, 66, 56, 0.25],
+        [0, 100, 78, 50, 0],
+        [0.3, 145, 115, 75, 0.38],
+        [0.7, 165, 130, 85, 0.48],
+        [1, 150, 118, 75, 0.30],
     ]);
 
-    // B环（最亮，冷灰白带暖色，有内外明暗变化）
+    // B环（最亮最不透明，土星环的主体，奶白偏金）
     paintRing(0.22, 0.57, [
-        [0,    128,122,105, 0.70],
-        [0.08, 158,150,130, 0.85],
-        [0.18, 178,170,148, 0.92],
-        [0.28, 192,185,162, 0.95],
-        [0.38, 200,193,170, 0.97],
-        [0.48, 195,188,165, 0.96],
-        [0.58, 185,178,155, 0.94],
-        [0.68, 172,165,142, 0.90],
-        [0.80, 155,148,128, 0.85],
-        [0.90, 138,132,112, 0.78],
-        [1,    118,112, 95, 0.65],
+        [0, 210, 175, 115, 0.65],
+        [0.15, 245, 210, 145, 0.90],
+        [0.30, 255, 230, 165, 0.96],
+        [0.45, 255, 240, 180, 0.98],
+        [0.60, 252, 228, 168, 0.95],
+        [0.75, 242, 215, 152, 0.92],
+        [0.88, 230, 198, 138, 0.86],
+        [1, 210, 175, 118, 0.75],
     ]);
 
-    // 卡西尼缝（黑色间隙，真实感强）
+    // 卡西尼缝（最明显的黑色间隙）
     paintRing(0.57, 0.62, [
-        [0,   0, 0, 0, 0.40],
-        [0.15,4, 4, 3, 0.75],
-        [0.5, 6, 6, 5, 0.88],
-        [0.85,4, 4, 3, 0.75],
-        [1,   0, 0, 0, 0.40],
+        [0, 0, 0, 0, 0.55],
+        [0.2, 8, 5, 3, 0.80],
+        [0.5, 12, 8, 4, 0.90],
+        [0.8, 8, 5, 3, 0.80],
+        [1, 0, 0, 0, 0.55],
     ]);
 
-    // A环（中亮，比B环略暗略冷）
-    paintRing(0.62, 0.755, [
-        [0,   148,142,122, 0.80],
-        [0.25,162,155,135, 0.86],
-        [0.5, 158,152,132, 0.84],
-        [0.75,148,142,122, 0.80],
-        [1,   138,132,112, 0.74],
+    // A环（中亮，比B环略暗，更偏金黄）
+    paintRing(0.62, 0.75, [
+        [0, 225, 188, 122, 0.82],
+        [0.3, 238, 202, 135, 0.88],
+        [0.6, 228, 192, 125, 0.82],
+        [1, 215, 178, 115, 0.75],
     ]);
 
-    // 恩克缝（细暗缝）
-    paintRing(0.755, 0.785, [
-        [0,   8, 8, 6, 0.30],
-        [0.5, 12,12, 9, 0.58],
-        [1,   8, 8, 6, 0.30],
+    // 恩克缝（A环中的细暗缝）
+    paintRing(0.75, 0.785, [
+        [0, 15, 10, 5, 0.35],
+        [0.5, 20, 14, 8, 0.60],
+        [1, 15, 10, 5, 0.35],
     ]);
 
-    // A环外半段（向外逐渐暗淡）
+    // A环外半段
     paintRing(0.785, 0.92, [
-        [0,   138,132,112, 0.74],
-        [0.3, 125,120,102, 0.65],
-        [0.6, 108,103, 88, 0.52],
-        [0.85, 88, 84, 70, 0.38],
-        [1,    65, 62, 52, 0.18],
+        [0, 215, 178, 115, 0.75],
+        [0.4, 202, 165, 105, 0.65],
+        [0.8, 182, 148, 90, 0.50],
+        [1, 155, 120, 70, 0.32],
     ]);
 
-    // F环（极细极暗外缘）
+    // F环（外环，极细极暗，几乎透明）
     paintRing(0.92, 1.0, [
-        [0,   55, 52, 44, 0.14],
-        [0.5, 48, 45, 38, 0.07],
-        [1,    0,  0,  0, 0],
+        [0, 140, 108, 65, 0.18],
+        [0.5, 125, 95, 55, 0.10],
+        [1, 0, 0, 0, 0],
     ]);
 
     return new THREE.CanvasTexture(canvas);
@@ -354,14 +336,19 @@ function loadSaturnMaterial() {
     const saturnTex = generateSaturnBodyTexture();
     const material = new THREE.MeshStandardMaterial({
         map: saturnTex,
-        roughness: 0.75,
-        metalness: 0.02,
-        emissive: new THREE.Color(0x080a06),
-        emissiveIntensity: 0.02,
+        roughness: 0.70,
+        metalness: 0.05,
+        emissive: new THREE.Color(0x1a0f00),
+        emissiveIntensity: 0.03,   // 极低，不自发光
     });
     textureLoaded();
     return material;
 }
+
+const planets = [];
+let earthMesh = null;
+const switchableObjects = [];
+const labelItems = [];
 
 // --- 太阳 ---
 const sunGeometry = new THREE.SphereGeometry(2.4, 128, 128);
@@ -383,6 +370,15 @@ const sunGlowMat = new THREE.MeshBasicMaterial({ color: 0xff8844, transparent: t
 const sunGlow = new THREE.Mesh(new THREE.SphereGeometry(2.68, 32, 32), sunGlowMat);
 scene.add(sunGlow);
 
+const sunDiv = document.createElement('div');
+sunDiv.textContent = '太阳';
+sunDiv.style.cssText = `color:#ffeecc;font-size:16px;font-weight:bold;background:rgba(80,30,0,0.6);padding:4px 12px;border-radius:24px;border:1px solid #ffaa44;backdrop-filter:blur(4px);pointer-events:none;transition:opacity 0.2s`;
+const sunLabel = new CSS2DObject(sunDiv);
+sunLabel.position.set(0, 3.2, 0);
+sunMesh.add(sunLabel);
+labelItems.push({ nameZh: '太阳', css2d: sunLabel, dom: sunDiv });
+const sunRealData = { name: '太阳', realRadius: 696340, realDistance: 0, realPeriod: 0 };
+
 // 行星数据
 const planetsData = [
     { name: '水星', radius: 0.28, distance: 4.2,  speed: 0.0056, color: 0xbc9a6c, useCdn: true,  cdnKey: 'mercury', roughness: 0.7, metalness: 0.15, emissive: 0x000000, emissiveIntensity: 0,    inclination: (Math.random()-0.5)*0.08, realRadius: 2440,  realDistance: 57.9,  realPeriod: 88 },
@@ -395,10 +391,6 @@ const planetsData = [
     { name: '海王星',radius: 0.78, distance: 21.8, speed: 0.00072,color: 0x4a7db4, useCdn: true,  cdnKey: 'neptune', roughness: 0.5, metalness: 0.2,  emissive: 0x002244, emissiveIntensity: 0.01, inclination: (Math.random()-0.5)*0.06, realRadius: 24622, realDistance: 4495,  realPeriod: 60190 }
 ];
 
-const planets = [];
-let earthMesh = null;
-const switchableObjects = [];
-const labelItems = [];
 
 function getRotatedPosition(distance, angle, inclination) {
     const x0 = Math.cos(angle) * distance;
@@ -477,7 +469,7 @@ let moonAngle = Math.random() * Math.PI * 2;
 const moonDistance = 1.15, moonBaseSpeed = 0.017;
 const moonRealData = { name: '月球', realRadius: 1737, realDistance: 0.384, realPeriod: 27.3 };
 
-switchableObjects.push({ nameZh: '太阳', mesh: sunMesh, type: 'sun', extra: { glow: sunGlow }, label: null });
+switchableObjects.push({ nameZh: '太阳', mesh: sunMesh, type: 'sun', extra: { glow: sunGlow }, label: sunLabel });
 
 // 小行星带
 const asteroidGeo = new THREE.BufferGeometry();
@@ -591,11 +583,11 @@ function startTracking(planetMesh) {
     const offset = new THREE.Vector3(0, 2, 5);
     new TWEEN.Tween(startPos).to(planetMesh.position.clone().add(offset), 600).easing(TWEEN.Easing.Quadratic.InOut).onUpdate(() => camera.position.copy(startPos)).start();
     new TWEEN.Tween(startTarget).to(planetMesh.position.clone(), 600).easing(TWEEN.Easing.Quadratic.InOut).onUpdate(() => controls.target.copy(startTarget)).start();
-    if (planetMesh.material) planetMesh.material.emissiveIntensity = 0.15;
+    if (planetMesh.material && planetMesh !== sunMesh) planetMesh.material.emissiveIntensity = 0.15;
 }
 function stopTracking() {
     if (!isTracking) return;
-    if (currentTrackedPlanet && currentTrackedPlanet.material) currentTrackedPlanet.material.emissiveIntensity = 0.03;
+    if (currentTrackedPlanet && currentTrackedPlanet.material && currentTrackedPlanet !== sunMesh) currentTrackedPlanet.material.emissiveIntensity = 0.03;
     currentTrackedPlanet = null; isTracking = false;
     const startPos = camera.position.clone(), startTarget = controls.target.clone();
     new TWEEN.Tween(startPos).to(new THREE.Vector3(0,12,30), 600).easing(TWEEN.Easing.Quadratic.InOut).onUpdate(() => camera.position.copy(startPos)).start();
@@ -607,11 +599,13 @@ window.addEventListener('click', (event) => {
     raycasterClick.setFromCamera(mouse, camera);
     const clickableObjects = planets.map(p => p.mesh);
     clickableObjects.push(moonMesh);
+    clickableObjects.push(sunMesh);
     const intersects = raycasterClick.intersectObjects(clickableObjects);
     if (intersects.length > 0) {
         const hit = intersects[0].object;
         let planetNameZh = '', realData = null;
         if (hit === moonMesh) { planetNameZh = '月球'; realData = moonRealData; }
+        else if (hit === sunMesh) { planetNameZh = '太阳'; realData = sunRealData; }
         else { const planetObj = planets.find(p => p.mesh === hit); if (planetObj) { planetNameZh = planetObj.name; realData = planetObj.realData; } }
         if (planetNameZh) { showPlanetInfo(planetNameZh, realData); startTracking(hit); }
     }
@@ -646,8 +640,8 @@ rotationSlider.addEventListener('input', (e) => { rotationSpeedFactor = parseFlo
 
 let currentLang = 'zh', labelsVisible = true;
 const translations = {
-    zh: { names:{'水星':'水星','金星':'金星','地球':'地球','火星':'火星','木星':'木星','土星':'土星','天王星':'天王星','海王星':'海王星','月球':'月球','太阳':'太阳'}, title:'🌌 3D 太阳系', subtitle:'⚡ 双速度调节 | 平滑巡游 | 土星真实纹理', footer:'✨ 点击行星追踪/信息 | 自动巡游默认开启', hide:'🏷️ 隐藏名称', show:'🏷️ 显示名称', lang:'EN', orbitLabel:'🚀 公转速度倍率', rotLabel:'🔄 自转速度倍率', radiusLabel:'🌍 半径', distanceLabel:'📡 距日距离', periodLabel:'⏱️ 公转周期', radiusUnit:'km', distanceUnit:'百万 km', periodUnit:'地球日', tourStop:'🔁 停止巡游', tourStart:'🔁 开始巡游', resetViewLabel:'🎥 重置全局视角' },
-    en: { names:{'水星':'Mercury','金星':'Venus','地球':'Earth','火星':'Mars','木星':'Jupiter','土星':'Saturn','天王星':'Uranus','海王星':'Neptune','月球':'Moon','太阳':'Sun'}, title:'🌌 3D Solar System', subtitle:'⚡ Dual Speed | Smooth Tour | Realistic Saturn', footer:'✨ Click planet to track/info | Auto tour default ON', hide:'🏷️ Hide Labels', show:'🏷️ Show Labels', lang:'中文', orbitLabel:'🚀 Orbit Speed Multiplier', rotLabel:'🔄 Rotation Speed Multiplier', radiusLabel:'🌍 Radius', distanceLabel:'📡 Distance from Sun', periodLabel:'⏱️ Orbital Period', radiusUnit:'km', distanceUnit:'million km', periodUnit:'Earth days', tourStop:'🔁 Stop Tour', tourStart:'🔁 Start Tour', resetViewLabel:'🎥 Reset View' }
+    zh: { names:{'太阳':'太阳','水星':'水星','金星':'金星','地球':'地球','火星':'火星','木星':'木星','土星':'土星','天王星':'天王星','海王星':'海王星','月球':'月球'}, title:'🌌 3D 太阳系', subtitle:'⚡ 双速度调节 | 平滑巡游 | 土星真实纹理', footer:'✨ 点击行星追踪/信息 | 自动巡游默认开启', miniHint:'🪐 平滑巡游(10秒/行星) | 点击可中断', hide:'🏷️ 隐藏名称', show:'🏷️ 显示名称', lang:'EN', orbitLabel:'🚀 公转速度倍率', rotLabel:'🔄 自转速度倍率', radiusLabel:'🌍 半径', distanceLabel:'📡 距日距离', periodLabel:'⏱️ 公转周期', radiusUnit:'km', distanceUnit:'百万 km', periodUnit:'地球日', tourStop:'🔁 停止巡游', tourStart:'🔁 开始巡游', resetViewLabel:'🎥 重置全局视角' },
+    en: { names:{'太阳':'Sun','水星':'Mercury','金星':'Venus','地球':'Earth','火星':'Mars','木星':'Jupiter','土星':'Saturn','天王星':'Uranus','海王星':'Neptune','月球':'Moon'}, title:'🌌 3D Solar System', subtitle:'⚡ Dual Speed | Smooth Tour | Realistic Saturn', footer:'✨ Click planet to track/info | Auto tour default ON', miniHint:'🪐 Smooth Tour (10s/planet) | Click to interrupt', hide:'🏷️ Hide Labels', show:'🏷️ Show Labels', lang:'中文', orbitLabel:'🚀 Orbit Speed Multiplier', rotLabel:'🔄 Rotation Speed Multiplier', radiusLabel:'🌍 Radius', distanceLabel:'📡 Distance from Sun', periodLabel:'⏱️ Orbital Period', radiusUnit:'km', distanceUnit:'million km', periodUnit:'Earth days', tourStop:'🔁 Stop Tour', tourStart:'🔁 Start Tour', resetViewLabel:'🎥 Reset View' }
 };
 function updateLang() {
     const t = translations[currentLang];
@@ -655,6 +649,7 @@ function updateLang() {
     document.getElementById('panel-title').textContent = t.title;
     document.getElementById('panel-subtitle').textContent = t.subtitle;
     document.getElementById('panel-footer').textContent = t.footer;
+    document.querySelector('.mini-hint').textContent = t.miniHint;
     document.getElementById('toggle-labels-btn').textContent = labelsVisible ? t.hide : t.show;
     document.getElementById('lang-switch-btn').textContent = t.lang;
     document.getElementById('orbit-speed-label').textContent = t.orbitLabel;
