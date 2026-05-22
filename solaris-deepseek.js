@@ -234,13 +234,13 @@ const sunGlow = new THREE.Mesh(new THREE.SphereGeometry(1.4, 32, 32), sunGlowMat
 scene.add(sunGlow);
 
 const sunDiv = document.createElement('div');
-sunDiv.textContent = '太阳';
+sunDiv.textContent = 'Sun';
 sunDiv.style.cssText = `color:#ffeecc;font-size:16px;font-weight:bold;background:rgba(80,30,0,0.6);padding:4px 12px;border-radius:24px;border:1px solid #ffaa44;backdrop-filter:blur(4px);pointer-events:none;transition:opacity 0.2s`;
 const sunLabel = new CSS2DObject(sunDiv);
 sunLabel.position.set(0, 2.0, 0);
 sunMesh.add(sunLabel);
-labelItems.push({ nameZh: '太阳', css2d: sunLabel, dom: sunDiv });
-const sunRealData = { name: '太阳', realRadius: 696340, realDistance: 0, realPeriod: 0 };
+labelItems.push({ name: 'Sun', css2d: sunLabel, dom: sunDiv });
+const sunRealData = { name: 'Sun', realRadius: 696340, realDistance: 0, realPeriod: 0 };
 
 // 轨道距离缩放：基于天文单位(AU)用对数映射到场景单位
 // 使用 ln(AU+1) 缩放，平衡内外行星视觉比例
@@ -298,7 +298,7 @@ planetsData.forEach((data, idx) => {
         planetMesh.add(ringGroup);
         planetMesh.userData.ringGroup = ringGroup;
     }
-    if (data.name === '火星') {
+    if (data.name === 'Mars') {
         const atmos = new THREE.Mesh(new THREE.SphereGeometry(data.radius + 0.04, 64, 64), new THREE.MeshPhongMaterial({ color: 0xcc6644, transparent: true, opacity: 0.05, side: THREE.BackSide }));
         planetMesh.add(atmos);
     }
@@ -307,15 +307,15 @@ planetsData.forEach((data, idx) => {
     const div = document.createElement('div');
     div.textContent = data.name;
     div.style.cssText = `color:#f0f0f0;font-size:13px;font-weight:500;background:rgba(20,20,40,0.7);padding:2px 10px;border-radius:20px;border:1px solid ${new THREE.Color(data.color).getStyle()};backdrop-filter:blur(4px);pointer-events:none;transition:opacity 0.2s`;
-    const labelYOffset = data.name === '水星' ? -0.3 : (data.name === '金星' || data.name === '地球' || data.name === '火星' ? data.radius + 0.4 : data.radius + 0.3);
+    const labelYOffset = data.name === 'Mercury' ? -0.3 : (data.name === 'Venus' || data.name === 'Earth' || data.name === 'Mars' ? data.radius + 0.4 : data.radius + 0.3);
     const label = new CSS2DObject(div);
     label.position.set(0, labelYOffset, 0);
     planetMesh.add(label);
-    labelItems.push({ nameZh: data.name, css2d: label, dom: div });
+    labelItems.push({ name: data.name, css2d: label, dom: div });
     
     planets.push({ mesh: planetMesh, baseSpeed: data.speed, angle: planetMesh.userData.angle, inclination: data.inclination, name: data.name, hasRing: data.hasRing, ringGroup: planetMesh.userData.ringGroup, label, realData: data, semiMajor: a, eccentricity: e });
-    if (data.name === '地球') earthMesh = planetMesh;
-    switchableObjects.push({ nameZh: data.name, mesh: planetMesh, type: 'planet', extra: null, label });
+    if (data.name === 'Earth') earthMesh = planetMesh;
+    switchableObjects.push({ name: data.name, mesh: planetMesh, type: 'planet', extra: null, label });
 });
 
 // 月球
@@ -324,18 +324,18 @@ const moonMesh = new THREE.Mesh(new THREE.SphereGeometry(0.11, 128, 128), moonMa
 moonMesh.castShadow = true;
 scene.add(moonMesh);
 const moonDiv = document.createElement('div');
-moonDiv.textContent = '月球';
+moonDiv.textContent = 'Moon';
 moonDiv.style.cssText = 'color:#ccdaff;font-size:9px;font-weight:300;background:rgba(0,0,0,0.4);padding:1px 5px;border-radius:10px;border:1px solid #8888cc;opacity:0.6';
 const moonLabel = new CSS2DObject(moonDiv);
 moonLabel.position.set(0, -0.18, 0);
 moonMesh.add(moonLabel);
-labelItems.push({ nameZh: '月球', css2d: moonLabel, dom: moonDiv });
-switchableObjects.push({ nameZh: '月球', mesh: moonMesh, type: 'moon', extra: null, label: moonLabel });
+labelItems.push({ name: 'Moon', css2d: moonLabel, dom: moonDiv });
+switchableObjects.push({ name: 'Moon', mesh: moonMesh, type: 'moon', extra: null, label: moonLabel });
 let moonAngle = Math.random() * Math.PI * 2;
 const moonDistance = 1.15, moonBaseSpeed = 0.017;
-const moonRealData = { name: '月球', realRadius: 1737, realDistance: 0.384, realPeriod: 27.3 };
+const moonRealData = { name: 'Moon', realRadius: 1737, realDistance: 0.384, realPeriod: 27.3 };
 
-switchableObjects.push({ nameZh: '太阳', mesh: sunMesh, type: 'sun', extra: { glow: sunGlow }, label: sunLabel });
+switchableObjects.push({ name: 'Sun', mesh: sunMesh, type: 'sun', extra: { glow: sunGlow }, label: sunLabel });
 
 // 小行星带 — 均匀分布的粒子，多层叠加增强自然感
 function createAsteroidBelt() {
@@ -381,9 +381,9 @@ scene.add(new THREE.Points(dustGeo, new THREE.PointsMaterial({ color: 0x88aadd, 
 
 // ========== 自动巡游 ==========
 const tourTargets = [
-    { name: '太阳', obj: sunMesh, offset: new THREE.Vector3(0, 3, 8) },
-    ...planets.map(p => ({ name: p.name, obj: p.mesh, offset: new THREE.Vector3(0, 1.5, p.name === '土星' ? 8 : 5) })),
-    { name: '月球', obj: moonMesh, offset: new THREE.Vector3(0, 0.8, 3) }
+    { name: 'Sun', obj: sunMesh, offset: new THREE.Vector3(0, 3, 8) },
+    ...planets.map(p => ({ name: p.name, obj: p.mesh, offset: new THREE.Vector3(0, 1.5, p.name === 'Saturn' ? 8 : 5) })),
+    { name: 'Moon', obj: moonMesh, offset: new THREE.Vector3(0, 0.8, 3) }
 ];
 let tourActive = true, tourIndex = 0, tourTimer = null, followFrameId = null;
 
@@ -447,7 +447,7 @@ document.getElementById('auto-tour-btn').addEventListener('click', () => { if (t
 // ========== 交互 ==========
 const raycasterClick = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
-let currentTrackedPlanet = null, isTracking = false, currentInfoPlanetZh = null;
+let currentTrackedPlanet = null, isTracking = false, currentInfoPlanet = null;
 const infoPanel = document.getElementById('infoPanel');
 const infoName = document.getElementById('infoName');
 const radiusLabelSpan = document.getElementById('radiusLabel'), distanceLabelSpan = document.getElementById('distanceLabel'), periodLabelSpan = document.getElementById('periodLabel');
@@ -455,23 +455,23 @@ const radiusValueSpan = document.getElementById('radiusValue'), distanceValueSpa
 const radiusUnitSpan = document.getElementById('radiusUnit'), distanceUnitSpan = document.getElementById('distanceUnit'), periodUnitSpan = document.getElementById('periodUnit');
 const resetViewBtn = document.getElementById('resetViewBtn'), closeInfoBtn = document.getElementById('closeInfoBtn');
 
-function showPlanetInfo(planetNameZh, realData) {
-    currentInfoPlanetZh = planetNameZh;
+function showPlanetInfo(planetName, realData) {
+    currentInfoPlanet = planetName;
     radiusValueSpan.textContent = realData.realRadius.toLocaleString();
     // 太阳显示N/A，其他行星显示真实数据
-    const isSun = planetNameZh === '太阳';
+    const isSun = planetName === 'Sun';
     distanceValueSpan.textContent = isSun ? 'N/A' : realData.realDistance.toLocaleString();
     periodValueSpan.textContent = isSun ? 'N/A' : realData.realPeriod.toLocaleString();
     infoPanel.style.display = 'block';
     updateInfoPanelLanguage();
 }
-function hideInfoPanel() { currentInfoPlanetZh = null; infoPanel.style.display = 'none'; }
+function hideInfoPanel() { currentInfoPlanet = null; infoPanel.style.display = 'none'; }
 function updateInfoPanelLanguage() {
     const t = translations[currentLang];
     radiusLabelSpan.textContent = t.radiusLabel; distanceLabelSpan.textContent = t.distanceLabel; periodLabelSpan.textContent = t.periodLabel;
     radiusUnitSpan.textContent = t.radiusUnit; distanceUnitSpan.textContent = t.distanceUnit; periodUnitSpan.textContent = t.periodUnit;
     resetViewBtn.textContent = t.resetViewLabel;
-    if (currentInfoPlanetZh && infoPanel.style.display === 'block') infoName.textContent = translations[currentLang].names[currentInfoPlanetZh] || currentInfoPlanetZh;
+    if (currentInfoPlanet && infoPanel.style.display === 'block') infoName.textContent = translations[currentLang].names[currentInfoPlanet] || currentInfoPlanet;
 }
 function startTracking(planetMesh) {
     if (tourActive) stopTour();
@@ -504,11 +504,11 @@ window.addEventListener('click', (event) => {
     const intersects = raycasterClick.intersectObjects(clickableObjectsCache);
     if (intersects.length > 0) {
         const hit = intersects[0].object;
-        let planetNameZh = '', realData = null;
-        if (hit === moonMesh) { planetNameZh = '月球'; realData = moonRealData; }
-        else if (hit === sunMesh) { planetNameZh = '太阳'; realData = sunRealData; }
-        else { const planetObj = planets.find(p => p.mesh === hit); if (planetObj) { planetNameZh = planetObj.name; realData = planetObj.realData; } }
-        if (planetNameZh) { showPlanetInfo(planetNameZh, realData); startTracking(hit); }
+        let planetName = '', realData = null;
+        if (hit === moonMesh) { planetName = 'Moon'; realData = moonRealData; }
+        else if (hit === sunMesh) { planetName = 'Sun'; realData = sunRealData; }
+        else { const planetObj = planets.find(p => p.mesh === hit); if (planetObj) { planetName = planetObj.name; realData = planetObj.realData; } }
+        if (planetName) { showPlanetInfo(planetName, realData); startTracking(hit); }
     }
 });
 resetViewBtn.addEventListener('click', (e) => { e.stopPropagation(); stopTracking(); hideInfoPanel(); if (!tourActive) startTour(); });
@@ -543,14 +543,14 @@ const rotationSlider = document.getElementById('rotationSpeedSlider'), rotationV
 orbitSlider.addEventListener('input', (e) => { orbitSpeedFactor = parseFloat(e.target.value); orbitValue.textContent = orbitSpeedFactor.toFixed(2)+' x'; });
 rotationSlider.addEventListener('input', (e) => { rotationSpeedFactor = parseFloat(e.target.value); rotationValue.textContent = rotationSpeedFactor.toFixed(2)+' x'; });
 
-let currentLang = 'zh', labelsVisible = true;
+let currentLang = 'en', labelsVisible = true;
 const translations = {
-    zh: { names:{'太阳':'太阳','水星':'水星','金星':'金星','地球':'地球','火星':'火星','木星':'木星','土星':'土星','天王星':'天王星','海王星':'海王星','月球':'月球'}, title:'🌌 3D 太阳系', subtitle:'⚡ 双速度调节 | 平滑巡游 | 土星真实纹理', footer:'✨ 点击行星追踪/信息 | 自动巡游默认开启', miniHint:'🪐 平滑巡游(10秒/行星) | 点击可中断', hide:'🏷️ 隐藏名称', show:'🏷️ 显示名称', lang:'EN', orbitLabel:'🚀 公转速度倍率', rotLabel:'🔄 自转速度倍率', radiusLabel:'🌍 半径', distanceLabel:'📡 距日距离', periodLabel:'⏱️ 公转周期', radiusUnit:'km', distanceUnit:'百万 km', periodUnit:'地球日', tourStop:'🔁 停止巡游', tourStart:'🔁 开始巡游', resetViewLabel:'🎥 重置全局视角' },
-    en: { names:{'太阳':'Sun','水星':'Mercury','金星':'Venus','地球':'Earth','火星':'Mars','木星':'Jupiter','土星':'Saturn','天王星':'Uranus','海王星':'Neptune','月球':'Moon'}, title:'🌌 3D Solar System', subtitle:'⚡ Dual Speed | Smooth Tour | Realistic Saturn', footer:'✨ Click planet to track/info | Auto tour default ON', miniHint:'🪐 Smooth Tour (10s/planet) | Click to interrupt', hide:'🏷️ Hide Labels', show:'🏷️ Show Labels', lang:'中文', orbitLabel:'🚀 Orbit Speed Multiplier', rotLabel:'🔄 Rotation Speed Multiplier', radiusLabel:'🌍 Radius', distanceLabel:'📡 Distance from Sun', periodLabel:'⏱️ Orbital Period', radiusUnit:'km', distanceUnit:'million km', periodUnit:'Earth days', tourStop:'🔁 Stop Tour', tourStart:'🔁 Start Tour', resetViewLabel:'🎥 Reset View' }
+    en: { names:{'Sun':'Sun','Mercury':'Mercury','Venus':'Venus','Earth':'Earth','Mars':'Mars','Jupiter':'Jupiter','Saturn':'Saturn','Uranus':'Uranus','Neptune':'Neptune','Moon':'Moon'}, title:'🌌 3D Solar System', subtitle:'⚡ Dual Speed | Smooth Tour | Realistic Saturn', footer:'✨ Click planet to track/info | Auto tour default ON', miniHint:'🪐 Smooth Tour (10s/planet) | Click to interrupt', hide:'🏷️ Hide Labels', show:'🏷️ Show Labels', lang:'中文', orbitLabel:'🚀 Orbit Speed Multiplier', rotLabel:'🔄 Rotation Speed Multiplier', radiusLabel:'🌍 Radius', distanceLabel:'📡 Distance from Sun', periodLabel:'⏱️ Orbital Period', radiusUnit:'km', distanceUnit:'million km', periodUnit:'Earth days', tourStop:'🔁 Stop Tour', tourStart:'🔁 Start Tour', resetViewLabel:'🎥 Reset View' },
+    zh: { names:{'Sun':'太阳','Mercury':'水星','Venus':'金星','Earth':'地球','Mars':'火星','Jupiter':'木星','Saturn':'土星','Uranus':'天王星','Neptune':'海王星','Moon':'月球'}, title:'🌌 3D 太阳系', subtitle:'⚡ 双速度调节 | 平滑巡游 | 土星真实纹理', footer:'✨ 点击行星追踪/信息 | 自动巡游默认开启', miniHint:'🪐 平滑巡游(10秒/行星) | 点击可中断', hide:'🏷️ 隐藏名称', show:'🏷️ 显示名称', lang:'EN', orbitLabel:'🚀 公转速度倍率', rotLabel:'🔄 自转速度倍率', radiusLabel:'🌍 半径', distanceLabel:'📡 距日距离', periodLabel:'⏱️ 公转周期', radiusUnit:'km', distanceUnit:'百万 km', periodUnit:'地球日', tourStop:'🔁 停止巡游', tourStart:'🔁 开始巡游', resetViewLabel:'🎥 重置全局视角' }
 };
 function updateLang() {
     const t = translations[currentLang];
-    labelItems.forEach(item => { item.dom.textContent = t.names[item.nameZh]; });
+    labelItems.forEach(item => { item.dom.textContent = t.names[item.name]; });
     document.getElementById('panel-title').textContent = t.title;
     document.getElementById('panel-subtitle').textContent = t.subtitle;
     document.getElementById('panel-footer').textContent = t.footer;
@@ -562,7 +562,7 @@ function updateLang() {
     document.getElementById('auto-tour-btn').textContent = tourActive ? t.tourStop : t.tourStart;
     resetViewBtn.textContent = t.resetViewLabel;
     const btns = document.querySelectorAll('.planet-btn');
-    const order = ['太阳','水星','金星','地球','火星','木星','土星','天王星','海王星','月球'];
+    const order = ['Sun','Mercury','Venus','Earth','Mars','Jupiter','Saturn','Uranus','Neptune','Moon'];
     btns.forEach((btn,i) => { btn.textContent = t.names[order[i]]; });
     updateInfoPanelLanguage();
 }
@@ -575,14 +575,14 @@ document.getElementById('lang-switch-btn').addEventListener('click', () => { cur
 updateLang();
 
 const grid = document.getElementById('planet-grid');
-const orderList = ['太阳','水星','金星','地球','火星','木星','土星','天王星','海王星','月球'];
+const orderList = ['Sun','Mercury','Venus','Earth','Mars','Jupiter','Saturn','Uranus','Neptune','Moon'];
 orderList.forEach(name => {
-    const obj = switchableObjects.find(o => o.nameZh === name);
+    const obj = switchableObjects.find(o => o.name === name);
     if (!obj) return;
     const btn = document.createElement('button');
     btn.className = 'planet-btn visible';
     btn.textContent = name;
-    const label = labelItems.find(l => l.nameZh === name)?.css2d || null;
+    const label = labelItems.find(l => l.name === name)?.css2d || null;
     const setVisible = (vis) => {
         obj.mesh.visible = vis;
         if (label) label.visible = vis;
