@@ -168,7 +168,7 @@ function loadPlanetMaterial(data) {
         emissiveIntensity: data.emissiveIntensity || 0
     });
     if (data.textureMap) {
-        texLoader.load(data.textureMap, (t) => { material.map = t; material.needsUpdate = true; textureLoaded(); }, undefined, () => textureLoaded());
+        texLoader.load(data.textureMap, (t) => { material.map = t; material.color.set(0xffffff);  material.needsUpdate = true; textureLoaded(); }, undefined, () => textureLoaded());
     } else {
         textureLoaded();
     }
@@ -195,8 +195,8 @@ const sunGeometry = new THREE.SphereGeometry(1.2, 128, 128);
 const sunTexture = texLoader.load(sunTextureUrl, () => { textureLoaded(); });
 const sunMat = new THREE.MeshStandardMaterial({
     map: sunTexture,
-    color: 0xffaa66,
-    emissive: 0xff6633,
+    color: 0xffffff,
+    emissive: 0xff8833,
     emissiveMap: sunTexture,
     emissiveIntensity: 1.5,
     metalness: 0.1,
@@ -269,7 +269,7 @@ planetsData.forEach((data, idx) => {
         planetMesh.userData.ringGroup = ringGroup;
     }
     if (data.name === 'Mars') {
-        const atmos = new THREE.Mesh(new THREE.SphereGeometry(data.radius + 0.04, 64, 64), new THREE.MeshPhongMaterial({ color: 0xcc6644, transparent: true, opacity: 0.05, side: THREE.BackSide }));
+        const atmos = new THREE.Mesh(new THREE.SphereGeometry(data.radius + 0.04, 64, 64), new THREE.MeshPhongMaterial({ color: 0xffffff, transparent: true, opacity: 0.05, side: THREE.BackSide }));
         planetMesh.add(atmos);
     }
     scene.add(planetMesh);
