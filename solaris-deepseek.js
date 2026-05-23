@@ -297,8 +297,8 @@ const moonDiv = document.createElement('div');
 moonDiv.textContent = 'Moon';
 moonDiv.style.cssText = 'color:#ccdaff;font-size:9px;font-weight:300;background:rgba(0,0,0,0.4);padding:1px 5px;border-radius:10px;border:1px solid #8888cc;opacity:0.6';
 const moonLabel = new CSS2DObject(moonDiv);
-moonLabel.position.set(0, -0.18, 0);
-moonMesh.add(moonLabel);
+moonLabel.position.set(0, 0, 0);
+scene.add(moonLabel);
 labelItems.push({ name: 'Moon', css2d: moonLabel, dom: moonDiv });
 switchableObjects.push({ name: 'Moon', mesh: moonMesh, type: 'moon', extra: null, label: moonLabel });
 let moonAngle = Math.random() * Math.PI * 2;
@@ -515,7 +515,7 @@ rotationSlider.addEventListener('input', (e) => { rotationSpeedFactor = parseFlo
 
 let currentLang = 'en', labelsVisible = true;
 const translations = {
-    en: { names:{'Sun':'Sun','Mercury':'Mercury','Venus':'Venus','Earth':'Earth','Mars':'Mars','Jupiter':'Jupiter','Saturn':'Saturn','Uranus':'Uranus','Neptune':'Neptune','Moon':'Moon'}, title:'🌌 3D Solar System', subtitle:'⚡ Dual Speed | Smooth Tour | Realistic Saturn', footer:'✨ Click planet to track/info | Auto tour default ON', miniHint:'🪐 Smooth Tour (10s/planet) | Click to interrupt', hide:'🏷️ Hide Labels', show:'🏷️ Show Labels', lang:'中文', orbitLabel:'🚀 Orbit Speed Multiplier', rotLabel:'🔄 Rotation Speed Multiplier', radiusLabel:'🌍 Radius', distanceLabel:'📡 Distance from Sun', periodLabel:'⏱️ Orbital Period', radiusUnit:'km', distanceUnit:'million km', periodUnit:'Earth days', tourStop:'🔁 Stop Tour', tourStart:'🔁 Start Tour', resetViewLabel:'🎥 Reset View' },
+    en: { names:{'Sun':'Sun','Mercury':'Mercury','Venus':'Venus','Earth':'Earth','Mars':'Mars','Jupiter':'Jupiter','Saturn':'Saturn','Uranus':'Uranus','Neptune':'Neptune','Moon':'Moon'}, title:'🌌 3D Solar System', subtitle:'⚡ Dual Speed | Smooth Tour', footer:'✨ Click planet to track/info | Auto tour default ON', miniHint:'🪐 Smooth Tour (10s/planet) | Click to interrupt', hide:'🏷️ Hide Labels', show:'🏷️ Show Labels', lang:'中文', orbitLabel:'🚀 Orbit Speed Multiplier', rotLabel:'🔄 Rotation Speed Multiplier', radiusLabel:'🌍 Radius', distanceLabel:'📡 Distance from Sun', periodLabel:'⏱️ Orbital Period', radiusUnit:'km', distanceUnit:'million km', periodUnit:'Earth days', tourStop:'🔁 Stop Tour', tourStart:'🔁 Start Tour', resetViewLabel:'🎥 Reset View' },
     zh: { names:{'Sun':'太阳','Mercury':'水星','Venus':'金星','Earth':'地球','Mars':'火星','Jupiter':'木星','Saturn':'土星','Uranus':'天王星','Neptune':'海王星','Moon':'月球'}, title:'🌌 3D 太阳系', subtitle:'⚡ 双速度调节 | 平滑巡游 | 土星真实纹理', footer:'✨ 点击行星追踪/信息 | 自动巡游默认开启', miniHint:'🪐 平滑巡游(10秒/行星) | 点击可中断', hide:'🏷️ 隐藏名称', show:'🏷️ 显示名称', lang:'EN', orbitLabel:'🚀 公转速度倍率', rotLabel:'🔄 自转速度倍率', radiusLabel:'🌍 半径', distanceLabel:'📡 距日距离', periodLabel:'⏱️ 公转周期', radiusUnit:'km', distanceUnit:'百万 km', periodUnit:'地球日', tourStop:'🔁 停止巡游', tourStart:'🔁 开始巡游', resetViewLabel:'🎥 重置全局视角' }
 };
 function updateLang() {
@@ -605,6 +605,8 @@ function animate() {
         moonAngle += moonBaseSpeed * orbitSpeedFactor * 0.6;
         if (moonAngle > Math.PI*2) moonAngle -= Math.PI*2;
         moonMesh.position.set(earthMesh.position.x + Math.cos(moonAngle)*moonDistance, Math.sin(moonAngle*2)*0.05, earthMesh.position.z + Math.sin(moonAngle)*moonDistance);
+        // 月球标签跟随月球位置，偏移到月球上方避免遮挡
+        moonLabel.position.set(moonMesh.position.x, moonMesh.position.y + 0.25, moonMesh.position.z);
         if (moonMesh.visible) moonMesh.rotation.y += (earthRotSpeed / 27.3) * rotationSpeedFactor;
     }
     asteroidField.rotation.y += 0.001;
