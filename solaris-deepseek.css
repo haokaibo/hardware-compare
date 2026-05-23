@@ -28,6 +28,7 @@
         .ctrl-btn:hover { background: rgba(80,120,180,0.9); border-color: #ffaa66; }
         .footer-note { font-size: 10px; text-align: center; margin-top: 10px; opacity: 0.5; }
         .mini-hint { position: absolute; bottom: 12px; right: 12px; color: rgba(255,255,255,0.4); background: rgba(0,0,0,0.4); padding: 4px 10px; border-radius: 20px; font-size: 10px; pointer-events: none; z-index: 10; }
+        .footer-credit { position: absolute; top: 12px; right: 12px; color: rgba(255,255,200,0.35); font-size: 11px; font-family: 'Courier New', monospace; pointer-events: none; z-index: 10; letter-spacing: 0.5px; text-shadow: 0 0 6px rgba(0,0,0,0.8); }
         .loading-tip { position: absolute; bottom: 50%; left: 50%; transform: translate(-50%,-50%); background: rgba(0,0,0,0.7); color: white; padding: 8px 16px; border-radius: 24px; font-size: 12px; z-index: 100; pointer-events: none; white-space: nowrap; }
         .info-panel { position: absolute; bottom: 20px; left: 20px; width: 280px; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); border-radius: 16px; padding: 12px 16px; color: #fff; font-size: 13px; border-left: 4px solid #ffaa66; pointer-events: auto; z-index: 25; font-family: monospace; }
         .info-panel h4 { margin: 0 0 8px 0; color: #ffcc88; font-size: 16px; }
