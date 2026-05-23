@@ -496,15 +496,13 @@ function updateLabelsOcclusion() {
         raycasterOcc.set(cameraPos, dir);
         const intersects = raycasterOcc.intersectObject(sunMesh);
         let occluded = false;
-        if (intersects.length > 0) { const d = cameraPos.distanceTo(planet.mesh.position); if (cameraPos.distanceTo(intersects[0].point) < d - 0.5) occluded = true; }
+        if (intersects.length > 0) {
+            const d = cameraPos.distanceTo(planet.mesh.position);
+            if (cameraPos.distanceTo(intersects[0].point) < d - 0.5) occluded = true;
+        }
         if (planet.label) planet.label.element.style.opacity = occluded ? '0' : '1';
     });
-    const moonDir = new THREE.Vector3().subVectors(moonMesh.position, cameraPos).normalize();
-    raycasterOcc.set(cameraPos, moonDir);
-    const moonIntersects = raycasterOcc.intersectObject(sunMesh);
-    let moonOccluded = false;
-    if (moonIntersects.length > 0) { const d = cameraPos.distanceTo(moonMesh.position); if (cameraPos.distanceTo(moonIntersects[0].point) < d - 0.5) moonOccluded = true; }
-    moonLabel.element.style.opacity = moonOccluded ? '0' : '1';
+    // 月球遮挡已在 animate() 里处理，这里不再重复
 }
 
 let orbitSpeedFactor = 1.0, rotationSpeedFactor = 1.0;
@@ -601,12 +599,32 @@ function animate() {
             p.mesh.rotation.y += earthRotSpeed * rotFactor * rotationSpeedFactor * Math.sign(p.realData.rotPeriod || 1);
         }
     });
+// animate() 里替换月球标签部分
     if (earthMesh) {
         moonAngle += moonBaseSpeed * orbitSpeedFactor * 0.6;
         if (moonAngle > Math.PI*2) moonAngle -= Math.PI*2;
-        moonMesh.position.set(earthMesh.position.x + Math.cos(moonAngle)*moonDistance, Math.sin(moonAngle*2)*0.05, earthMesh.position.z + Math.sin(moonAngle)*moonDistance);
-        // 月球标签跟随月球位置，偏移到月球上方避免遮挡
-        moonLabel.position.set(moonMesh.position.x, moonMesh.position.y + 0.25, moonMesh.position.z);
+        moonMesh.position.set(
+            earthMesh.position.x + Math.cos(moonAngle) * moonDistance,
+            Math.sin(moonAngle * 2) * 0.05,
+            earthMesh.position.z + Math.sin(moonAngle) * moonDistance
+        );
+        moonLabel.position.set(
+            moonMesh.position.x,
+            moonMesh.position.y + 0.25,
+            moonMesh.position.z
+        );
+
+        // 判断月球是否在地球背面（相对相机）
+        const camToEarth = new THREE.Vector3()
+            .subVectors(earthMesh.position, camera.position)
+            .normalize();
+        const earthToMoon = new THREE.Vector3()
+            .subVectors(moonMesh.position, earthMesh.position)
+            .normalize();
+        // dot > 0 说明月球在地球远离相机的一侧 → 被遮挡
+        const behindEarth = camToEarth.dot(earthToMoon) > 0.3;
+        moonLabel.element.style.opacity = behindEarth ? '0' : '1';
+
         if (moonMesh.visible) moonMesh.rotation.y += (earthRotSpeed / 27.3) * rotationSpeedFactor;
     }
     asteroidField.rotation.y += 0.001;
