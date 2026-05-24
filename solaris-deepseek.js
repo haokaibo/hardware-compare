@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 import { planetsData, totalTextures, sunTextureUrl, moonTextureUrl } from './solaris-data.js';
-import { generateSaturnRingTexture } from './solaris-textures.js';
+import { generateSaturnRingTexture, generateSaturnBodyTexture } from './solaris-textures.js';
 import TWEEN from 'https://unpkg.com/@tweenjs/tween.js@23.1.1/dist/tween.esm.js';
 
 // =====================================================
@@ -20,63 +20,101 @@ import TWEEN from 'https://unpkg.com/@tweenjs/tween.js@23.1.1/dist/tween.esm.js'
 // =====================================================
 // 土星环几何体 —— 多层叠加，增加真实感
 // =====================================================
+// ── 生成环的 alphaMap（从 RGBA 纹理提取 alpha → 灰度图）──────────────────
+function buildAlphaMap(rgbaTexture, w, h) {
+    const ac = document.createElement('canvas'); ac.width = w; ac.height = h || 1;
+    const ax = ac.getContext('2d');
+    ax.drawImage(rgbaTexture.image, 0, 0, w, h || 1);
+    const d = ax.getImageData(0, 0, w, h || 1);
+    for (let i = 0; i < d.data.length; i += 4) {
+        const a = d.data[i + 3];
+        d.data[i] = d.data[i+1] = d.data[i+2] = a;
+        d.data[i+3] = 255;
+    }
+    ax.putImageData(d, 0, 0);
+    const t = new THREE.CanvasTexture(ac);
+    t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping;
+    return t;
+}
+
+// ── 修正 RingGeometry UV 为径向 ──────────────────────────────────────────
+function fixRingUV(geo, innerR, outerR) {
+    const pos = geo.attributes.position, uv = geo.attributes.uv;
+    for (let i = 0; i < pos.count; i++) {
+        const r = Math.sqrt(pos.getX(i)**2 + pos.getY(i)**2);
+        uv.setXY(i, (r - innerR) / (outerR - innerR), 0.5);
+    }
+    uv.needsUpdate = true;
+}
+
+// ── 在球体表面烘焙一张"环投影"纹理 ────────────────────────────────────────
+// 用极坐标画布模拟环在球面上投下的阴影（赤道带状暗区）
+function buildRingOnPlanetShadowTexture(planetRadius, innerR, outerR) {
+    const w = 512, h = 512;
+    const c = document.createElement('canvas'); c.width = w; c.height = h;
+    const ctx = c.getContext('2d');
+    ctx.clearRect(0, 0, w, h);
+
+    // 环投影：赤道附近（纬度±30°以内）的环状暗条
+    // UV: x → 经度 0~1, y → 纬度 0(北极)~1(南极)
+    // 只在赤道偏下侧画一条渐变暗带（背光面一侧），模拟环挡住阳光
+    const shadowGrad = ctx.createLinearGradient(0, h*0.38, 0, h*0.62);
+    shadowGrad.addColorStop(0,    'rgba(0,0,0,0)');
+    shadowGrad.addColorStop(0.18, 'rgba(0,0,0,0.55)');
+    shadowGrad.addColorStop(0.5,  'rgba(0,0,0,0.45)');
+    shadowGrad.addColorStop(0.82, 'rgba(0,0,0,0.55)');
+    shadowGrad.addColorStop(1,    'rgba(0,0,0,0)');
+    ctx.fillStyle = shadowGrad;
+    ctx.fillRect(0, 0, w, h);
+
+    const t = new THREE.CanvasTexture(c);
+    return t;
+}
+
+// ── 主函数 ────────────────────────────────────────────────────────────────
 function createRealisticSaturnRing(planetRadius) {
     const group = new THREE.Group();
-
     const innerR = planetRadius * 1.22;
     const outerR = planetRadius * 2.28;
 
-    // 主环几何
-    const ringGeo = new THREE.RingGeometry(innerR, outerR, 256, 4);
-
-    // 修正 UV：RingGeometry 默认 UV 不是径向的，手动修正
-    const pos = ringGeo.attributes.position;
-    const uv  = ringGeo.attributes.uv;
-    for (let i = 0; i < pos.count; i++) {
-        const x = pos.getX(i), y = pos.getY(i);
-        const r = Math.sqrt(x * x + y * y);
-        const u = (r - innerR) / (outerR - innerR);
-        uv.setXY(i, u, 0.5);
-    }
-    uv.needsUpdate = true;
-
     const ringTex = generateSaturnRingTexture();
-    ringTex.wrapS = THREE.ClampToEdgeWrapping;
-    ringTex.wrapT = THREE.ClampToEdgeWrapping;
+    ringTex.wrapS = ringTex.wrapT = THREE.ClampToEdgeWrapping;
+    const alphaMap = buildAlphaMap(ringTex, 1024, 4);
 
-    const ringMat = new THREE.MeshStandardMaterial({
-        map: ringTex,
-        alphaMap: ringTex,          // 用同一张纹理的 alpha 控制透明
+    // MeshBasicMaterial：不受光照影响，纹理颜色原样显示
+    const ringMat = new THREE.MeshBasicMaterial({
+        map:         ringTex,
+        alphaMap:    alphaMap,
         transparent: true,
-        opacity: 1.0,
-        side: THREE.DoubleSide,
-        depthWrite: false,
-        roughness: 0.85,
-        metalness: 0.05,
-        emissive: new THREE.Color(0x221a0a),
-        emissiveIntensity: 0.04,    // 极低自发光，不发光圆盘
+        opacity:     1.0,
+        side:        THREE.DoubleSide,
+        depthWrite:  false,
     });
 
-    const ring = new THREE.Mesh(ringGeo, ringMat);
-    // 土星环真实倾角约 26.7°
+    const geo = new THREE.RingGeometry(innerR, outerR, 256, 4);
+    fixRingUV(geo, innerR, outerR);
+
+    const ring = new THREE.Mesh(geo, ringMat);
     ring.rotation.x = Math.PI / 2;
+    ring.renderOrder = 1;
     group.add(ring);
 
-    // 背面再加一层轻微阴影环，增加立体感
-    const shadowMat = new THREE.MeshBasicMaterial({
-        color: 0x110c04,
+    // AO 接触阴影层：内侧约28%区域轻微压暗，增加空间感
+    const aoInner = innerR;
+    const aoOuter = innerR + (outerR - innerR) * 0.28;
+    const aoGeo = new THREE.RingGeometry(aoInner, aoOuter, 128, 2);
+    fixRingUV(aoGeo, aoInner, aoOuter);
+    const aoMat = new THREE.MeshBasicMaterial({
+        color:       0x000000,
         transparent: true,
-        opacity: 0.12,
-        side: THREE.FrontSide,
-        depthWrite: false,
+        opacity:     0.22,
+        side:        THREE.DoubleSide,
+        depthWrite:  false,
     });
-    const shadowRing = new THREE.Mesh(
-        new THREE.RingGeometry(innerR * 0.98, outerR * 1.01, 128),
-        shadowMat
-    );
-    shadowRing.rotation.x = Math.PI / 2;
-    shadowRing.position.y = -0.01;
-    group.add(shadowRing);
+    const aoRing = new THREE.Mesh(aoGeo, aoMat);
+    aoRing.rotation.x = Math.PI / 2;
+    aoRing.renderOrder = 1;
+    group.add(aoRing);
 
     return group;
 }
@@ -119,8 +157,8 @@ scene.add(ambientLight);
 const sunLight = new THREE.PointLight(0xffcc88, 4.5, 100);
 sunLight.position.set(0, 0, 0);
 sunLight.castShadow = true;
-sunLight.shadow.mapSize.width = 1024;
-sunLight.shadow.mapSize.height = 1024;
+sunLight.shadow.mapSize.width = 2048;
+sunLight.shadow.mapSize.height = 2048;
 sunLight.shadow.bias = -0.0001;
 scene.add(sunLight);
 
@@ -167,6 +205,16 @@ function loadPlanetMaterial(data) {
         emissive: data.emissive || 0x000000,
         emissiveIntensity: data.emissiveIntensity || 0
     });
+    // 土星使用程序生成纹理（颜色更准确），跳过外部 jpg
+    if (data.name === 'Saturn') {
+        const satTex = generateSaturnBodyTexture();
+        material.map = satTex;
+        material.color.set(0xffffff);
+        material.needsUpdate = true;
+        textureLoaded(); // map
+        textureLoaded(); // normal (Saturn has none)
+        return material;
+    }
     if (data.textureMap) {
         texLoader.load(data.textureMap, (t) => { material.map = t; material.color.set(0xffffff);  material.needsUpdate = true; textureLoaded(); }, undefined, () => textureLoaded());
     } else {
@@ -259,12 +307,20 @@ planetsData.forEach((data, idx) => {
     const material = loadPlanetMaterial(data);
     
     const planetMesh = new THREE.Mesh(new THREE.SphereGeometry(data.radius, 128, 128), material);
-    planetMesh.castShadow = true;
-    planetMesh.userData = { speed: data.speed, angle: Math.random() * Math.PI * 2, inclination: data.inclination, realData: data, semiMajor: a, eccentricity: e };
+    planetMesh.castShadow = false;
+    planetMesh.receiveShadow = false;
+    // 土星环用 renderOrder=1，球体默认0，深度排序正确
+
+
+    // 轴倾角容器：rotation.z = axialTilt，行星自转只需转 planetMesh.rotation.y
+    // 金星 axialTilt=177.4° 已编码逆转方向，天王星 97.77° 几乎躺平
+    const axialTilt = data.axialTilt || 0;
+    const axisGroup = new THREE.Object3D();
+    axisGroup.rotation.z = axialTilt;
+    axisGroup.add(planetMesh);
 
     if (data.hasRing) {
         const ringGroup = createRealisticSaturnRing(data.radius);
-        // 土星环随行星倾角微调（真实倾角约26.7°已在几何体设定）
         planetMesh.add(ringGroup);
         planetMesh.userData.ringGroup = ringGroup;
     }
@@ -272,18 +328,24 @@ planetsData.forEach((data, idx) => {
         const atmos = new THREE.Mesh(new THREE.SphereGeometry(data.radius + 0.04, 64, 64), new THREE.MeshPhongMaterial({ color: 0xffffff, transparent: true, opacity: 0.05, side: THREE.BackSide }));
         planetMesh.add(atmos);
     }
-    scene.add(planetMesh);
-    
+    scene.add(axisGroup);
+
     const div = document.createElement('div');
     div.textContent = data.name;
     div.style.cssText = `color:#f0f0f0;font-size:13px;font-weight:500;background:rgba(20,20,40,0.7);padding:2px 10px;border-radius:20px;border:1px solid ${new THREE.Color(data.color).getStyle()};backdrop-filter:blur(4px);pointer-events:none;transition:opacity 0.2s`;
-    const labelYOffset = data.name === 'Mercury' ? -0.3 : (data.name === 'Venus' || data.name === 'Earth' || data.name === 'Mars' ? data.radius + 0.4 : data.radius + 0.3);
+    const labelYOffset = data.radius + 0.4;
     const label = new CSS2DObject(div);
-    label.position.set(0, labelYOffset, 0);
-    planetMesh.add(label);
+    // 倾角 > 90° 时（金星177°、天王星98°），axisGroup 的 +Y 轴已朝下
+    // 需要用负偏移才能让 label 出现在球体上方
+    const tiltedDown = axialTilt > Math.PI / 2 && axialTilt < Math.PI * 3 / 2;
+    label.position.set(0, tiltedDown ? -labelYOffset : labelYOffset, 0);
+    axisGroup.add(label);
     labelItems.push({ name: data.name, css2d: label, dom: div });
-    
-    planets.push({ mesh: planetMesh, baseSpeed: data.speed, angle: planetMesh.userData.angle, inclination: data.inclination, name: data.name, hasRing: data.hasRing, ringGroup: planetMesh.userData.ringGroup, label, realData: data, semiMajor: a, eccentricity: e });
+
+    // userData 存在 axisGroup 上，方便 animate() 移动整体位置
+    axisGroup.userData = { speed: data.speed, angle: Math.random() * Math.PI * 2, inclination: data.inclination, realData: data, semiMajor: a, eccentricity: e };
+
+    planets.push({ mesh: planetMesh, axisGroup, baseSpeed: data.speed, angle: axisGroup.userData.angle, inclination: data.inclination, name: data.name, hasRing: data.hasRing, ringGroup: planetMesh.userData.ringGroup, label, realData: data, semiMajor: a, eccentricity: e });
     if (data.name === 'Earth') earthMesh = planetMesh;
     switchableObjects.push({ name: data.name, mesh: planetMesh, type: 'planet', extra: null, label });
 });
@@ -382,7 +444,8 @@ function nextTourTargetSmooth() {
     if (!target.obj.visible) { tourIndex++; nextTourTargetSmooth(); return; }
     const startTime = performance.now();
     const startCameraPos = camera.position.clone(), startTargetPos = controls.target.clone();
-    const endCameraPos = target.obj.position.clone().add(target.offset), endTargetPos = target.obj.position.clone();
+    const worldPos = new THREE.Vector3(); target.obj.getWorldPosition(worldPos);
+    const endCameraPos = worldPos.clone().add(target.offset), endTargetPos = worldPos.clone();
     const duration = 1500;
     function updateCamera(timestamp) {
         if (!tourActive) return;
@@ -402,10 +465,12 @@ function nextTourTargetSmooth() {
 let currentFollowTarget = null, currentOffset = null;
 function startFollowing(obj, offset) {
     currentFollowTarget = obj; currentOffset = offset;
+    const _wp = new THREE.Vector3();
     function follow() {
         if (!tourActive || !currentFollowTarget) { followFrameId = null; return; }
-        camera.position.lerp(currentFollowTarget.position.clone().add(currentOffset), 0.05);
-        controls.target.lerp(currentFollowTarget.position, 0.05);
+        currentFollowTarget.getWorldPosition(_wp);
+        camera.position.lerp(_wp.clone().add(currentOffset), 0.05);
+        controls.target.lerp(_wp, 0.05);
         followFrameId = requestAnimationFrame(follow);
     }
     if (followFrameId) cancelAnimationFrame(followFrameId);
@@ -448,8 +513,9 @@ function startTracking(planetMesh) {
     currentTrackedPlanet = planetMesh; isTracking = true;
     const startPos = camera.position.clone(), startTarget = controls.target.clone();
     const offset = new THREE.Vector3(0, 2, 5);
-    new TWEEN.Tween(startPos).to(planetMesh.position.clone().add(offset), 600).easing(TWEEN.Easing.Quadratic.InOut).onUpdate(() => camera.position.copy(startPos)).start();
-    new TWEEN.Tween(startTarget).to(planetMesh.position.clone(), 600).easing(TWEEN.Easing.Quadratic.InOut).onUpdate(() => controls.target.copy(startTarget)).start();
+    const wp = new THREE.Vector3(); planetMesh.getWorldPosition(wp);
+    new TWEEN.Tween(startPos).to(wp.clone().add(offset), 600).easing(TWEEN.Easing.Quadratic.InOut).onUpdate(() => camera.position.copy(startPos)).start();
+    new TWEEN.Tween(startTarget).to(wp.clone(), 600).easing(TWEEN.Easing.Quadratic.InOut).onUpdate(() => controls.target.copy(startTarget)).start();
     if (planetMesh.material && planetMesh !== sunMesh) planetMesh.material.emissiveIntensity = 0.15;
 }
 function stopTracking() {
@@ -491,18 +557,19 @@ document.getElementById('controlPanel').addEventListener('click', (e) => e.stopP
 const raycasterOcc = new THREE.Raycaster();
 function updateLabelsOcclusion() {
     const cameraPos = camera.position;
+    const _wp = new THREE.Vector3();
     planets.forEach(planet => {
-        const dir = new THREE.Vector3().subVectors(planet.mesh.position, cameraPos).normalize();
+        planet.mesh.getWorldPosition(_wp);
+        const dir = new THREE.Vector3().subVectors(_wp, cameraPos).normalize();
         raycasterOcc.set(cameraPos, dir);
         const intersects = raycasterOcc.intersectObject(sunMesh);
         let occluded = false;
         if (intersects.length > 0) {
-            const d = cameraPos.distanceTo(planet.mesh.position);
+            const d = cameraPos.distanceTo(_wp);
             if (cameraPos.distanceTo(intersects[0].point) < d - 0.5) occluded = true;
         }
         if (planet.label) planet.label.element.style.opacity = occluded ? '0' : '1';
     });
-    // 月球遮挡已在 animate() 里处理，这里不再重复
 }
 
 let orbitSpeedFactor = 1.0, rotationSpeedFactor = 1.0;
@@ -553,6 +620,9 @@ orderList.forEach(name => {
     const label = labelItems.find(l => l.name === name)?.css2d || null;
     const setVisible = (vis) => {
         obj.mesh.visible = vis;
+        // 同时隐藏/显示 axisGroup 容器（包含行星+环+标签）
+        const planetEntry = planets.find(p => p.mesh === obj.mesh);
+        if (planetEntry && planetEntry.axisGroup) planetEntry.axisGroup.visible = vis;
         if (label) label.visible = vis;
         if (obj.type === 'sun' && obj.extra) obj.extra.glow.visible = vis;
         btn.classList.toggle('visible', vis);
@@ -581,50 +651,45 @@ function animate() {
     planets.forEach(p => {
         p.angle += p.baseSpeed * orbitSpeedFactor * 0.6;
         if (p.angle > Math.PI*2) p.angle -= Math.PI*2;
-        // 椭圆轨道：r = a(1-e²)/(1+e·cosθ)，θ为近心点角
+        // 椭圆轨道：r = a(1-e²)/(1+e·cosθ)
         const a = p.semiMajor;
         const e = p.eccentricity;
         const r = a * (1 - e * e) / (1 + e * Math.cos(p.angle));
         const x0 = Math.cos(p.angle) * r;
         const z0 = Math.sin(p.angle) * r;
-        const y0 = 0;
         const cosI = Math.cos(p.inclination), sinI = Math.sin(p.inclination);
-        p.mesh.position.set(x0, y0 * cosI - z0 * sinI, y0 * sinI + z0 * cosI);
+        // 移动 axisGroup（带倾角的容器），label 和 ring 跟随行星一起动
+        const target = p.axisGroup || p.mesh;
+        target.position.set(x0, -z0 * sinI, z0 * cosI);
         if (p.mesh.visible) {
-            // 真实自转：rotPeriod为地球日，负值表示逆向自转
-            // 角速度 ω ∝ 1/T。添加视觉下限 minFactor 防止极慢行星完全静止
             const rawFactor = 1 / Math.abs(p.realData.rotPeriod || 1);
-            const minFactor = 0.03; // 视觉保底：最慢的行星也能看到转动
+            const minFactor = 0.03;
             const rotFactor = Math.max(rawFactor, minFactor);
-            p.mesh.rotation.y += earthRotSpeed * rotFactor * rotationSpeedFactor * Math.sign(p.realData.rotPeriod || 1);
+            p.mesh.rotation.y += earthRotSpeed * rotFactor * rotationSpeedFactor;
         }
     });
-// animate() 里替换月球标签部分
     if (earthMesh) {
         moonAngle += moonBaseSpeed * orbitSpeedFactor * 0.6;
         if (moonAngle > Math.PI*2) moonAngle -= Math.PI*2;
+        // 强制更新 axisGroup 的世界矩阵，确保 getWorldPosition 得到本帧正确值
+        earthMesh.parent.updateWorldMatrix(true, false);
+        const earthWorldPos = new THREE.Vector3();
+        earthMesh.getWorldPosition(earthWorldPos);
         moonMesh.position.set(
-            earthMesh.position.x + Math.cos(moonAngle) * moonDistance,
-            Math.sin(moonAngle * 2) * 0.05,
-            earthMesh.position.z + Math.sin(moonAngle) * moonDistance
+            earthWorldPos.x + Math.cos(moonAngle) * moonDistance,
+            earthWorldPos.y + Math.sin(moonAngle * 2) * 0.05,
+            earthWorldPos.z + Math.sin(moonAngle) * moonDistance
         );
         moonLabel.position.set(
             moonMesh.position.x,
             moonMesh.position.y + 0.25,
             moonMesh.position.z
         );
-
-        // 判断月球是否在地球背面（相对相机）
-        const camToEarth = new THREE.Vector3()
-            .subVectors(earthMesh.position, camera.position)
-            .normalize();
-        const earthToMoon = new THREE.Vector3()
-            .subVectors(moonMesh.position, earthMesh.position)
-            .normalize();
-        // dot > 0 说明月球在地球远离相机的一侧 → 被遮挡
+        // 月球遮挡检测也用世界坐标
+        const camToEarth = new THREE.Vector3().subVectors(earthWorldPos, camera.position).normalize();
+        const earthToMoon = new THREE.Vector3().subVectors(moonMesh.position, earthWorldPos).normalize();
         const behindEarth = camToEarth.dot(earthToMoon) > 0.3;
         moonLabel.element.style.opacity = behindEarth ? '0' : '1';
-
         if (moonMesh.visible) moonMesh.rotation.y += (earthRotSpeed / 27.3) * rotationSpeedFactor;
     }
     asteroidField.rotation.y += 0.001;
@@ -633,7 +698,7 @@ function animate() {
     sunLight.intensity = 1.5 + Math.sin(time*3)*0.12;
     sunGlow.material.opacity = 0.2 + Math.sin(time*2)*0.05;
     updateLabelsOcclusion();
-    if (isTracking && currentTrackedPlanet) controls.target.lerp(currentTrackedPlanet.position, 0.05);
+    if (isTracking && currentTrackedPlanet) { const _twp = new THREE.Vector3(); currentTrackedPlanet.getWorldPosition(_twp); controls.target.lerp(_twp, 0.05); }
     controls.update();
     renderer.render(scene, camera);
     labelRenderer.render(scene, camera);
