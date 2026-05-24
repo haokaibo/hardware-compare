@@ -465,8 +465,11 @@ let tourActive = false, tourIndex = 0, tourTimer = null, followFrameId = null;
 function startTour() {
     if (tourTimer) clearTimeout(tourTimer);
     if (followFrameId) cancelAnimationFrame(followFrameId);
-    // 停止手动追踪，避免干扰巡游相机
-    if (isTracking) stopTracking();
+    // 停止手动追踪，但不清除追踪状态（发光效果）, 也不重置相机视角
+    if (isTracking) {
+        if (currentTrackedPlanet && currentTrackedPlanet.material && currentTrackedPlanet !== sunMesh) currentTrackedPlanet.material.emissiveIntensity = 0.03;
+        currentTrackedPlanet = null; isTracking = false;
+    }
     tourActive = true;
     const t = translations[currentLang];
     document.getElementById('auto-tour-btn').textContent = t.tourStop;
