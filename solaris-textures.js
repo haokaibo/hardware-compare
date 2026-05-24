@@ -6,65 +6,100 @@ export function generateSaturnBodyTexture() {
     canvas.width = w; canvas.height = h;
     const ctx = canvas.getContext('2d');
 
-    // 底色：真实土星的淡黄色/米黄色底调，饱和度极低
-    // 参考：NASA Cassini 真实色图，整体接近 #e8dfc0 ~ #d4c99a
+    // ── 底色：真实土星奶油淡金底调 ──
+    // 参考 NASA Cassini 真实色彩：北极偏灰蓝绿，赤道暖米金，南极偏灰蓝
     const baseGrad = ctx.createLinearGradient(0, 0, 0, h);
-    baseGrad.addColorStop(0,    '#8fa0a8');  // 北极：微蓝灰色（氨冰+大气散射）
-    baseGrad.addColorStop(0.08, '#b0aaa0');  // 北极过渡：灰米色
-    baseGrad.addColorStop(0.18, '#cec5a8');  // 北温带：浅灰黄
-    baseGrad.addColorStop(0.30, '#ddd3b0');  // 北赤道带：淡米黄
-    baseGrad.addColorStop(0.42, '#e8dfc0');  // 赤道：最亮的淡黄白
-    baseGrad.addColorStop(0.50, '#e2d8b8');  // 赤道中心
-    baseGrad.addColorStop(0.58, '#e8dfc0');  // 赤道对称
-    baseGrad.addColorStop(0.70, '#d8cfa8');  // 南赤道带
-    baseGrad.addColorStop(0.82, '#c8c0a0');  // 南温带
-    baseGrad.addColorStop(0.92, '#aaa498');  // 南极过渡
-    baseGrad.addColorStop(1,    '#909898');  // 南极：灰蓝色
+    baseGrad.addColorStop(0.00, '#b8b6ae');  // 北极：灰白
+    baseGrad.addColorStop(0.04, '#c2beae');  // 极冠边缘
+    baseGrad.addColorStop(0.12, '#d8d0b8');  // 北高纬：暖灰米
+    baseGrad.addColorStop(0.22, '#e5dbbc');  // 北温带
+    baseGrad.addColorStop(0.32, '#efe4c4');  // 北赤道
+    baseGrad.addColorStop(0.40, '#f5eace');  // 赤道亮区
+    baseGrad.addColorStop(0.50, '#f2e8cc');  // 赤道
+    baseGrad.addColorStop(0.60, '#ede2c4');  // 南赤道
+    baseGrad.addColorStop(0.70, '#e2d6b6');  // 南温带
+    baseGrad.addColorStop(0.78, '#d6cbaa');  // 南中纬
+    baseGrad.addColorStop(0.86, '#c8bea0');  // 南高纬
+    baseGrad.addColorStop(0.94, '#b8b29a');  // 南极边缘
+    baseGrad.addColorStop(1.00, '#aeae9e');  // 南极：灰绿
     ctx.fillStyle = baseGrad;
     ctx.fillRect(0, 0, w, h);
 
-    // 条带：颜色对比度极低，都是灰黄/灰褐的细微渐变
-    // 土星条带远没有木星明显，alpha 值普遍偏低
+    // ── 条带：柔和对比，暖褐/暖灰色调 ──
+    // 土星条带远没有木星夸张，全是低对比度渐变
     const bands = [
-        [0.09,  0.012, '#786858', 0.18],
-        [0.14,  0.018, '#8a7c6a', 0.15],
-        [0.19,  0.010, '#a09080', 0.12],
-        [0.24,  0.022, '#7a6e5e', 0.20],
-        [0.29,  0.014, '#c0b898', 0.10],
-        [0.34,  0.028, '#7e7260', 0.22],  // 北赤道带，最明显但仍然淡
-        [0.39,  0.010, '#efe8d0', 0.18],  // 赤道亮纹
-        [0.43,  0.006, '#f8f4e8', 0.25],  // 赤道白纹（氨冰）
-        [0.46,  0.010, '#efe8d0', 0.18],
-        [0.51,  0.026, '#7e7260', 0.20],  // 南赤道带
-        [0.57,  0.014, '#968e78', 0.14],
-        [0.62,  0.018, '#7a7060', 0.17],
-        [0.68,  0.012, '#b0a890', 0.10],
-        [0.74,  0.016, '#888078', 0.15],
-        [0.80,  0.010, '#706860', 0.18],
-        [0.86,  0.012, '#808890', 0.14],  // 南极附近轻微蓝灰
+        // [yRatio, halfHeightRatio, color, maxAlpha]
+        [0.06, 0.012, '#8a8272', 0.14],
+        [0.10, 0.014, '#968e7a', 0.12],
+        [0.15, 0.010, '#c8bea0', 0.08],
+        [0.19, 0.018, '#7a6e5a', 0.18],  // 北中纬度暗带
+        [0.24, 0.012, '#d8ccae', 0.10],
+        [0.28, 0.022, '#6e6250', 0.22],  // 北温带明显暖褐带
+        [0.33, 0.012, '#f0e4c8', 0.14],  // 北赤道亮纹
+        [0.37, 0.008, '#faf2dc', 0.20],  // 赤道明亮
+        [0.40, 0.006, '#fcf6e4', 0.22],  // 赤道最亮
+        [0.44, 0.010, '#f4ead0', 0.14],
+        [0.48, 0.020, '#786c5a', 0.20],  // 赤道南侧暗带
+        [0.53, 0.014, '#8a7e6a', 0.16],
+        [0.58, 0.018, '#6e6452', 0.20],  // 南温带暗带
+        [0.63, 0.012, '#d0c4a6', 0.10],
+        [0.68, 0.016, '#7a7060', 0.16],
+        [0.73, 0.012, '#c0b69a', 0.08],
+        [0.78, 0.014, '#8a8274', 0.14],
+        [0.83, 0.018, '#7a7668', 0.16],
+        [0.88, 0.012, '#9e9a8e', 0.10],
+        [0.93, 0.010, '#aaac9e', 0.08],
     ];
 
-    bands.forEach(([yRatio, heightRatio, color, alpha]) => {
-        const y = yRatio * h;
-        const bh = Math.max(2, heightRatio * h);
+    bands.forEach(([yRatio, halfH, color, alpha]) => {
+        const y = (yRatio - halfH) * h;
+        const bh = Math.max(2, halfH * 2 * h);
         const bandGrad = ctx.createLinearGradient(0, y, 0, y + bh);
-        const [r, g, b] = color.match(/[\da-f]{2}/gi).map(x => parseInt(x, 16));
+        const r = parseInt(color.slice(1,3), 16);
+        const g = parseInt(color.slice(3,5), 16);
+        const b = parseInt(color.slice(5,7), 16);
         bandGrad.addColorStop(0,   `rgba(${r},${g},${b},0)`);
-        bandGrad.addColorStop(0.2, `rgba(${r},${g},${b},${alpha})`);
-        bandGrad.addColorStop(0.8, `rgba(${r},${g},${b},${alpha})`);
+        bandGrad.addColorStop(0.15, `rgba(${r},${g},${b},${alpha * 0.6})`);
+        bandGrad.addColorStop(0.40, `rgba(${r},${g},${b},${alpha})`);
+        bandGrad.addColorStop(0.60, `rgba(${r},${g},${b},${alpha})`);
+        bandGrad.addColorStop(0.85, `rgba(${r},${g},${b},${alpha * 0.6})`);
         bandGrad.addColorStop(1,   `rgba(${r},${g},${b},0)`);
         ctx.fillStyle = bandGrad;
         ctx.fillRect(0, y, w, bh);
     });
-    ctx.globalAlpha = 1;
 
-    // 细噪点：更轻，颜色接近底色
-    for (let i = 0; i < 6000; i++) {
+    // ── 极地区域特殊处理 ──
+    // 北极六边形涡旋（视觉暗示）
+    const northPoleGrad = ctx.createRadialGradient(w/2, h*0.02, 5, w/2, h*0.02, h*0.10);
+    northPoleGrad.addColorStop(0, 'rgba(120,128,132,0.25)');
+    northPoleGrad.addColorStop(0.5, 'rgba(160,158,148,0.12)');
+    northPoleGrad.addColorStop(1, 'rgba(160,158,148,0)');
+    ctx.fillStyle = northPoleGrad;
+    ctx.fillRect(0, 0, w, h*0.10);
+
+    // 南极小暗斑
+    const southPoleGrad = ctx.createRadialGradient(w/2, h*0.98, 3, w/2, h*0.98, h*0.08);
+    southPoleGrad.addColorStop(0, 'rgba(100,104,108,0.30)');
+    southPoleGrad.addColorStop(0.5, 'rgba(130,128,120,0.12)');
+    southPoleGrad.addColorStop(1, 'rgba(130,128,120,0)');
+    ctx.fillStyle = southPoleGrad;
+    ctx.fillRect(0, h*0.90, w, h*0.10);
+
+    // ── 赤道淡暖色微渐变（模拟大气雾状效果） ──
+    const eqGrad = ctx.createLinearGradient(0, h*0.35, 0, h*0.65);
+    eqGrad.addColorStop(0, 'rgba(245,235,210,0)');
+    eqGrad.addColorStop(0.5, 'rgba(245,235,210,0.08)');
+    eqGrad.addColorStop(1, 'rgba(245,235,210,0)');
+    ctx.fillStyle = eqGrad;
+    ctx.fillRect(0, h*0.35, w, h*0.30);
+
+    // ── 微弱噪点（模拟大气湍流） ──
+    for (let i = 0; i < 8000; i++) {
         const px = Math.random() * w;
         const py = Math.random() * h;
-        const bright = Math.random() > 0.5;
-        ctx.fillStyle = bright ? 'rgba(240,235,215,0.04)' : 'rgba(100,90,70,0.03)';
-        ctx.fillRect(px, py, 1.5, 1);
+        const isLight = Math.random() > 0.5;
+        ctx.fillStyle = isLight ? 'rgba(248,242,228,0.03)' : 'rgba(110,100,80,0.02)';
+        ctx.fillRect(px, py, 1.5 + Math.random(), 1);
     }
 
     return new THREE.CanvasTexture(canvas);

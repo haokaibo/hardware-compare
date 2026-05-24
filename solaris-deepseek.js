@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 import { planetsData, totalTextures, sunTextureUrl, moonTextureUrl } from './solaris-data.js';
-import { generateSaturnRingTexture, generateSaturnBodyTexture } from './solaris-textures.js';
+import { generateSaturnRingTexture } from './solaris-textures.js';
 import TWEEN from 'https://unpkg.com/@tweenjs/tween.js@23.1.1/dist/tween.esm.js';
 
 // =====================================================
@@ -205,14 +205,10 @@ function loadPlanetMaterial(data) {
         emissive: data.emissive || 0x000000,
         emissiveIntensity: data.emissiveIntensity || 0
     });
-    // 土星使用程序生成纹理（颜色更准确），跳过外部 jpg
+    // 土星使用本地 2k_saturn.jpg（颜色更准确）
     if (data.name === 'Saturn') {
-        const satTex = generateSaturnBodyTexture();
-        material.map = satTex;
-        material.color.set(0xffffff);
-        material.needsUpdate = true;
-        textureLoaded(); // map
-        textureLoaded(); // normal (Saturn has none)
+        texLoader.load(data.textureMap, (t) => { material.map = t; material.color.set(0xffffff); material.needsUpdate = true; textureLoaded(); }, undefined, () => textureLoaded());
+        textureLoaded(); // Saturn has no normal map
         return material;
     }
     if (data.textureMap) {
@@ -630,8 +626,8 @@ rotationSlider.addEventListener('input', (e) => { rotationSpeedFactor = parseFlo
 
 let currentLang = 'en', labelsVisible = true;
 const translations = {
-    en: { names:{'Sun':'Sun','Mercury':'Mercury','Venus':'Venus','Earth':'Earth','Mars':'Mars','Jupiter':'Jupiter','Saturn':'Saturn','Uranus':'Uranus','Neptune':'Neptune','Moon':'Moon'}, title:'🌌 3D Solar System', subtitle:'⚡ Dual Speed | Smooth Tour', footer:'✨ Click planet to track/info | Auto tour default ON', miniHint:'🪐 Smooth Tour (10s/planet) | Click to interrupt', hide:'🏷️ Hide Labels', show:'🏷️ Show Labels', lang:'中文', orbitLabel:'🚀 Orbit Speed Multiplier', rotLabel:'🔄 Rotation Speed Multiplier', radiusLabel:'🌍 Radius', distanceLabel:'📡 Distance from Sun', periodLabel:'⏱️ Orbital Period', tiltLabel:'🌀 Axial Tilt', radiusUnit:'km', distanceUnit:'million km', periodUnit:'Earth days', tourStop:'🔁 Stop Tour', tourStart:'🔁 Start Tour', resetViewLabel:'🎥 Reset View', axisToggle:'🌀 Axis Lines' },
-    zh: { names:{'Sun':'太阳','Mercury':'水星','Venus':'金星','Earth':'地球','Mars':'火星','Jupiter':'木星','Saturn':'土星','Uranus':'天王星','Neptune':'海王星','Moon':'月球'}, title:'🌌 3D 太阳系', subtitle:'⚡ 双速度调节 | 平滑巡游 | 土星真实纹理', footer:'✨ 点击行星追踪/信息 | 自动巡游默认开启', miniHint:'🪐 平滑巡游(10秒/行星) | 点击可中断', hide:'🏷️ 隐藏名称', show:'🏷️ 显示名称', lang:'EN', orbitLabel:'🚀 公转速度倍率', rotLabel:'🔄 自转速度倍率', radiusLabel:'🌍 半径', distanceLabel:'📡 距日距离', periodLabel:'⏱️ 公转周期', tiltLabel:'🌀 自转倾角', radiusUnit:'km', distanceUnit:'百万 km', periodUnit:'地球日', tourStop:'🔁 停止巡游', tourStart:'🔁 开始巡游', resetViewLabel:'🎥 重置全局视角', axisToggle:'🌀 倾角线' }
+    en: { names:{'Sun':'Sun','Mercury':'Mercury','Venus':'Venus','Earth':'Earth','Mars':'Mars','Jupiter':'Jupiter','Saturn':'Saturn','Uranus':'Uranus','Neptune':'Neptune','Moon':'Moon'}, title:'🌌 3D Solar System', subtitle:'⚡ Dual Speed | Smooth Tour', footer:'✨ Click planet to track/info | Auto tour default ON', miniHint:'🪐 Smooth Tour (10s/planet) | Click to interrupt', lang:'中文', orbitLabel:'🚀 Orbit Speed Multiplier', rotLabel:'🔄 Rotation Speed Multiplier', radiusLabel:'🌍 Radius', distanceLabel:'📡 Distance from Sun', periodLabel:'⏱️ Orbital Period', tiltLabel:'🌀 Axial Tilt', radiusUnit:'km', distanceUnit:'million km', periodUnit:'Earth days', tourStop:'🔁 Stop Tour', tourStart:'🔁 Start Tour', resetViewLabel:'🎥 Reset View', axisToggle:'🌀 Axis Lines', labelsToggle:'🏷️ Labels' },
+    zh: { names:{'Sun':'太阳','Mercury':'水星','Venus':'金星','Earth':'地球','Mars':'火星','Jupiter':'木星','Saturn':'土星','Uranus':'天王星','Neptune':'海王星','Moon':'月球'}, title:'🌌 3D 太阳系', subtitle:'⚡ 双速度调节 | 平滑巡游 | 土星真实纹理', footer:'✨ 点击行星追踪/信息 | 自动巡游默认开启', miniHint:'🪐 平滑巡游(10秒/行星) | 点击可中断', lang:'EN', orbitLabel:'🚀 公转速度倍率', rotLabel:'🔄 自转速度倍率', radiusLabel:'🌍 半径', distanceLabel:'📡 距日距离', periodLabel:'⏱️ 公转周期', tiltLabel:'🌀 自转倾角', radiusUnit:'km', distanceUnit:'百万 km', periodUnit:'地球日', tourStop:'🔁 停止巡游', tourStart:'🔁 开始巡游', resetViewLabel:'🎥 重置全局视角', axisToggle:'🌀 倾角线', labelsToggle:'🏷️ 名称' }
 };
 function updateLang() {
     const t = translations[currentLang];
@@ -640,7 +636,7 @@ function updateLang() {
     document.getElementById('panel-subtitle').textContent = t.subtitle;
     document.getElementById('panel-footer').textContent = t.footer;
     document.querySelector('.mini-hint').textContent = t.miniHint;
-    document.getElementById('toggle-labels-btn').textContent = labelsVisible ? t.hide : t.show;
+    document.getElementById('labels-toggle-label').textContent = t.labelsToggle;
     document.getElementById('lang-switch-btn').textContent = t.lang;
     document.getElementById('orbit-speed-label').textContent = t.orbitLabel;
     document.getElementById('rotation-speed-label').textContent = t.rotLabel;
@@ -653,10 +649,9 @@ function updateLang() {
     btns.forEach((btn,i) => { btn.textContent = t.names[order[i]]; });
     updateInfoPanelLanguage();
 }
-document.getElementById('toggle-labels-btn').addEventListener('click', () => {
-    labelsVisible = !labelsVisible;
+document.getElementById('labelsToggle').addEventListener('change', (e) => {
+    labelsVisible = e.target.checked;
     labelItems.forEach(item => item.css2d.visible = labelsVisible);
-    document.getElementById('toggle-labels-btn').textContent = labelsVisible ? translations[currentLang].hide : translations[currentLang].show;
 });
 document.getElementById('lang-switch-btn').addEventListener('click', () => { currentLang = currentLang === 'zh' ? 'en' : 'zh'; updateLang(); });
 updateLang();
@@ -725,8 +720,8 @@ function animate() {
     time += 0.008;
     if (sunMesh.visible) { sunMesh.rotation.y += 0.0001 * rotationSpeedFactor; sunGlow.rotation.y += 0.00005; }
     planets.forEach(p => {
-        p.angle += p.baseSpeed * orbitSpeedFactor * 0.6;
-        if (p.angle > Math.PI*2) p.angle -= Math.PI*2;
+        p.angle -= p.baseSpeed * orbitSpeedFactor * 0.6;
+        if (p.angle < 0) p.angle += Math.PI*2;
         // 椭圆轨道：r = a(1-e²)/(1+e·cosθ)
         const a = p.semiMajor;
         const e = p.eccentricity;
@@ -745,8 +740,8 @@ function animate() {
         }
     });
     if (earthMesh) {
-        moonAngle += moonBaseSpeed * orbitSpeedFactor * 0.6;
-        if (moonAngle > Math.PI*2) moonAngle -= Math.PI*2;
+        moonAngle -= moonBaseSpeed * orbitSpeedFactor * 0.6;
+        if (moonAngle < 0) moonAngle += Math.PI*2;
         // 强制更新 axisGroup 的世界矩阵，确保 getWorldPosition 得到本帧正确值
         earthMesh.parent.updateWorldMatrix(true, false);
         const earthWorldPos = new THREE.Vector3();

@@ -27,14 +27,20 @@
             <input type="range" id="rotationSpeedSlider" min="0.1" max="2.0" step="0.01" value="1.0">
         </div>
         <div class="toggle-group">
-            <span class="toggle-label"><span id="axis-toggle-label">自转倾角线</span></span>
+            <span class="toggle-label"><span id="labels-toggle-label">🏷️ 名称标签</span></span>
+            <label class="toggle-switch">
+                <input type="checkbox" id="labelsToggle" checked>
+                <span class="toggle-slider"></span>
+            </label>
+        </div>
+        <div class="toggle-group">
+            <span class="toggle-label"><span id="axis-toggle-label">🌀 自转倾角线</span></span>
             <label class="toggle-switch">
                 <input type="checkbox" id="axisToggle">
                 <span class="toggle-slider"></span>
             </label>
         </div>
         <div class="button-group">
-            <div id="toggle-labels-btn" class="ctrl-btn">🏷️ 隐藏名称</div>
             <div id="auto-tour-btn" class="ctrl-btn">🔁 停止巡游</div>
         </div>
         <div class="footer-note" id="panel-footer">✨ 点击行星追踪/信息 | 自动巡游默认开启</div>
