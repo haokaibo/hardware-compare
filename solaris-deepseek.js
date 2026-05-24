@@ -465,10 +465,19 @@ let tourActive = false, tourIndex = 0, tourTimer = null, followFrameId = null;
 function startTour() {
     if (tourTimer) clearTimeout(tourTimer);
     if (followFrameId) cancelAnimationFrame(followFrameId);
+    // 停止手动追踪，避免干扰巡游相机
+    if (isTracking) stopTracking();
     tourActive = true;
     const t = translations[currentLang];
     document.getElementById('auto-tour-btn').textContent = t.tourStop;
     document.getElementById('auto-tour-btn').style.background = 'rgba(80,100,130,0.9)';
+    // 以当前信息卡显示的星球为起点，若未选择过则从太阳开始
+    if (currentInfoPlanet) {
+        const idx = tourTargets.findIndex(tt => tt.name === currentInfoPlanet);
+        if (idx >= 0) tourIndex = idx;
+    } else {
+        tourIndex = 0; // 太阳
+    }
     nextTourTargetSmooth();
 }
 function stopTour() {
@@ -508,6 +517,14 @@ function nextTourTargetSmooth() {
 let currentFollowTarget = null, currentOffset = null;
 function startFollowing(obj, offset) {
     currentFollowTarget = obj; currentOffset = offset;
+    // 如果信息卡已打开，更新为当前巡游星球的信息
+    if (infoPanel.style.display === 'block') {
+        let planetName = '', realData = null;
+        if (obj === moonMesh) { planetName = 'Moon'; realData = moonRealData; }
+        else if (obj === sunMesh) { planetName = 'Sun'; realData = sunRealData; }
+        else { const planetObj = planets.find(p => p.mesh === obj); if (planetObj) { planetName = planetObj.name; realData = planetObj.realData; } }
+        if (planetName) showPlanetInfo(planetName, realData);
+    }
     const _wp = new THREE.Vector3();
     function follow() {
         if (!tourActive || !currentFollowTarget) { followFrameId = null; return; }
@@ -598,13 +615,16 @@ function startTracking(planetMesh) {
     new TWEEN.Tween(startTarget).to(wp.clone(), 600).easing(TWEEN.Easing.Quadratic.InOut).onUpdate(() => controls.target.copy(startTarget)).start();
     if (planetMesh.material && planetMesh !== sunMesh) planetMesh.material.emissiveIntensity = 0.15;
 }
+function resetCameraView() {
+    const startPos = camera.position.clone(), startTarget = controls.target.clone();
+    new TWEEN.Tween(startPos).to(new THREE.Vector3(0,12,30), 600).easing(TWEEN.Easing.Quadratic.InOut).onUpdate(() => camera.position.copy(startPos)).start();
+    new TWEEN.Tween(startTarget).to(new THREE.Vector3(0,0,0), 600).easing(TWEEN.Easing.Quadratic.InOut).onUpdate(() => controls.target.copy(startTarget)).start();
+}
 function stopTracking() {
     if (!isTracking) return;
     if (currentTrackedPlanet && currentTrackedPlanet.material && currentTrackedPlanet !== sunMesh) currentTrackedPlanet.material.emissiveIntensity = 0.03;
     currentTrackedPlanet = null; isTracking = false;
-    const startPos = camera.position.clone(), startTarget = controls.target.clone();
-    new TWEEN.Tween(startPos).to(new THREE.Vector3(0,12,30), 600).easing(TWEEN.Easing.Quadratic.InOut).onUpdate(() => camera.position.copy(startPos)).start();
-    new TWEEN.Tween(startTarget).to(new THREE.Vector3(0,0,0), 600).easing(TWEEN.Easing.Quadratic.InOut).onUpdate(() => controls.target.copy(startTarget)).start();
+    resetCameraView();
 }
 let clickableObjectsCache = null;
 window.addEventListener('click', (event) => {
@@ -627,7 +647,7 @@ window.addEventListener('click', (event) => {
         if (planetName) { showPlanetInfo(planetName, realData); startTracking(hit); }
     }
 });
-resetViewBtn.addEventListener('click', (e) => { e.stopPropagation(); stopTracking(); hideInfoPanel(); if (!tourActive) startTour(); });
+resetViewBtn.addEventListener('click', (e) => { e.stopPropagation(); if (tourActive) stopTour(); if (isTracking) stopTracking(); resetCameraView(); hideInfoPanel(); });
 closeInfoBtn.addEventListener('click', (e) => { e.stopPropagation(); hideInfoPanel(); });
   
 // 阻止信息面板和控制面板上的点击冒泡到window，避免触发星球选中
