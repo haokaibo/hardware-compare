@@ -235,30 +235,60 @@ const switchableObjects = [];
 const labelItems = [];
 
 // --- 太阳 ---
-const sunGeometry = new THREE.SphereGeometry(1.2, 128, 128);
+const sunGeometry = new THREE.SphereGeometry(1.8, 128, 128);
 const sunTexture = texLoader.load(sunTextureUrl, () => { textureLoaded(); });
 const sunMat = new THREE.MeshStandardMaterial({
     map: sunTexture,
     color: 0xffffff,
     emissive: 0xff8833,
     emissiveMap: sunTexture,
-    emissiveIntensity: 1.5,
-    metalness: 0.1,
-    roughness: 0.4,
+    emissiveIntensity: 2.8,
+    metalness: 0.0,
+    roughness: 0.3,
     toneMapped: false
 });
 const sunMesh = new THREE.Mesh(sunGeometry, sunMat);
 sunMesh.castShadow = false;
 scene.add(sunMesh);
-const sunGlowMat = new THREE.MeshBasicMaterial({ color: 0xff8844, transparent: true, opacity: 0.2, side: THREE.BackSide });
-const sunGlow = new THREE.Mesh(new THREE.SphereGeometry(1.4, 32, 32), sunGlowMat);
-scene.add(sunGlow);
+
+// ── 辉光：三层 Sprite，尺寸各异，AdditiveBlending，无轮廓 ──
+function makeSunGlowSprite(innerR, outerR, innerAlpha, outerAlpha, innerColor, outerColor, scale) {
+    const size = 512;
+    const c = document.createElement('canvas');
+    c.width = c.height = size;
+    const ctx = c.getContext('2d');
+    const half = size / 2;
+    const grad = ctx.createRadialGradient(half, half, half * innerR, half, half, half * outerR);
+    grad.addColorStop(0.0,  innerColor.replace('A', innerAlpha.toFixed(2)));
+    grad.addColorStop(0.4,  innerColor.replace('A', (innerAlpha * 0.5).toFixed(2)));
+    grad.addColorStop(1.0,  outerColor.replace('A', '0.00'));
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, size, size);
+    const mat = new THREE.SpriteMaterial({
+        map: new THREE.CanvasTexture(c),
+        blending: THREE.AdditiveBlending,
+        transparent: true,
+        depthWrite: false,
+    });
+    const sp = new THREE.Sprite(mat);
+    sp.scale.set(scale, scale, 1);
+    scene.add(sp);
+    return sp;
+}
+// 内晕：紧贴球体，明亮橙黄
+const glowInner  = makeSunGlowSprite(0.0, 1.0, 0.90, 0, 'rgba(255,220,90,A)',  'rgba(255,120,0,A)',  5.5);
+// 中晕：稍大，橙红
+const glowMid    = makeSunGlowSprite(0.0, 1.0, 0.45, 0, 'rgba(255,140,20,A)',  'rgba(200,40,0,A)',  7.0);
+// 外晕：大范围，深红极淡
+const glowOuter  = makeSunGlowSprite(0.0, 1.0, 0.18, 0, 'rgba(200,60,0,A)',    'rgba(100,10,0,A)',  13.0);
+
+const sunGlow = glowInner; // 兼容后续 sunGlow 引用
 
 const sunDiv = document.createElement('div');
 sunDiv.textContent = 'Sun';
 sunDiv.style.cssText = `color:#ffeecc;font-size:16px;font-weight:bold;text-shadow:0 0 8px rgba(0,0,0,0.9);pointer-events:none;transition:opacity 0.2s`;
 const sunLabel = new CSS2DObject(sunDiv);
-sunLabel.position.set(0, 2.0, 0);
+sunLabel.position.set(0, 2.8, 0);
 sunMesh.add(sunLabel);
 labelItems.push({ name: 'Sun', css2d: sunLabel, dom: sunDiv });
 const sunRealData = { name: 'Sun', realRadius: 696340, realDistance: 0, realPeriod: 0, rotPeriod: 25.4, realMass: 1989000, surfaceGravity: 274, surfaceTemp: 5505, axialTilt: 0.469 };
@@ -752,7 +782,9 @@ orderList.forEach(name => {
             planetEntry.axisVisuals.dots.visible = false;
         }
         if (label) label.visible = vis;
-        if (obj.type === 'sun' && obj.extra) obj.extra.glow.visible = vis;
+        if (obj.type === 'sun' && obj.extra) {
+            glowInner.visible = glowMid.visible = glowOuter.visible = vis;
+        }
         btn.classList.toggle('visible', vis);
         btn.classList.toggle('hidden', !vis);
         if (tourActive && !vis && tourTargets[tourIndex] && tourTargets[tourIndex].obj === obj.mesh) { if (tourTimer) clearTimeout(tourTimer); tourIndex++; nextTourTargetSmooth(); }
@@ -775,7 +807,16 @@ function animate() {
     requestAnimationFrame(animate);
     TWEEN.update();
     time += 0.008;
-    if (sunMesh.visible) { sunMesh.rotation.y += 0.0001 * rotationSpeedFactor; sunGlow.rotation.y += 0.00005; }
+    if (sunMesh.visible) {
+        sunMesh.rotation.y += 0.00018 * rotationSpeedFactor;
+        const pulse = 0.88 + Math.sin(time * 2.1) * 0.07;
+        glowInner.visible  = glowMid.visible = glowOuter.visible = true;
+        glowInner.material.opacity  = pulse;
+        glowMid.material.opacity    = 0.55 + Math.sin(time * 1.7) * 0.05;
+        glowOuter.material.opacity  = 0.28 + Math.sin(time * 1.3) * 0.04;
+    } else {
+        glowInner.visible = glowMid.visible = glowOuter.visible = false;
+    }
     planets.forEach(p => {
         p.angle -= p.baseSpeed * orbitSpeedFactor * 0.6;
         if (p.angle < 0) p.angle += Math.PI*2;
@@ -826,7 +867,6 @@ function animate() {
     stars.rotation.y += 0.0003;
     stars2.rotation.x += 0.0002;
     sunLight.intensity = 1.5 + Math.sin(time*3)*0.12;
-    sunGlow.material.opacity = 0.2 + Math.sin(time*2)*0.05;
     updateLabelsOcclusion();
     if (isTracking && currentTrackedPlanet) { const _twp = new THREE.Vector3(); currentTrackedPlanet.getWorldPosition(_twp); controls.target.lerp(_twp, 0.05); }
     controls.update();
