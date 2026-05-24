@@ -408,7 +408,7 @@ labelItems.push({ name: 'Moon', css2d: moonLabel, dom: moonDiv });
 switchableObjects.push({ name: 'Moon', mesh: moonMesh, type: 'moon', extra: null, label: moonLabel });
 let moonAngle = Math.random() * Math.PI * 2;
 const moonDistance = 1.15, moonBaseSpeed = 0.017;
-const moonRealData = { name: 'Moon', realRadius: 1737, realDistance: 0.384, realPeriod: 27.3, rotPeriod: 27.3, realMass: 0.0735, surfaceGravity: 1.62, surfaceTemp: -53, axialTilt: 0.026 };
+const moonRealData = { name: 'Moon', realRadius: 1737, realDistance: 0.384, realPeriod: 27.3, rotPeriod: 27.3, realMass: 0.0735, surfaceGravity: 1.62, surfaceTemp: -23, axialTilt: 0.026 };
 
 switchableObjects.push({ name: 'Sun', mesh: sunMesh, type: 'sun', extra: { glow: sunGlow }, label: sunLabel });
 
