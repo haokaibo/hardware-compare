@@ -26,6 +26,13 @@
             <div class="speed-label"><span id="rotation-speed-label">🔄 自转速度倍率</span><span class="speed-value" id="rotationSpeedValue">1.00 x</span></div>
             <input type="range" id="rotationSpeedSlider" min="0.1" max="2.0" step="0.01" value="1.0">
         </div>
+        <div class="toggle-group">
+            <span class="toggle-label"><span id="axis-toggle-label">自转倾角线</span></span>
+            <label class="toggle-switch">
+                <input type="checkbox" id="axisToggle">
+                <span class="toggle-slider"></span>
+            </label>
+        </div>
         <div class="button-group">
             <div id="toggle-labels-btn" class="ctrl-btn">🏷️ 隐藏名称</div>
             <div id="auto-tour-btn" class="ctrl-btn">🔁 停止巡游</div>
@@ -44,6 +51,7 @@
     <p id="infoRadius"><span id="radiusLabel">🌍 半径</span>: <span id="radiusValue">--</span> <span id="radiusUnit">km</span></p>
     <p id="infoDistance"><span id="distanceLabel">📡 距日距离</span>: <span id="distanceValue">--</span> <span id="distanceUnit">百万 km</span></p>
     <p id="infoOrbitPeriod"><span id="periodLabel">⏱️ 公转周期</span>: <span id="periodValue">--</span> <span id="periodUnit">地球日</span></p>
+    <p id="infoAxialTilt"><span id="tiltLabel">🌀 自转倾角</span>: <span id="tiltValue">--</span>°</p>
     <div id="resetViewBtn" class="reset-view-btn">🎥 重置全局视角</div>
 </div>
 

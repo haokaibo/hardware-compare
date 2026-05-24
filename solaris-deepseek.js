@@ -318,6 +318,48 @@ planetsData.forEach((data, idx) => {
     const axisGroup = new THREE.Object3D();
     axisGroup.rotation.z = axialTilt;
     axisGroup.add(planetMesh);
+    
+    // ── 自转轴倾角指示线 ──
+    // 沿局部 Y 轴从南极延伸到北极，长度 = 行星半径 × 2.2
+    // 这样无论行星如何倾斜，轴线始终指向真实自转轴方向
+    const axisLen = data.radius * 2.2;
+    // 用虚线，颜色取行星互补色或亮色
+    const axisColor = data.name === 'Uranus' ? 0xff66aa  // 天王星用亮粉色突出"躺平"
+                     : data.name === 'Venus'  ? 0xff8844  // 金星用橙色显示倒立
+                     : 0x88ccff;                          // 其他用淡蓝色
+    const axisMat = new THREE.LineDashedMaterial({
+        color: axisColor,
+        dashSize: 0.04,
+        gapSize: 0.06,
+        transparent: true,
+        opacity: data.name === 'Uranus' ? 0.9 : 0.5
+    });
+    const axisGeo = new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(0, -axisLen, 0),
+        new THREE.Vector3(0, axisLen, 0)
+    ]);
+    const axisLine = new THREE.Line(axisGeo, axisMat);
+    axisLine.computeLineDistances();
+    axisLine.renderOrder = 999;
+    axisGroup.add(axisLine);
+    
+    // 在轴两端加小圆点标记
+    const dotMat = new THREE.PointsMaterial({
+        color: axisColor,
+        size: data.radius * 0.12,
+        transparent: true,
+        opacity: data.name === 'Uranus' ? 0.9 : 0.5
+    });
+    const dotGeo = new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(0, -axisLen, 0),
+        new THREE.Vector3(0, axisLen, 0)
+    ]);
+    const dotPoints = new THREE.Points(dotGeo, dotMat);
+    dotPoints.renderOrder = 999;
+    axisGroup.add(dotPoints);
+    
+    // 存储轴线引用到 planet 对象，用于开关控制
+    const axisVisuals = { line: axisLine, dots: dotPoints };
 
     if (data.hasRing) {
         const ringGroup = createRealisticSaturnRing(data.radius);
@@ -345,7 +387,7 @@ planetsData.forEach((data, idx) => {
     // userData 存在 axisGroup 上，方便 animate() 移动整体位置
     axisGroup.userData = { speed: data.speed, angle: Math.random() * Math.PI * 2, inclination: data.inclination, realData: data, semiMajor: a, eccentricity: e };
 
-    planets.push({ mesh: planetMesh, axisGroup, baseSpeed: data.speed, angle: axisGroup.userData.angle, inclination: data.inclination, name: data.name, hasRing: data.hasRing, ringGroup: planetMesh.userData.ringGroup, label, realData: data, semiMajor: a, eccentricity: e });
+    planets.push({ mesh: planetMesh, axisGroup, axisVisuals, baseSpeed: data.speed, angle: axisGroup.userData.angle, inclination: data.inclination, name: data.name, hasRing: data.hasRing, ringGroup: planetMesh.userData.ringGroup, label, realData: data, semiMajor: a, eccentricity: e });
     if (data.name === 'Earth') earthMesh = planetMesh;
     switchableObjects.push({ name: data.name, mesh: planetMesh, type: 'planet', extra: null, label });
 });
@@ -489,6 +531,7 @@ const radiusLabelSpan = document.getElementById('radiusLabel'), distanceLabelSpa
 const radiusValueSpan = document.getElementById('radiusValue'), distanceValueSpan = document.getElementById('distanceValue'), periodValueSpan = document.getElementById('periodValue');
 const radiusUnitSpan = document.getElementById('radiusUnit'), distanceUnitSpan = document.getElementById('distanceUnit'), periodUnitSpan = document.getElementById('periodUnit');
 const resetViewBtn = document.getElementById('resetViewBtn'), closeInfoBtn = document.getElementById('closeInfoBtn');
+const tiltValueSpan = document.getElementById('tiltValue');
 
 function showPlanetInfo(planetName, realData) {
     currentInfoPlanet = planetName;
@@ -497,6 +540,13 @@ function showPlanetInfo(planetName, realData) {
     const isSun = planetName === 'Sun';
     distanceValueSpan.textContent = isSun ? 'N/A' : realData.realDistance.toLocaleString();
     periodValueSpan.textContent = isSun ? 'N/A' : realData.realPeriod.toLocaleString();
+    // 自转倾角：从弧度转为角度，保留1位小数
+    if (isSun) {
+        tiltValueSpan.textContent = 'N/A';
+    } else {
+        const tiltDeg = (realData.axialTilt || 0) * 180 / Math.PI;
+        tiltValueSpan.textContent = tiltDeg.toFixed(1);
+    }
     infoPanel.style.display = 'block';
     updateInfoPanelLanguage();
 }
@@ -580,8 +630,8 @@ rotationSlider.addEventListener('input', (e) => { rotationSpeedFactor = parseFlo
 
 let currentLang = 'en', labelsVisible = true;
 const translations = {
-    en: { names:{'Sun':'Sun','Mercury':'Mercury','Venus':'Venus','Earth':'Earth','Mars':'Mars','Jupiter':'Jupiter','Saturn':'Saturn','Uranus':'Uranus','Neptune':'Neptune','Moon':'Moon'}, title:'🌌 3D Solar System', subtitle:'⚡ Dual Speed | Smooth Tour', footer:'✨ Click planet to track/info | Auto tour default ON', miniHint:'🪐 Smooth Tour (10s/planet) | Click to interrupt', hide:'🏷️ Hide Labels', show:'🏷️ Show Labels', lang:'中文', orbitLabel:'🚀 Orbit Speed Multiplier', rotLabel:'🔄 Rotation Speed Multiplier', radiusLabel:'🌍 Radius', distanceLabel:'📡 Distance from Sun', periodLabel:'⏱️ Orbital Period', radiusUnit:'km', distanceUnit:'million km', periodUnit:'Earth days', tourStop:'🔁 Stop Tour', tourStart:'🔁 Start Tour', resetViewLabel:'🎥 Reset View' },
-    zh: { names:{'Sun':'太阳','Mercury':'水星','Venus':'金星','Earth':'地球','Mars':'火星','Jupiter':'木星','Saturn':'土星','Uranus':'天王星','Neptune':'海王星','Moon':'月球'}, title:'🌌 3D 太阳系', subtitle:'⚡ 双速度调节 | 平滑巡游 | 土星真实纹理', footer:'✨ 点击行星追踪/信息 | 自动巡游默认开启', miniHint:'🪐 平滑巡游(10秒/行星) | 点击可中断', hide:'🏷️ 隐藏名称', show:'🏷️ 显示名称', lang:'EN', orbitLabel:'🚀 公转速度倍率', rotLabel:'🔄 自转速度倍率', radiusLabel:'🌍 半径', distanceLabel:'📡 距日距离', periodLabel:'⏱️ 公转周期', radiusUnit:'km', distanceUnit:'百万 km', periodUnit:'地球日', tourStop:'🔁 停止巡游', tourStart:'🔁 开始巡游', resetViewLabel:'🎥 重置全局视角' }
+    en: { names:{'Sun':'Sun','Mercury':'Mercury','Venus':'Venus','Earth':'Earth','Mars':'Mars','Jupiter':'Jupiter','Saturn':'Saturn','Uranus':'Uranus','Neptune':'Neptune','Moon':'Moon'}, title:'🌌 3D Solar System', subtitle:'⚡ Dual Speed | Smooth Tour', footer:'✨ Click planet to track/info | Auto tour default ON', miniHint:'🪐 Smooth Tour (10s/planet) | Click to interrupt', hide:'🏷️ Hide Labels', show:'🏷️ Show Labels', lang:'中文', orbitLabel:'🚀 Orbit Speed Multiplier', rotLabel:'🔄 Rotation Speed Multiplier', radiusLabel:'🌍 Radius', distanceLabel:'📡 Distance from Sun', periodLabel:'⏱️ Orbital Period', tiltLabel:'🌀 Axial Tilt', radiusUnit:'km', distanceUnit:'million km', periodUnit:'Earth days', tourStop:'🔁 Stop Tour', tourStart:'🔁 Start Tour', resetViewLabel:'🎥 Reset View', axisToggle:'🌀 Axis Lines' },
+    zh: { names:{'Sun':'太阳','Mercury':'水星','Venus':'金星','Earth':'地球','Mars':'火星','Jupiter':'木星','Saturn':'土星','Uranus':'天王星','Neptune':'海王星','Moon':'月球'}, title:'🌌 3D 太阳系', subtitle:'⚡ 双速度调节 | 平滑巡游 | 土星真实纹理', footer:'✨ 点击行星追踪/信息 | 自动巡游默认开启', miniHint:'🪐 平滑巡游(10秒/行星) | 点击可中断', hide:'🏷️ 隐藏名称', show:'🏷️ 显示名称', lang:'EN', orbitLabel:'🚀 公转速度倍率', rotLabel:'🔄 自转速度倍率', radiusLabel:'🌍 半径', distanceLabel:'📡 距日距离', periodLabel:'⏱️ 公转周期', tiltLabel:'🌀 自转倾角', radiusUnit:'km', distanceUnit:'百万 km', periodUnit:'地球日', tourStop:'🔁 停止巡游', tourStart:'🔁 开始巡游', resetViewLabel:'🎥 重置全局视角', axisToggle:'🌀 倾角线' }
 };
 function updateLang() {
     const t = translations[currentLang];
@@ -595,6 +645,8 @@ function updateLang() {
     document.getElementById('orbit-speed-label').textContent = t.orbitLabel;
     document.getElementById('rotation-speed-label').textContent = t.rotLabel;
     document.getElementById('auto-tour-btn').textContent = tourActive ? t.tourStop : t.tourStart;
+    document.getElementById('axis-toggle-label').textContent = t.axisToggle;
+    document.getElementById('tiltLabel').textContent = t.tiltLabel;
     resetViewBtn.textContent = t.resetViewLabel;
     const btns = document.querySelectorAll('.planet-btn');
     const order = ['Sun','Mercury','Venus','Earth','Mars','Jupiter','Saturn','Uranus','Neptune','Moon'];
@@ -609,6 +661,25 @@ document.getElementById('toggle-labels-btn').addEventListener('click', () => {
 document.getElementById('lang-switch-btn').addEventListener('click', () => { currentLang = currentLang === 'zh' ? 'en' : 'zh'; updateLang(); });
 updateLang();
 
+// ── 自转倾角线开关（iOS 风格 Toggle，默认关闭） ──
+let axisLinesVisible = false;
+document.getElementById('axisToggle').addEventListener('change', (e) => {
+    axisLinesVisible = e.target.checked;
+    planets.forEach(p => {
+        if (p.axisVisuals) {
+            p.axisVisuals.line.visible = axisLinesVisible;
+            p.axisVisuals.dots.visible = axisLinesVisible;
+        }
+    });
+});
+// 默认隐藏所有倾角线
+planets.forEach(p => {
+    if (p.axisVisuals) {
+        p.axisVisuals.line.visible = false;
+        p.axisVisuals.dots.visible = false;
+    }
+});
+
 const grid = document.getElementById('planet-grid');
 const orderList = ['Sun','Mercury','Venus','Earth','Mars','Jupiter','Saturn','Uranus','Neptune','Moon'];
 orderList.forEach(name => {
@@ -620,9 +691,14 @@ orderList.forEach(name => {
     const label = labelItems.find(l => l.name === name)?.css2d || null;
     const setVisible = (vis) => {
         obj.mesh.visible = vis;
-        // 同时隐藏/显示 axisGroup 容器（包含行星+环+标签）
+        // 同时隐藏/显示 axisGroup 容器（包含行星+环+标签+自转轴线）
         const planetEntry = planets.find(p => p.mesh === obj.mesh);
         if (planetEntry && planetEntry.axisGroup) planetEntry.axisGroup.visible = vis;
+        // 如果倾角线开关关闭，即使行星显示也不显示轴线
+        if (planetEntry && planetEntry.axisVisuals && vis && !axisLinesVisible) {
+            planetEntry.axisVisuals.line.visible = false;
+            planetEntry.axisVisuals.dots.visible = false;
+        }
         if (label) label.visible = vis;
         if (obj.type === 'sun' && obj.extra) obj.extra.glow.visible = vis;
         btn.classList.toggle('visible', vis);
