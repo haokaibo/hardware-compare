@@ -790,14 +790,12 @@ function animate() {
         const target = p.axisGroup || p.mesh;
         target.position.set(x0, -z0 * sinI, z0 * cosI);
         if (p.mesh.visible) {
-            // 水星自西向东（逆时针），正 rotPeriod = 逆时针；金星/天王星负值 = 顺时针
+            // 正 rotPeriod = 逆时针（自西向东），负值 = 顺时针（自东向西）
             const rawFactor = 1 / (p.realData.rotPeriod || 1);
             const minFactor = 0.03;
             const sign = Math.sign(rawFactor);
             const rotFactor = Math.max(Math.abs(rawFactor), minFactor) * sign;
-            // 水星 rotPeriod=58.646（正值本应自东向西），单独取反改为自西向东
-            const mercury = p.realData.name === 'Mercury';
-            p.mesh.rotation.y += earthRotSpeed * rotFactor * rotationSpeedFactor * (mercury ? -1 : 1);
+            p.mesh.rotation.y += earthRotSpeed * rotFactor * rotationSpeedFactor;
         }
     });
     if (earthMesh) {
