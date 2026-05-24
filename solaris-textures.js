@@ -210,16 +210,16 @@ export function generateSaturnRingTexture() {
         }
     }
 
-    // 边缘雾化
+    // 边缘雾化 — 很轻微，避免造成管道视觉
     const fogL = ctx.createLinearGradient(0.22 * w, 0, 0.245 * w, 0);
-    fogL.addColorStop(0, 'rgba(0,0,0,0.22)');
+    fogL.addColorStop(0, 'rgba(0,0,0,0.10)');
     fogL.addColorStop(1, 'rgba(0,0,0,0)');
     ctx.fillStyle = fogL;
     ctx.fillRect(0.22 * w, 0, 0.025 * w, h);
 
     const fogR = ctx.createLinearGradient(0.88 * w, 0, 0.92 * w, 0);
     fogR.addColorStop(0, 'rgba(0,0,0,0)');
-    fogR.addColorStop(1, 'rgba(0,0,0,0.30)');
+    fogR.addColorStop(1, 'rgba(0,0,0,0.12)');
     ctx.fillStyle = fogR;
     ctx.fillRect(0.88 * w, 0, 0.04 * w, h);
 
