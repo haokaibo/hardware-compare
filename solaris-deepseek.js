@@ -256,7 +256,7 @@ scene.add(sunGlow);
 
 const sunDiv = document.createElement('div');
 sunDiv.textContent = 'Sun';
-sunDiv.style.cssText = `color:#ffeecc;font-size:16px;font-weight:bold;background:rgba(80,30,0,0.6);padding:4px 12px;border-radius:24px;border:1px solid #ffaa44;backdrop-filter:blur(4px);pointer-events:none;transition:opacity 0.2s`;
+sunDiv.style.cssText = `color:#ffeecc;font-size:16px;font-weight:bold;text-shadow:0 0 8px rgba(0,0,0,0.9);pointer-events:none;transition:opacity 0.2s`;
 const sunLabel = new CSS2DObject(sunDiv);
 sunLabel.position.set(0, 2.0, 0);
 sunMesh.add(sunLabel);
@@ -375,7 +375,7 @@ planetsData.forEach((data, idx) => {
 
     const div = document.createElement('div');
     div.textContent = data.name;
-    div.style.cssText = `color:#f0f0f0;font-size:13px;font-weight:500;background:rgba(20,20,40,0.7);padding:2px 10px;border-radius:20px;border:1px solid ${new THREE.Color(data.color).getStyle()};backdrop-filter:blur(4px);pointer-events:none;transition:opacity 0.2s`;
+    div.style.cssText = `color:#f0f0f0;font-size:13px;font-weight:500;text-shadow:0 0 6px rgba(0,0,0,0.9);pointer-events:none;transition:opacity 0.2s`;
     const labelYOffset = data.radius + 0.4;
     const label = new CSS2DObject(div);
     // 倾角 > 90° 时（金星177°、天王星98°），axisGroup 的 +Y 轴已朝下
@@ -400,7 +400,7 @@ moonMesh.castShadow = true;
 scene.add(moonMesh);
 const moonDiv = document.createElement('div');
 moonDiv.textContent = 'Moon';
-moonDiv.style.cssText = 'color:#ccdaff;font-size:9px;font-weight:300;background:rgba(0,0,0,0.4);padding:1px 5px;border-radius:10px;border:1px solid #8888cc;opacity:0.6';
+moonDiv.style.cssText = 'color:#ccdaff;font-size:9px;font-weight:300;text-shadow:0 0 4px rgba(0,0,0,0.9);opacity:0.7';
 const moonLabel = new CSS2DObject(moonDiv);
 moonLabel.position.set(0, 0, 0);
 scene.add(moonLabel);
