@@ -571,6 +571,11 @@ function startFollowing(obj, offset) {
 }
 function stopFollowing() { if (followFrameId) cancelAnimationFrame(followFrameId); followFrameId = null; currentFollowTarget = null; currentOffset = null; }
 document.getElementById('auto-tour-btn').addEventListener('click', () => { if (tourActive) stopTour(); else startTour(); });
+document.getElementById('pause-btn').addEventListener('click', () => {
+    isPaused = !isPaused;
+    const t = translations[currentLang];
+    document.getElementById('pause-btn').textContent = isPaused ? t.resumeBtn : t.pauseBtn;
+});
 
 // ========== 交互 ==========
 const raycasterClick = new THREE.Raycaster();
@@ -706,15 +711,16 @@ function updateLabelsOcclusion() {
 }
 
 let orbitSpeedFactor = 1.0, rotationSpeedFactor = 1.0;
-const orbitSlider = document.getElementById('orbitSpeedSlider'), orbitValue = document.getElementById('orbitSpeedValue');
-const rotationSlider = document.getElementById('rotationSpeedSlider'), rotationValue = document.getElementById('rotationSpeedValue');
-orbitSlider.addEventListener('input', (e) => { orbitSpeedFactor = parseFloat(e.target.value); orbitValue.textContent = orbitSpeedFactor.toFixed(2)+' x'; });
-rotationSlider.addEventListener('input', (e) => { rotationSpeedFactor = parseFloat(e.target.value); rotationValue.textContent = rotationSpeedFactor.toFixed(2)+' x'; });
+  let isPaused = false;
+  const orbitSlider = document.getElementById('orbitSpeedSlider'), orbitValue = document.getElementById('orbitSpeedValue');
+  const rotationSlider = document.getElementById('rotationSpeedSlider'), rotationValue = document.getElementById('rotationSpeedValue');
+  orbitSlider.addEventListener('input', (e) => { orbitSpeedFactor = parseFloat(e.target.value); if (orbitSpeedFactor === 0) orbitValue.textContent = '0 x'; else orbitValue.textContent = orbitSpeedFactor.toFixed(2)+' x'; });
+  rotationSlider.addEventListener('input', (e) => { rotationSpeedFactor = parseFloat(e.target.value); if (rotationSpeedFactor === 0) rotationValue.textContent = '0 x'; else rotationValue.textContent = rotationSpeedFactor.toFixed(2)+' x'; });
 
 let currentLang = 'en', labelsVisible = true;
 const translations = {
-    en: { names:{'Sun':'Sun','Mercury':'Mercury','Venus':'Venus','Earth':'Earth','Mars':'Mars','Jupiter':'Jupiter','Saturn':'Saturn','Uranus':'Uranus','Neptune':'Neptune','Moon':'Moon'}, title:'🌌 3D Solar System', subtitle:'⚡ Dual Speed | Smooth Tour', footer:'✨ Click planet to track/info | Auto tour default OFF', miniHint:'🪐 Smooth Tour (10s/planet) | Click to interrupt', lang:'中文', orbitLabel:'🚀 Orbit Speed Multiplier', rotLabel:'🔄 Rotation Speed Multiplier', radiusLabel:'🌍 Radius', distanceLabel:'📡 Distance from Sun', periodLabel:'⏱️ Orbital Period', tiltLabel:'🌀 Axial Tilt', radiusUnit:'km', distanceUnit:'million km', periodUnit:'Earth days', tourStop:'🔁 Stop Tour', tourStart:'🔁 Start Tour', resetViewLabel:'🎥 Reset View', axisToggle:'🌀 Axis Lines', labelsToggle:'🏷️ Labels', massLabel:'⚖️ Mass', massUnit:'×10²⁴ kg', rotPeriodLabel:'🔄 Rotation Period', rotPeriodUnit:'Earth days', gravityLabel:'⬇️ Surface Gravity', gravityUnit:'m/s²', tempLabel:'🌡️ Surface Temp.', tempUnit:'°C' },
-    zh: { names:{'Sun':'太阳','Mercury':'水星','Venus':'金星','Earth':'地球','Mars':'火星','Jupiter':'木星','Saturn':'土星','Uranus':'天王星','Neptune':'海王星','Moon':'月球'}, title:'🌌 3D 太阳系', subtitle:'⚡ 双速度调节 | 平滑巡游 | 土星真实纹理', footer:'✨ 点击行星追踪/信息 | 自动巡游默认关闭', miniHint:'🪐 平滑巡游(10秒/行星) | 点击可中断', lang:'EN', orbitLabel:'🚀 公转速度倍率', rotLabel:'🔄 自转速度倍率', radiusLabel:'🌍 半径', distanceLabel:'📡 距日距离', periodLabel:'⏱️ 公转周期', tiltLabel:'🌀 自转倾角', radiusUnit:'km', distanceUnit:'百万 km', periodUnit:'地球日', tourStop:'🔁 停止巡游', tourStart:'🔁 开始巡游', resetViewLabel:'🎥 重置全局视角', axisToggle:'🌀 倾角线', labelsToggle:'🏷️ 名称', massLabel:'⚖️ 质量', massUnit:'×10²⁴ kg', rotPeriodLabel:'🔄 自转周期', rotPeriodUnit:'地球日', gravityLabel:'⬇️ 表面重力', gravityUnit:'m/s²', tempLabel:'🌡️ 表面温度', tempUnit:'°C' }
+    en: { names:{'Sun':'Sun','Mercury':'Mercury','Venus':'Venus','Earth':'Earth','Mars':'Mars','Jupiter':'Jupiter','Saturn':'Saturn','Uranus':'Uranus','Neptune':'Neptune','Moon':'Moon'}, title:'🌌 3D Solar System', subtitle:'⚡ Dual Speed | Smooth Tour', footer:'✨ Click planet to track/info | Auto tour default OFF', miniHint:'🪐 Smooth Tour (10s/planet) | Click to interrupt', lang:'中文', orbitLabel:'🚀 Orbit Speed Multiplier', rotLabel:'🔄 Rotation Speed Multiplier', radiusLabel:'🌍 Radius', distanceLabel:'📡 Distance from Sun', periodLabel:'⏱️ Orbital Period', tiltLabel:'🌀 Axial Tilt', radiusUnit:'km', distanceUnit:'million km', periodUnit:'Earth days', tourStop:'🔁 Stop Tour', tourStart:'🔁 Start Tour', pauseBtn:'⏸ Pause', resumeBtn:'▶ Resume', resetViewLabel:'🎥 Reset View', axisToggle:'🌀 Axis Lines', labelsToggle:'🏷️ Labels', massLabel:'⚖️ Mass', massUnit:'×10²⁴ kg', rotPeriodLabel:'🔄 Rotation Period', rotPeriodUnit:'Earth days', gravityLabel:'⬇️ Surface Gravity', gravityUnit:'m/s²', tempLabel:'🌡️ Surface Temp.', tempUnit:'°C' },
+    zh: { names:{'Sun':'太阳','Mercury':'水星','Venus':'金星','Earth':'地球','Mars':'火星','Jupiter':'木星','Saturn':'土星','Uranus':'天王星','Neptune':'海王星','Moon':'月球'}, title:'🌌 3D 太阳系', subtitle:'⚡ 双速度调节 | 平滑巡游 | 土星真实纹理', footer:'✨ 点击行星追踪/信息 | 自动巡游默认关闭', miniHint:'🪐 平滑巡游(10秒/行星) | 点击可中断', lang:'EN', orbitLabel:'🚀 公转速度倍率', rotLabel:'🔄 自转速度倍率', radiusLabel:'🌍 半径', distanceLabel:'📡 距日距离', periodLabel:'⏱️ 公转周期', tiltLabel:'🌀 自转倾角', radiusUnit:'km', distanceUnit:'百万 km', periodUnit:'地球日', tourStop:'🔁 停止巡游', tourStart:'🔁 开始巡游', pauseBtn:'⏸ 暂停运动', resumeBtn:'▶ 继续运动', resetViewLabel:'🎥 重置全局视角', axisToggle:'🌀 倾角线', labelsToggle:'🏷️ 名称', massLabel:'⚖️ 质量', massUnit:'×10²⁴ kg', rotPeriodLabel:'🔄 自转周期', rotPeriodUnit:'地球日', gravityLabel:'⬇️ 表面重力', gravityUnit:'m/s²', tempLabel:'🌡️ 表面温度', tempUnit:'°C' }
 };
 function updateLang() {
     const t = translations[currentLang];
@@ -728,6 +734,7 @@ function updateLang() {
     document.getElementById('orbit-speed-label').textContent = t.orbitLabel;
     document.getElementById('rotation-speed-label').textContent = t.rotLabel;
     document.getElementById('auto-tour-btn').textContent = tourActive ? t.tourStop : t.tourStart;
+    document.getElementById('pause-btn').textContent = isPaused ? t.resumeBtn : t.pauseBtn;
     document.getElementById('axis-toggle-label').textContent = t.axisToggle;
     document.getElementById('tiltLabel').textContent = t.tiltLabel;
     resetViewBtn.textContent = t.resetViewLabel;
@@ -806,6 +813,12 @@ const earthRotSpeed = 0.0015; // 基准
 function animate() {
     requestAnimationFrame(animate);
     TWEEN.update();
+    if (isPaused) {
+        controls.update();
+        renderer.render(scene, camera);
+        labelRenderer.render(scene, camera);
+        return;
+    }
     time += 0.008;
     if (sunMesh.visible) {
         sunMesh.rotation.y += 0.00018 * rotationSpeedFactor;
