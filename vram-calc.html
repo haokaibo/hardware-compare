@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLM 显存计算器 - VRAM Calculator</title>
+    <link rel="stylesheet" href="styles/vram-calc.css">
+</head>
+<body>
+
+<header>
+    <div class="logo"><a href="index.html"><span class="logo-dot"></span>GPURank.ai</a></div>
+    <nav>
+        <ul>
+            <li><button class="nav-btn"><a href="index.html">排行榜</a></button></li>
+            <li><button class="nav-btn active">显存计算器</button></li>
+        </ul>
+    </nav>
+</header>
+
+  <!-- ===== Main Content ===== -->
+  <main>
+
+    <!-- Hero -->
+    <div class="hero">
+      <h1>LLM 显存计算器 <span class="moe-badge" style="font-size: 13px;">v1.0</span></h1>
+      <p>根据模型参数量、精度与使用场景，估算运行 LLM 所需的 GPU 显存</p>
+    </div>
+
+    <!-- Calculator -->
+    <div class="calc-container">
+
+      <!-- Left: Input Panel -->
+      <div class="input-panel">
+        <h2>参数设置</h2>
+
+        <!-- Preset -->
+        <div class="form-group">
+          <label>模型预设</label>
+          <select id="modelPreset">
+          </select>
+        </div>
+
+        <!-- Parameters -->
+        <div class="form-group">
+          <label>模型参数量 <span class="unit">(Billion)</span></label>
+          <div class="input-with-controls">
+            <button id="paramDec" type="button" aria-label="减">−</button>
+            <input type="number" id="paramCount" value="7" min="0.1" max="10000" step="1">
+            <button id="paramInc" type="button" aria-label="加">+</button>
+          </div>
+        </div>
+
+        <!-- MoE active params -->
+        <div class="form-group" id="moeOptions" style="display:none;">
+          <label>活跃参数量 <span class="unit">(B, MoE 模型)</span></label>
+          <input type="number" id="activeParams" value="0" min="0" step="1">
+        </div>
+
+        <!-- Precision -->
+        <div class="form-group">
+          <label>权重精度</label>
+          <div class="btn-group" id="precisionGroup">
+            <button type="button" data-value="fp32" class="btn-option">FP32</button>
+            <button type="button" data-value="fp16" class="btn-option active">BF16 / FP16</button>
+            <button type="button" data-value="fp8" class="btn-option">FP8</button>
+            <button type="button" data-value="int4" class="btn-option">INT4 / NF4</button>
+          </div>
+        </div>
+
+        <!-- Use Case -->
+        <div class="form-group">
+          <label>使用场景</label>
+          <div class="btn-group" id="modeGroup">
+            <button type="button" data-value="inference" class="btn-option active">推理</button>
+            <button type="button" data-value="train" class="btn-option">完整训练</button>
+            <button type="button" data-value="lora" class="btn-option">LoRA 微调</button>
+          </div>
+        </div>
+
+        <!-- Context + Batch -->
+        <div class="form-group row">
+          <div class="half">
+            <label>上下文长度 <span class="unit">(tokens)</span></label>
+            <input type="number" id="contextLen" value="8192" min="1" step="512">
+          </div>
+          <div class="half">
+            <label>Batch Size</label>
+            <input type="number" id="batchSize" value="1" min="1" step="1">
+          </div>
+        </div>
+
+        <!-- Advanced Settings -->
+        <details class="advanced-section">
+          <summary>高级设置</summary>
+          <div class="form-group row">
+            <div class="half">
+              <label>层数 <span class="unit">(Layers)</span></label>
+              <input type="number" id="numLayers" value="32" min="1" step="1">
+            </div>
+            <div class="half">
+              <label>隐藏维度 <span class="unit">(Hidden Dim)</span></label>
+              <input type="number" id="hiddenDim" value="4096" min="64" step="64">
+            </div>
+          </div>
+          <!-- Activation Checkpointing (hidden by default, shown in training mode) -->
+          <div class="form-group" id="activationOptions" style="display:none;">
+            <label class="checkbox-label">
+              <input type="checkbox" id="activationCheckpoint" checked>
+              启用激活检查点 (Activation Checkpointing)
+            </label>
+            <span class="hint" style="padding-left: 24px;">大幅减少训练时的激活值显存，但会略微降低训练速度</span>
+          </div>
+        </details>
+
+        <div style="margin-top: 8px; font-size: 12px; color: var(--text-muted);">
+          💡 选择预设后自动填充架构参数，也可展开「高级设置」手动调整
+        </div>
+      </div>
+
+      <!-- Right: Results Panel -->
+      <div class="result-panel" id="resultPanel">
+        <h2>计算结果</h2>
+
+        <!-- Total VRAM Card -->
+        <div class="total-vram-card">
+          <div class="total-label">所需 GPU 显存</div>
+          <div id="totalVram" class="total-value">-- <span class="unit-text">GiB</span></div>
+          <div class="total-bar-container">
+            <div class="total-bar-labels">
+              <span>0 GiB</span>
+              <span>---</span>
+            </div>
+            <div class="total-bar">
+              <div id="totalBarFill" class="bar-fill" style="width:0%"></div>
+            </div>
+            <div class="total-bar-ticks"></div>
+          </div>
+        </div>
+
+        <!-- Breakdown -->
+        <div class="breakdown-section">
+          <h3>显存构成</h3>
+          <div id="breakdownList" class="breakdown-list">
+            <div class="result-empty">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="2" y="3" width="20" height="18" rx="2"/>
+                <line x1="8" y1="9" x2="16" y2="9"/>
+                <line x1="8" y1="13" x2="12" y2="13"/>
+              </svg>
+              <p>调整参数后自动计算</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- GPU Compatibility -->
+        <div class="gpu-section">
+          <h3>兼容显卡</h3>
+          <div id="gpuList" class="gpu-list">
+            <div class="result-empty" style="padding: 30px 16px;">
+              <p>等待输入参数…</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Detail Table -->
+    <div class="detail-section">
+      <h2>计算明细</h2>
+      <div id="detailTable">
+        <div style="text-align:center; padding: 20px; color: var(--text-muted); font-size: 14px;">
+          在左侧输入参数后将显示详细计算过程
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="scripts/vram-calc.js"></script>
+</body>
+</html>
