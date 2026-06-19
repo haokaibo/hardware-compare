@@ -58,7 +58,7 @@ a:hover {
   color: var(--accent-hover);
 }
 
-/* --- Header (matches gemini-code-1778909610194.html) --- */
+/* --- Header (unified with index.html) --- */
 header {
   display: flex;
   justify-content: space-between;
@@ -67,27 +67,22 @@ header {
   border-bottom: 1px solid var(--border-color);
 }
 
-.logo {
+.logo-area {
   display: flex;
   align-items: center;
   font-size: 20px;
   font-weight: 700;
   color: #0F172A;
   user-select: none;
+  cursor: pointer;
 }
 
-.logo a {
-  color: inherit;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.logo-dot {
-  width: 10px;
-  height: 10px;
+.logo-icon {
+  width: 12px;
+  height: 12px;
   background-color: var(--accent);
-  border-radius: 50%;
+  border-radius: 3px;
+  margin-right: 8px;
   flex-shrink: 0;
 }
 
@@ -96,34 +91,30 @@ nav ul {
   margin: 0;
   padding: 0;
   display: flex;
-  gap: 8px;
+  gap: 4px;
 }
 
-.nav-btn {
+.nav-link {
   background: none;
   border: none;
-  font-size: 15px;
+  font-size: 14px;
   color: var(--text-secondary);
   padding: 8px 16px;
-  border-radius: 20px;
+  border-radius: 6px;
   cursor: pointer;
   font-weight: 500;
   transition: all var(--transition);
 }
 
-.nav-btn.active {
-  background-color: #EDF2F7;
+.nav-link.active {
+  background-color: #F1F5F9;
   color: var(--text-main);
   font-weight: 600;
 }
 
-.nav-btn:hover:not(.active) {
+.nav-link:hover:not(.active) {
   background-color: #F7FAFC;
   color: var(--text-main);
-}
-
-.nav-btn a {
-  color: inherit;
 }
 
 /* --- Hero --- */
@@ -809,7 +800,7 @@ tr:hover:not(.total-row) {
     gap: 4px;
   }
 
-  .nav-btn {
+  .nav-link {
     padding: 6px 12px;
     font-size: 14px;
   }

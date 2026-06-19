@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(rtk git *)",
-      "Bash(git rm *)"
+      "Bash(git rm *)",
+      "Bash(awk 'NR>=803 && NR<=806' /Users/kaibo/Documents/code/hardware-compare/styles/vram-calc.css)"
     ]
   }
 }
