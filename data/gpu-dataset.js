@@ -4,7 +4,7 @@
    ============================================= */
 
 /**
- * GPU benchmark dataset — 7 consumer-grade GPUs tested for AI workloads.
+ * GPU benchmark dataset — consumer-grade GPUs tested for AI workloads.
  *
  * Fields:
  *   rank        – ranking position
@@ -39,12 +39,15 @@ const GPU_BENCHMARKS = [
 const GPU_VRAM_LIST = [
   // NVIDIA
   { name: 'RTX 3060',         vram: 12,  vendor: 'nvidia' },
+  { name: 'RTX 4060',         vram: 8,   vendor: 'nvidia' },
   { name: 'RTX 4060 Ti',      vram: 16,  vendor: 'nvidia' },
   { name: 'RTX 4070',         vram: 12,  vendor: 'nvidia' },
   { name: 'RTX 4070 Ti Super', vram: 16, vendor: 'nvidia' },
   { name: 'RTX 4080 Super',   vram: 16,  vendor: 'nvidia' },
   { name: 'RTX 4090',         vram: 24,  vendor: 'nvidia' },
+  { name: 'RTX 5080',         vram: 16,  vendor: 'nvidia' },
   { name: 'RTX 5090',         vram: 32,  vendor: 'nvidia' },
+  { name: 'RTX 3090',         vram: 24,  vendor: 'nvidia' },
   { name: 'RTX 6000 Ada',     vram: 48,  vendor: 'nvidia' },
   { name: 'A100 40GB',        vram: 40,  vendor: 'nvidia' },
   { name: 'A100 80GB',        vram: 80,  vendor: 'nvidia' },
@@ -53,6 +56,7 @@ const GPU_VRAM_LIST = [
   { name: 'B200 SXM',         vram: 180, vendor: 'nvidia' },
   // AMD
   { name: 'RX 7900 XTX',      vram: 24,  vendor: 'amd' },
+  { name: 'RX 9070 XT',       vram: 16,  vendor: 'amd' },
   { name: 'AI Pro R9700',     vram: 32,  vendor: 'amd' },
   // Apple
   { name: 'Mac M4 Max (统一内存)',  vram: 128, vendor: 'apple' },
