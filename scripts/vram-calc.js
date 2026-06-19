@@ -35,28 +35,7 @@
     phi3_14b: { name: 'Phi-3 14B', params: 14, layers: 40, hidden: 5120, type: 'dense' },
   };
 
-  const GPU_LIST = [
-    // NVIDIA
-    { name: 'RTX 3060', vram: 12, vendor: 'nvidia' },
-    { name: 'RTX 4060 Ti', vram: 16, vendor: 'nvidia' },
-    { name: 'RTX 4070', vram: 12, vendor: 'nvidia' },
-    { name: 'RTX 4070 Ti Super', vram: 16, vendor: 'nvidia' },
-    { name: 'RTX 4080 Super', vram: 16, vendor: 'nvidia' },
-    { name: 'RTX 4090', vram: 24, vendor: 'nvidia' },
-    { name: 'RTX 5090', vram: 32, vendor: 'nvidia' },
-    { name: 'RTX 6000 Ada', vram: 48, vendor: 'nvidia' },
-    { name: 'A100 40GB', vram: 40, vendor: 'nvidia' },
-    { name: 'A100 80GB', vram: 80, vendor: 'nvidia' },
-    { name: 'H100 SXM', vram: 80, vendor: 'nvidia' },
-    { name: 'H200 SXM', vram: 141, vendor: 'nvidia' },
-    { name: 'B200 SXM', vram: 180, vendor: 'nvidia' },
-    // AMD
-    { name: 'RX 7900 XTX', vram: 24, vendor: 'amd' },
-    { name: 'AI Pro R9700', vram: 32, vendor: 'amd' },
-    // Apple
-    { name: 'Mac M4 Max (统一内存)', vram: 128, vendor: 'apple' },
-    { name: 'Mac M3 Ultra (统一内存)', vram: 192, vendor: 'apple' },
-  ];
+  // GPU_VRAM_LIST is loaded from data/gpu-dataset.js (global)
 
   // ===== DOM Refs =====
   const $ = (sel) => document.querySelector(sel);
@@ -370,7 +349,7 @@
     const vendorLabels = { nvidia: 'NVIDIA', amd: 'AMD', apple: 'Apple' };
 
     const gpuHTML = vendorOrder.map(vendor => {
-      const items = GPU_LIST.filter(g => g.vendor === vendor);
+      const items = GPU_VRAM_LIST.filter(g => g.vendor === vendor);
       if (!items.length) return '';
       return `
         <div class="gpu-group">

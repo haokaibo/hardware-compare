@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>消费级 AI 硬件基准测试 - GPURank.ai</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="data/gpu-dataset.js"></script>
     <link rel="stylesheet" href="styles/index.css">
 </head>
 <body>
@@ -26,6 +27,54 @@
     <div class="header-headline">
         <h1>消费级显卡 AI 生产力跑分榜 <span class="headline-tag">非企业级数据中心显卡</span></h1>
         <div class="desc-text">针对独立开发者、炼丹师及本地部署用户。实测运行端侧大模型与多模态生成架构的真实表现。</div>
+    </div>
+
+    <!-- 冠军看板 -->
+    <div class="champion-grid">
+        <div class="champion-card">
+            <div class="champ-header">🖼️ 文生图冠军</div>
+            <div class="gpu-model">RTX 5090</div>
+            <div class="model-details">Flux.1 Dev · 1024px · <span class="highlight-data">4.8 it/s</span></div>
+        </div>
+        <div class="champion-card">
+            <div class="champ-header">📹 文生视频冠军</div>
+            <div class="gpu-model">RTX 5090</div>
+            <div class="model-details">5s 720p · <span class="highlight-data">38s</span> 生成时间</div>
+        </div>
+        <div class="champion-card">
+            <div class="champ-header">💬 LLM 推理冠军</div>
+            <div class="gpu-model">RTX 5090</div>
+            <div class="model-details">Llama 4 70B · <span class="highlight-data">68 tok/s</span></div>
+        </div>
+        <div class="champion-card champion-value">
+            <div class="champ-header">🏆 性价比之王</div>
+            <div class="gpu-model">RTX 3090 <span class="recommend-tag">💎 推荐</span></div>
+            <div class="model-details">24GB GDDR6X · <span class="highlight-data">~$499 二手均价</span></div>
+        </div>
+    </div>
+
+    <!-- 筛选器 -->
+    <div class="filter-section">
+        <div class="filter-group">
+            <div class="filter-label">任务类型</div>
+            <button class="filter-chip selected" data-group="task" data-value="all">全部</button>
+            <button class="filter-chip" data-group="task" data-value="img">文生图</button>
+            <button class="filter-chip" data-group="task" data-value="vid">文生视频</button>
+            <button class="filter-chip" data-group="task" data-value="llm">LLM 推理</button>
+        </div>
+        <div class="filter-group">
+            <div class="filter-label">显存</div>
+            <button class="filter-chip selected" data-group="vram" data-value="all">全部</button>
+            <button class="filter-chip" data-group="vram" data-value="8">8GB+</button>
+            <button class="filter-chip" data-group="vram" data-value="16">16GB+</button>
+            <button class="filter-chip" data-group="vram" data-value="24">24GB+</button>
+        </div>
+        <div class="filter-group">
+            <div class="filter-label">预算 (CAD)</div>
+            <button class="filter-chip selected" data-group="budget" data-value="all">不限</button>
+            <button class="filter-chip" data-group="budget" data-value="800">≤$800</button>
+            <button class="filter-chip" data-group="budget" data-value="1500">≤$1500</button>
+        </div>
     </div>
 
     <div class="view-switcher">
@@ -68,34 +117,70 @@
 </main>
 
 <script>
-    // 闭环定义全量数据集，绝无任何缺失键名
-    const gpuDataset = [
-        { rank: 1, name: "RTX 5090", vram: "32GB GDDR7 · 575W", imgVal: 4.8, imgMax: 5.0, imgColor: "var(--bar-img)", vidText: "38s", vidPct: 90, vidColor: "var(--bar-vid)", llmVal: 68, llmMax: 70, llmColor: "var(--bar-llm)", price: "$2,999", ratio: 72, grade: "S", isPick: false },
-        { rank: 2, name: "RTX 5080", vram: "16GB GDDR7 · 360W", imgVal: 3.5, imgMax: 5.0, imgColor: "var(--bar-img)", vidText: "58s", vidPct: 70, vidColor: "var(--bar-vid)", llmVal: 49, llmMax: 70, llmColor: "var(--bar-llm)", price: "$1,499", ratio: 81, grade: "A", isPick: false },
-        { rank: 3, name: "RX 9070 XT", vram: "16GB GDDR6 · 304W", imgVal: 2.8, imgMax: 5.0, imgColor: "var(--bar-img)", vidText: "74s", vidPct: 55, vidColor: "var(--bar-vid)", llmVal: 31, llmMax: 70, llmColor: "var(--bar-llm)", price: "$799", ratio: 88, grade: "A", isPick: false },
-        { rank: 4, name: "RTX 3090", vram: "24GB GDDR6X · 350W", imgVal: 2.6, imgMax: 5.0, imgColor: "var(--bar-img)", vidText: "82s", vidPct: 48, vidColor: "var(--bar-vid)", llmVal: 38, llmMax: 70, llmColor: "var(--bar-llm)", price: "~$499 二手", ratio: 96, grade: "A", isPick: true },
-        { rank: 5, name: "RTX 4070 Ti Super", vram: "16GB GDDR6X · 285W", imgVal: 2.2, imgMax: 5.0, imgColor: "var(--bar-img)", vidText: "96s", vidPct: 35, vidColor: "var(--bar-vid)", llmVal: 27, llmMax: 70, llmColor: "var(--bar-llm)", price: "$899", ratio: 74, grade: "B", isPick: false },
-        { rank: 6, name: "RTX 4060 Ti", vram: "16GB GDDR6 · 165W", imgVal: 1.6, imgMax: 5.0, imgColor: "var(--bar-img)", vidText: "133s", vidPct: 15, vidColor: "var(--bar-vid)", llmVal: 19, llmMax: 70, llmColor: "var(--bar-llm)", price: "$599", ratio: 62, grade: "B", isPick: false },
-        { rank: 7, name: "RTX 4060", vram: "8GB GDDR6 · 115W", imgVal: 1.1, imgMax: 5.0, imgColor: "var(--bar-img)", vidText: "显存不足", vidPct: 0, vidColor: "var(--bar-vid)", llmVal: 15, llmMax: 70, llmColor: "var(--bar-llm)", price: "$399", ratio: 41, grade: "C", isPick: false }
-    ];
+    // ===== 筛选器状态 =====
+    const filters = { task: 'all', vram: 'all', budget: 'all' };
 
-    // 渲染动态表格逻辑
+    // 从 desc 提取显存数值（如 "32GB GDDR7 · 575W" → 32）
+    function extractVRAM(desc) {
+        const m = desc.match(/(\d+)\s*GB/i);
+        return m ? parseInt(m[1]) : 0;
+    }
+
+    // 从 price 提取价格数值（如 "$2,999" → 2999, "~$499 二手" → 499）
+    function extractPrice(price) {
+        const m = price.match(/\$?([\d,]+)/);
+        return m ? parseInt(m[1].replace(/,/g, '')) : Infinity;
+    }
+
+    // 判断一项是否通过当前筛选
+    function passesFilter(item) {
+        if (filters.vram !== 'all') {
+            const gb = extractVRAM(item.desc);
+            if (gb < parseInt(filters.vram)) return false;
+        }
+        if (filters.budget !== 'all') {
+            const p = extractPrice(item.price);
+            const limit = parseInt(filters.budget);
+            if (p > limit) return false;
+        }
+        // task filter is visual-only: all rows always shown
+        return true;
+    }
+
+    // 根据排名映射颜色层级
+    function getTierColors(rank) {
+        if (rank <= 1) return { img: '#2D68D9', vid: '#2D68D9', llm: '#2D68D9' };
+        if (rank <= 3) return { img: '#319795', vid: '#319795', llm: '#319795' };
+        if (rank <= 4) return { img: '#38A169', vid: '#38A169', llm: '#38A169' };
+        if (rank <= 5) return { img: '#DD6B20', vid: '#DD6B20', llm: '#DD6B20' };
+        return { img: '#A0AEC0', vid: '#A0AEC0', llm: '#A0AEC0' };
+    }
+
+    // 渲染表格
     function populateTable() {
         const container = document.getElementById('gpu-rows-target');
-        container.innerHTML = gpuDataset.map(item => {
+        const filtered = GPU_BENCHMARKS.filter(passesFilter);
+
+        if (filtered.length === 0) {
+            container.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text-muted);">没有符合筛选条件的显卡</td></tr>';
+            return;
+        }
+
+        container.innerHTML = filtered.map(item => {
+            const colors = getTierColors(item.rank);
             const imgPct = (item.imgVal / item.imgMax) * 100;
             const llmPct = (item.llmVal / item.llmMax) * 100;
 
-            // 文生视频 OOM 安全分支隔离
             let videoBlock = '';
             if (item.vidText === "显存不足") {
                 videoBlock = `<div class="metric-cell"><div class="cell-bar-container"><div class="cell-bar-fill" style="width:0%"></div></div><span class="oom-label">显存不足(OOM)</span></div>`;
             } else {
-                videoBlock = `<div class="metric-cell"><div class="cell-bar-container"><div class="cell-bar-fill" style="background-color:${item.vidColor}; width:${item.vidPct}%"></div></div><span class="cell-number-label">${item.vidText}</span></div>`;
+                const vidPct = Math.min((item.vidPct), 100);
+                videoBlock = `<div class="metric-cell"><div class="cell-bar-container"><div class="cell-bar-fill" style="background-color:${colors.vid}; width:${vidPct}%"></div></div><span class="cell-number-label">${item.vidText}</span></div>`;
             }
 
-            const rowClass = item.isPick ? 'class="highlight-row"' : '';
-            const tagHTML = item.isPick ? '<span class="tag-badge">核心推荐 💎</span>' : '';
+            const rowClass = item.isHighlight ? 'class="highlight-row"' : '';
+            const tagHTML = item.isHighlight ? '<span class="tag-badge">核心推荐 💎</span>' : '';
 
             return `
                 <tr ${rowClass}>
@@ -103,18 +188,18 @@
                     <td><span class="badge-index badge-${item.grade.toLowerCase()}">${item.grade}</span></td>
                     <td>
                         <div class="gpu-name-main">${item.name} ${tagHTML}</div>
-                        <div class="gpu-spec-sub">${item.vram}</div>
+                        <div class="gpu-spec-sub">${item.desc}</div>
                     </td>
                     <td>
                         <div class="metric-cell">
-                            <div class="cell-bar-container"><div class="cell-bar-fill" style="background-color:${item.imgColor}; width:${imgPct}%"></div></div>
+                            <div class="cell-bar-container"><div class="cell-bar-fill" style="background-color:${colors.img}; width:${imgPct}%"></div></div>
                             <span class="cell-number-label">${item.imgVal.toFixed(1)}</span>
                         </div>
                     </td>
                     <td>${videoBlock}</td>
                     <td>
                         <div class="metric-cell">
-                            <div class="cell-bar-container"><div class="cell-bar-fill" style="background-color:${item.llmColor}; width:${llmPct}%"></div></div>
+                            <div class="cell-bar-container"><div class="cell-bar-fill" style="background-color:${colors.llm}; width:${llmPct}%"></div></div>
                             <span class="cell-number-label">${item.llmVal}</span>
                         </div>
                     </td>
@@ -125,21 +210,40 @@
         }).join('');
     }
 
-    // 选项卡无缝视窗切换逻辑
+    // 筛选器点击处理
+    document.querySelectorAll('.filter-chip').forEach(chip => {
+        chip.addEventListener('click', function() {
+            const group = this.dataset.group;
+            const value = this.dataset.value;
+
+            // 同组内切换 active
+            document.querySelectorAll(`.filter-chip[data-group="${group}"]`).forEach(c => c.classList.remove('selected'));
+            this.classList.add('selected');
+
+            filters[group] = value;
+            populateTable();
+            // 切换图表时图表也过滤
+            if (document.getElementById('chart-panel').classList.contains('active')) {
+                if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
+                initChart();
+            }
+        });
+    });
+
+    // 选项卡切换
     function switchView(panelId, tabButton) {
         document.querySelectorAll('.content-panel').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'));
-        
+
         document.getElementById(panelId).classList.add('active');
         tabButton.classList.add('active');
-        
-        // 如果切换到图表面板，触发 Chart.js 重绘渲染
+
         if (panelId === 'chart-panel') {
             initChart();
         }
     }
 
-    // 头部导航按钮交互反馈
+    // 头部导航交互
     document.getElementById('top-nav').addEventListener('click', function(e) {
         if (e.target.classList.contains('nav-link')) {
             this.querySelectorAll('.nav-link').forEach(btn => btn.classList.remove('active'));
@@ -147,24 +251,18 @@
         }
     });
 
-    // 完美模仿 Artificial Analysis 经典的“性能 vs 价格”散点象限分析图
+    // 散点图
     let chartInstance = null;
     function initChart() {
-        if (chartInstance) return; // 避免重复创建引发内存泄漏
-        
-        const ctx = document.getElementById('analysisChart').getContext('2d');
-        
-        // 过滤提取真实价格和吞吐量作为坐标轴
-        const scatterData = [
-            { x: 2999, y: 68, label: "RTX 5090" },
-            { x: 1499, y: 49, label: "RTX 5080" },
-            { x: 799, y: 31, label: "RX 9070 XT" },
-            { x: 499, y: 38, label: "RTX 3090 (二手价格之王)" },
-            { x: 899, y: 27, label: "RTX 4070 Ti Super" },
-            { x: 599, y: 19, label: "RTX 4060 Ti" },
-            { x: 399, y: 15, label: "RTX 4060" }
-        ];
+        if (chartInstance) return;
 
+        const filtered = GPU_BENCHMARKS.filter(passesFilter);
+        const scatterData = filtered.map(item => {
+            const priceNum = extractPrice(item.price);
+            return { x: priceNum, y: item.llmVal, label: item.name + (item.isHighlight ? ' (二手价格之王)' : '') };
+        });
+
+        const ctx = document.getElementById('analysisChart').getContext('2d');
         chartInstance = new Chart(ctx, {
             type: 'scatter',
             data: {
@@ -204,7 +302,7 @@
         });
     }
 
-    // 初始化渲染
+    // 初始化
     populateTable();
 </script>
 </body>
