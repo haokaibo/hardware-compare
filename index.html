@@ -24,33 +24,12 @@
 
 <main>
     <div class="header-headline">
-        <h1>消费级显卡 AI 生产力跑分榜 <span class="headline-tag">非企业级数据中心显卡</span></h1>
-        <div class="desc-text">针对独立开发者、炼丹师及本地部署用户。实测运行端侧大模型与多模态生成架构的真实表现。</div>
+        <h1>AI 生产力 GPU 跑分榜</h1>
+        <div class="desc-text">覆盖消费级至数据中心级 GPU · 实测文生图 / 文生视频 / LLM 推理性能表现</div>
     </div>
 
-    <!-- 冠军看板 -->
-    <div class="champion-grid">
-        <div class="champion-card">
-            <div class="champ-header">🖼️ 文生图冠军</div>
-            <div class="gpu-model">RTX 5090</div>
-            <div class="model-details">Flux.1 Dev · 1024px · <span class="highlight-data">4.8 it/s</span></div>
-        </div>
-        <div class="champion-card">
-            <div class="champ-header">📹 文生视频冠军</div>
-            <div class="gpu-model">RTX 5090</div>
-            <div class="model-details">5s 720p · <span class="highlight-data">38s</span> 生成时间</div>
-        </div>
-        <div class="champion-card">
-            <div class="champ-header">💬 LLM 推理冠军</div>
-            <div class="gpu-model">RTX 5090</div>
-            <div class="model-details">Llama 4 70B · <span class="highlight-data">68 tok/s</span></div>
-        </div>
-        <div class="champion-card champion-value">
-            <div class="champ-header">🏆 性价比之王</div>
-            <div class="gpu-model">RTX 3090 <span class="recommend-tag">💎 推荐</span></div>
-            <div class="model-details">24GB GDDR6X · <span class="highlight-data">~$499 二手均价</span></div>
-        </div>
-    </div>
+    <!-- 冠军看板（由 JS 数据驱动渲染） -->
+    <div class="champion-grid" id="championGrid"></div>
 
     <!-- 筛选器 -->
     <div class="filter-section">
@@ -119,13 +98,13 @@
     // ===== 筛选器状态 =====
     const filters = { task: 'all', vram: 'all', budget: 'all' };
 
-    // 从 desc 提取显存数值（如 "32GB GDDR7 · 575W" → 32）
+    // 从 desc 提取显存数值
     function extractVRAM(desc) {
         const m = desc.match(/(\d+)\s*GB/i);
         return m ? parseInt(m[1]) : 0;
     }
 
-    // 从 price 提取价格数值（如 "$2,999" → 2999, "~$499 二手" → 499）
+    // 从 price 提取价格数值
     function extractPrice(price) {
         const m = price.match(/\$?([\d,]+)/);
         return m ? parseInt(m[1].replace(/,/g, '')) : Infinity;
@@ -142,17 +121,51 @@
             const limit = parseInt(filters.budget);
             if (p > limit) return false;
         }
-        // task filter is visual-only: all rows always shown
         return true;
     }
 
-    // 根据排名映射颜色层级
+    // 根据排名映射颜色层级（适配 21 项）
     function getTierColors(rank) {
-        if (rank <= 1) return { img: '#2D68D9', vid: '#2D68D9', llm: '#2D68D9' };
-        if (rank <= 3) return { img: '#319795', vid: '#319795', llm: '#319795' };
-        if (rank <= 4) return { img: '#38A169', vid: '#38A169', llm: '#38A169' };
-        if (rank <= 5) return { img: '#DD6B20', vid: '#DD6B20', llm: '#DD6B20' };
+        if (rank <= 3)  return { img: '#2D68D9', vid: '#2D68D9', llm: '#2D68D9' };
+        if (rank <= 5)  return { img: '#319795', vid: '#319795', llm: '#319795' };
+        if (rank <= 8)  return { img: '#38A169', vid: '#38A169', llm: '#38A169' };
+        if (rank <= 14) return { img: '#DD6B20', vid: '#DD6B20', llm: '#DD6B20' };
         return { img: '#A0AEC0', vid: '#A0AEC0', llm: '#A0AEC0' };
+    }
+
+    // 渲染冠军看板
+    function renderChampions() {
+        const imgChamp = GPU_BENCHMARKS.reduce((a, b) => a.imgVal >= b.imgVal ? a : b);
+        const vidChamp = GPU_BENCHMARKS.reduce((a, b) => {
+            const at = a.vidText === '显存不足' ? Infinity : parseInt(a.vidText);
+            const bt = b.vidText === '显存不足' ? Infinity : parseInt(b.vidText);
+            return at <= bt ? a : b;
+        });
+        const llmChamp = GPU_BENCHMARKS.reduce((a, b) => a.llmVal >= b.llmVal ? a : b);
+        const valueChamp = GPU_BENCHMARKS.reduce((a, b) => a.ratio >= b.ratio ? a : b);
+
+        document.getElementById('championGrid').innerHTML = `
+            <div class="champion-card">
+                <div class="champ-header">🖼️ 文生图冠军</div>
+                <div class="gpu-model">${imgChamp.name}</div>
+                <div class="model-details">Flux.1 Dev · 1024px · <span class="highlight-data">${imgChamp.imgVal.toFixed(1)} it/s</span></div>
+            </div>
+            <div class="champion-card">
+                <div class="champ-header">📹 文生视频冠军</div>
+                <div class="gpu-model">${vidChamp.name}</div>
+                <div class="model-details">5s 720p · <span class="highlight-data">${vidChamp.vidText}</span> 生成时间</div>
+            </div>
+            <div class="champion-card">
+                <div class="champ-header">💬 LLM 推理冠军</div>
+                <div class="gpu-model">${llmChamp.name}</div>
+                <div class="model-details">Llama 4 70B · <span class="highlight-data">${llmChamp.llmVal} tok/s</span></div>
+            </div>
+            <div class="champion-card champion-value">
+                <div class="champ-header">🏆 性价比之王</div>
+                <div class="gpu-model">${valueChamp.name} ${valueChamp.isHighlight ? '<span class="recommend-tag">💎 推荐</span>' : ''}</div>
+                <div class="model-details">${valueChamp.desc} · <span class="highlight-data">${valueChamp.price}</span></div>
+            </div>
+        `;
     }
 
     // 渲染表格
@@ -215,13 +228,12 @@
             const group = this.dataset.group;
             const value = this.dataset.value;
 
-            // 同组内切换 active
             document.querySelectorAll(`.filter-chip[data-group="${group}"]`).forEach(c => c.classList.remove('selected'));
             this.classList.add('selected');
 
             filters[group] = value;
             populateTable();
-            // 切换图表时图表也过滤
+            renderChampions();
             if (document.getElementById('chart-panel').classList.contains('active')) {
                 if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
                 initChart();
@@ -261,16 +273,19 @@
             return { x: priceNum, y: item.llmVal, label: item.name + (item.isHighlight ? ' (二手价格之王)' : '') };
         });
 
+        const maxPrice = Math.max(...scatterData.map(d => d.x), 200);
+        const maxTok = Math.max(...scatterData.map(d => d.y), 50);
+
         const ctx = document.getElementById('analysisChart').getContext('2d');
         chartInstance = new Chart(ctx, {
             type: 'scatter',
             data: {
                 datasets: [{
-                    label: '消费级 GPU (2026年5月)',
+                    label: 'GPU (2026年5月)',
                     data: scatterData,
                     backgroundColor: '#2D68D9',
-                    pointRadius: 8,
-                    pointHoverRadius: 12
+                    pointRadius: 7,
+                    pointHoverRadius: 11
                 }]
             },
             options: {
@@ -280,21 +295,23 @@
                     tooltip: {
                         callbacks: {
                             label: function(ctx) {
-                                return `${ctx.raw.label}: 价格 $${ctx.raw.x} CAD, 推理速度 ${ctx.raw.y} tok/s`;
+                                return `${ctx.raw.label}: 价格 $${ctx.raw.x.toLocaleString()} CAD, LLM ${ctx.raw.y} tok/s`;
                             }
                         }
                     }
                 },
                 scales: {
                     x: {
-                        title: { display: true, text: '市场参考价格 (CAD) - 越左越划算', font: { weight: 'bold' } },
+                        title: { display: true, text: '参考价格 (CAD) - 越左越划算', font: { weight: 'bold' } },
+                        type: 'logarithmic',
                         min: 200,
-                        max: 3200
+                        max: maxPrice * 1.15,
+                        ticks: { callback: function(v) { return '$' + v.toLocaleString(); } }
                     },
                     y: {
-                        title: { display: true, text: 'LLM 推理速度 (tokens每秒) - 越上越强劲', font: { weight: 'bold' } },
+                        title: { display: true, text: 'LLM 推理速度 (tok/s) - 越上越强劲', font: { weight: 'bold' } },
                         min: 0,
-                        max: 80
+                        max: maxTok * 1.15
                     }
                 }
             }
@@ -302,6 +319,7 @@
     }
 
     // 初始化
+    renderChampions();
     populateTable();
 </script>
 </body>

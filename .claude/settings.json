@@ -5,7 +5,8 @@
       "Bash(git rm *)",
       "Bash(awk 'NR>=803 && NR<=806' /Users/kaibo/Documents/code/hardware-compare/styles/vram-calc.css)",
       "Bash(node -e \"$\\(cat data/gpu-dataset.js\\); console.log\\(GPU_BENCHMARKS.map\\(g=>g.name\\).join\\(', '\\)\\)\")",
-      "Bash(node -e \"$\\(cat data/gpu-dataset.js\\); console.log\\(GPU_VRAM_LIST.map\\(g=>g.name\\).join\\(', '\\)\\)\")"
+      "Bash(node -e \"$\\(cat data/gpu-dataset.js\\); console.log\\(GPU_VRAM_LIST.map\\(g=>g.name\\).join\\(', '\\)\\)\")",
+      "Bash(node -e \"$\\(cat data/gpu-dataset.js\\); console.log\\('GPU_BENCHMARKS:', GPU_BENCHMARKS.length, 'items'\\); console.log\\('GPU_VRAM_LIST:', GPU_VRAM_LIST.length, 'items'\\); console.log\\('=== BENCHMARK NAMES ==='\\); GPU_BENCHMARKS.forEach\\(g => console.log\\('  '+g.rank+'. '+g.name+' | img:'+g.imgVal+' vid:'+g.vidText+' llm:'+g.llmVal+' price:'+g.price+' vendor:'+g.vendor\\)\\)\")"
     ]
   }
 }
