@@ -3,35 +3,7 @@
    Matches gemini-code-1778909610194.html design
    ============================================= */
 
-/* --- CSS Variables (light theme) --- */
-:root {
-  --primary-bg: #FFFFFF;
-  --secondary-bg: #F8F9FA;
-  --border-color: #E2E8F0;
-  --text-main: #1A202C;
-  --text-secondary: #718096;
-  --text-muted: #A0AEC0;
-  --accent: #2D68D9;
-  --accent-hover: #1A4FA8;
-  --accent-light: #EBF4FF;
-  --card-bg: #F8F9FA;
-  --card-hover: #EDF2F7;
-
-  --success: #38A169;
-  --success-bg: #E6FFFA;
-  --warning: #DD6B20;
-  --warning-bg: #FEFCBF;
-  --danger: #DC2626;
-  --danger-bg: #FFF5F5;
-
-  --info: #319795;
-  --info-bg: #E6FFFA;
-
-  --radius: 12px;
-  --radius-sm: 8px;
-  --transition: 0.2s ease;
-  --font-mono: 'SF Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
-}
+/* --- CSS Variables — page-specific overrides only --- */
 
 /* --- Reset & Base --- */
 *, *::before, *::after {
@@ -42,8 +14,8 @@
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
-  background: var(--primary-bg);
-  color: var(--text-main);
+  background: var(--bg-primary);
+  color: var(--text-primary);
   line-height: 1.6;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
@@ -108,13 +80,13 @@ nav ul {
 
 .nav-link.active {
   background-color: #F1F5F9;
-  color: var(--text-main);
+  color: var(--text-primary);
   font-weight: 600;
 }
 
 .nav-link:hover:not(.active) {
   background-color: #F7FAFC;
-  color: var(--text-main);
+  color: var(--text-primary);
 }
 
 /* --- Hero --- */
@@ -127,7 +99,7 @@ nav ul {
   font-size: 26px;
   font-weight: 700;
   margin: 0 0 8px 0;
-  color: var(--text-main);
+  color: var(--text-primary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -164,7 +136,7 @@ main {
 /* --- Panels --- */
 .input-panel,
 .result-panel {
-  background: var(--secondary-bg);
+  background: var(--bg-secondary);
   border-radius: var(--radius);
   padding: 28px;
   border: 1px solid transparent;
@@ -182,7 +154,7 @@ main {
   margin-bottom: 24px;
   padding-bottom: 12px;
   border-bottom: 1px solid var(--border-color);
-  color: var(--text-main);
+  color: var(--text-primary);
 }
 
 .result-panel h2 {
@@ -230,10 +202,10 @@ main {
 select {
   width: 100%;
   padding: 10px 12px;
-  background: var(--primary-bg);
+  background: var(--bg-primary);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
-  color: var(--text-main);
+  color: var(--text-primary);
   font-size: 14px;
   cursor: pointer;
   appearance: none;
@@ -258,9 +230,9 @@ select:focus {
 .input-with-controls button {
   width: 40px;
   height: 40px;
-  background: var(--primary-bg);
+  background: var(--bg-primary);
   border: 1px solid var(--border-color);
-  color: var(--text-main);
+  color: var(--text-primary);
   font-size: 18px;
   cursor: pointer;
   display: flex;
@@ -281,7 +253,7 @@ select:focus {
 }
 
 .input-with-controls button:hover {
-  background: var(--secondary-bg);
+  background: var(--bg-secondary);
 }
 
 .input-with-controls button:active {
@@ -294,9 +266,9 @@ select:focus {
   width: 100px;
   height: 40px;
   text-align: center;
-  background: var(--primary-bg);
+  background: var(--bg-primary);
   border: 1px solid var(--border-color);
-  color: var(--text-main);
+  color: var(--text-primary);
   font-size: 16px;
   font-weight: 600;
   font-family: var(--font-mono);
@@ -318,10 +290,10 @@ select:focus {
 input[type="number"] {
   width: 100%;
   padding: 10px 12px;
-  background: var(--primary-bg);
+  background: var(--bg-primary);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
-  color: var(--text-main);
+  color: var(--text-primary);
   font-size: 14px;
   font-family: var(--font-mono);
   outline: none;
@@ -336,7 +308,7 @@ input[type="number"]:focus {
 .btn-group {
   display: flex;
   gap: 4px;
-  background: var(--primary-bg);
+  background: var(--bg-primary);
   border: 1px solid var(--border-color);
   border-radius: 20px;
   padding: 3px;
@@ -357,13 +329,13 @@ input[type="number"]:focus {
 }
 
 .btn-group button:hover {
-  color: var(--text-main);
+  color: var(--text-primary);
   background-color: #F7FAFC;
 }
 
 .btn-group button.active {
   color: var(--accent);
-  background-color: var(--primary-bg);
+  background-color: var(--bg-primary);
   font-weight: 600;
   box-shadow: 0 0 0 1px var(--accent);
 }
@@ -387,12 +359,12 @@ input[type="number"]:focus {
 }
 
 .advanced-section summary:hover {
-  color: var(--text-main);
+  color: var(--text-primary);
 }
 
 .advanced-section[open] summary {
   border-bottom: 1px solid var(--border-color);
-  color: var(--text-main);
+  color: var(--text-primary);
 }
 
 .advanced-section .form-group {
@@ -425,7 +397,7 @@ input[type="number"]:focus {
   text-align: center;
   padding: 24px 16px;
   margin-bottom: 20px;
-  background: var(--primary-bg);
+  background: var(--bg-primary);
   border-radius: var(--radius-sm);
   border: 1px solid var(--border-color);
 }
@@ -443,7 +415,7 @@ input[type="number"]:focus {
   letter-spacing: -1px;
   line-height: 1.1;
   margin-bottom: 12px;
-  color: var(--text-main);
+  color: var(--text-primary);
 }
 
 .total-value .unit-text {
@@ -556,7 +528,7 @@ input[type="number"]:focus {
   font-size: 13px;
   font-weight: 500;
   font-family: var(--font-mono);
-  color: var(--text-main);
+  color: var(--text-primary);
   flex-shrink: 0;
 }
 
@@ -605,7 +577,7 @@ input[type="number"]:focus {
   padding: 8px 12px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--border-color);
-  background: var(--primary-bg);
+  background: var(--bg-primary);
   font-size: 13px;
   transition: all var(--transition);
 }
@@ -624,7 +596,7 @@ input[type="number"]:focus {
 
 .gpu-item .gpu-name {
   font-weight: 500;
-  color: var(--text-main);
+  color: var(--text-primary);
 }
 
 .gpu-item .gpu-vram {
@@ -659,7 +631,7 @@ input[type="number"]:focus {
 /* --- Detail Section --- */
 .detail-section {
   margin-top: 32px;
-  background: var(--secondary-bg);
+  background: var(--bg-secondary);
   border-radius: var(--radius);
   padding: 28px;
   border: 1px solid transparent;
@@ -674,7 +646,7 @@ input[type="number"]:focus {
   font-size: 18px;
   font-weight: 600;
   margin-bottom: 20px;
-  color: var(--text-main);
+  color: var(--text-primary);
 }
 
 .detail-table {
@@ -707,7 +679,7 @@ input[type="number"]:focus {
 .detail-table td:first-child {
   font-family: inherit;
   font-weight: 500;
-  color: var(--text-main);
+  color: var(--text-primary);
 }
 
 .detail-table td:last-child {

@@ -1,0 +1,43 @@
+/* =============================================
+   Theme — Shared CSS Variables
+   hardware-compare project
+   ============================================= */
+
+:root {
+  /* ---- Backgrounds ---- */
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F8FAFC;
+
+  /* ---- Borders ---- */
+  --border-color: #E2E8F0;
+
+  /* ---- Text ---- */
+  --text-primary: #0F172A;
+  --text-secondary: #64748B;
+  --text-muted: #A0AEC0;
+
+  /* ---- Accent ---- */
+  --accent: #2D68D9;
+  --accent-hover: #1A4FA8;
+  --accent-light: #EBF4FF;
+
+  /* ---- Semantic ---- */
+  --success: #38A169;
+  --success-bg: #E6FFFA;
+  --warning: #DD6B20;
+  --warning-bg: #FEFCBF;
+  --danger: #DC2626;
+  --danger-bg: #FFF5F5;
+  --info: #319795;
+  --info-bg: #E6FFFA;
+
+  /* ---- Spacing & Radius ---- */
+  --radius: 12px;
+  --radius-sm: 8px;
+
+  /* ---- Motion ---- */
+  --transition: 0.2s ease;
+
+  /* ---- Typography ---- */
+  --font-mono: 'SF Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
+}

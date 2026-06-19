@@ -1,23 +1,10 @@
-:root {
-    --bg-main: #FFFFFF;
-    --bg-sub: #F8FAFC;
-    --border: #E2E8F0;
-    --text-main: #0F172A;
-    --text-muted: #64748B;
-    --brand-blue: #2D68D9;
-    --accent-green: #10B981;
-    
-    /* 进度条颜色群 */
-    --bar-img: #3B82F6;
-    --bar-vid: #06B6D4;
-    --bar-llm: #6366F1;
-}
+/* --- 进度条颜色群 --- */
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     margin: 0;
-    background-color: var(--bg-main);
-    color: var(--text-main);
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
     -webkit-font-smoothing: antialiased;
 }
 
@@ -26,7 +13,7 @@ header {
     justify-content: space-between;
     align-items: center;
     padding: 16px 40px;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid var(--border-color);
 }
 
 .logo-area {
@@ -40,7 +27,7 @@ header {
 .logo-icon {
     width: 12px;
     height: 12px;
-    background-color: var(--brand-blue);
+    background-color: var(--accent);
     border-radius: 3px;
     margin-right: 8px;
 }
@@ -67,13 +54,13 @@ nav ul {
 
 .nav-link.active {
     background-color: #F1F5F9;
-    color: var(--text-main);
+    color: var(--text-primary);
     font-weight: 600;
 }
 
 .nav-link:hover:not(.active) {
-    background-color: var(--bg-sub);
-    color: var(--text-main);
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
 }
 
 main {
@@ -95,7 +82,7 @@ h1 {
 .headline-tag {
     font-size: 14px;
     background-color: #EFF6FF;
-    color: var(--brand-blue);
+    color: var(--accent);
     padding: 4px 10px;
     border-radius: 4px;
     font-weight: 600;
@@ -113,7 +100,7 @@ h1 {
     display: flex;
     gap: 12px;
     margin-bottom: 24px;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid var(--border-color);
     padding-bottom: 12px;
 }
 
@@ -129,7 +116,7 @@ h1 {
 }
 
 .view-tab.active {
-    color: var(--brand-blue);
+    color: var(--accent);
 }
 
 .view-tab.active::after {
@@ -139,7 +126,7 @@ h1 {
     left: 0;
     width: 100%;
     height: 2px;
-    background-color: var(--brand-blue);
+    background-color: var(--accent);
 }
 
 .content-panel {
@@ -152,8 +139,8 @@ h1 {
 
 /* 图表面板布局 */
 .chart-wrapper {
-    background-color: var(--bg-sub);
-    border: 1px solid var(--border);
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
     border-radius: 12px;
     padding: 24px;
     margin-bottom: 32px;
@@ -162,7 +149,7 @@ h1 {
 
 /* --- 核心大表样式 --- */
 .table-container {
-    border: 1px solid var(--border);
+    border: 1px solid var(--border-color);
     border-radius: 12px;
     overflow: hidden;
     background-color: #FFFFFF;
@@ -176,17 +163,17 @@ table {
 }
 
 th {
-    background-color: var(--bg-sub);
+    background-color: var(--bg-secondary);
     color: var(--text-muted);
     font-weight: 600;
     padding: 16px 16px;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid var(--border-color);
     user-select: none;
 }
 
 td {
     padding: 16px 16px;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid var(--border-color);
     vertical-align: middle;
 }
 
@@ -270,7 +257,7 @@ tr.highlight-row:hover {
     height: 22px;
     border-radius: 50%;
     background-color: #E2E8F0;
-    color: var(--text-main);
+    color: var(--text-primary);
     font-weight: 700;
     font-size: 11px;
 }
@@ -283,7 +270,7 @@ tr.highlight-row:hover {
 footer {
     margin-top: 48px;
     padding-top: 24px;
-    border-top: 1px solid var(--border);
+    border-top: 1px solid var(--border-color);
     font-size: 12px;
     color: var(--text-muted);
     line-height: 1.6;
@@ -298,7 +285,7 @@ footer {
 }
 
 .champion-card {
-    background-color: var(--bg-sub);
+    background-color: var(--bg-secondary);
     border-radius: 12px;
     padding: 20px;
     border: 1px solid transparent;
@@ -311,7 +298,7 @@ footer {
 
 .champion-value {
     grid-column: span 3;
-    border: 1px solid var(--border);
+    border: 1px solid var(--border-color);
 }
 
 .champ-header {
@@ -336,7 +323,7 @@ footer {
 
 .highlight-data {
     font-weight: 700;
-    color: var(--text-main);
+    color: var(--text-primary);
 }
 
 .recommend-tag {
@@ -359,7 +346,7 @@ footer {
     gap: 12px;
     margin-bottom: 32px;
     padding-bottom: 24px;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid var(--border-color);
 }
 
 .filter-group {
@@ -378,27 +365,27 @@ footer {
 
 .filter-chip {
     padding: 6px 16px;
-    background-color: var(--bg-main);
-    border: 1px solid var(--border);
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
     border-radius: 20px;
     font-size: 14px;
-    color: var(--text-main);
+    color: var(--text-primary);
     cursor: pointer;
     transition: all 0.15s ease;
     user-select: none;
 }
 
 .filter-chip:hover:not(.selected) {
-    background-color: var(--bg-sub);
+    background-color: var(--bg-secondary);
     border-color: #CBD5E0;
 }
 
 .filter-chip.selected {
-    background-color: var(--bg-main);
-    border-color: var(--brand-blue);
-    color: var(--brand-blue);
+    background-color: var(--bg-primary);
+    border-color: var(--accent);
+    color: var(--accent);
     font-weight: 600;
-    box-shadow: 0 0 0 1px var(--brand-blue);
+    box-shadow: 0 0 0 1px var(--accent);
 }
 
 /* ===== 响应式 ===== */
