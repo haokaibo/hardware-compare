@@ -1,287 +1,93 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>带宽阶梯 — PCIe / DDR5 / 显存 / 存储速度全景</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --bg: #0A0D12;
-    --panel: #12161D;
-    --panel-2: #171C25;
-    --line: #232A36;
-    --text: #E8E9ED;
-    --text-dim: #8A93A3;
-    --amber: #FFB238;
-    --cyan: #4CC9F0;
-    --green: #52D273;
-    --red: #FF5D5D;
-    --mono: 'JetBrains Mono', monospace;
-    --sans: 'IBM Plex Sans SC', 'IBM Plex Sans', sans-serif;
-  }
-  *{box-sizing:border-box; margin:0; padding:0;}
-  html,body{background:var(--bg); color:var(--text); font-family:var(--sans); -webkit-font-smoothing:antialiased;}
-  body{
-    background-image:
-      linear-gradient(var(--line) 1px, transparent 1px),
-      linear-gradient(90deg, var(--line) 1px, transparent 1px);
-    background-size: 48px 48px;
-    background-attachment: fixed;
-    background-position: -1px -1px;
-  }
-  .wrap{max-width:1080px; margin:0 auto; padding: 64px 24px 120px;}
-
-  /* ---------- Hero ---------- */
-  .hero{margin-bottom:72px;}
-  .eyebrow{
-    font-family:var(--mono); font-size:12px; letter-spacing:0.18em; text-transform:uppercase;
-    color:var(--text-dim); display:flex; align-items:center; gap:10px; margin-bottom:20px;
-  }
-  .eyebrow .dot{width:7px; height:7px; border-radius:50%; background:var(--green); box-shadow:0 0 8px var(--green); animation:pulse 2s ease-in-out infinite;}
-  @keyframes pulse{0%,100%{opacity:1} 50%{opacity:0.35}}
-  h1{
-    font-size: clamp(34px, 5.5vw, 58px); line-height:1.05; font-weight:700; letter-spacing:-0.02em;
-    max-width: 780px;
-  }
-  h1 span{color:var(--text-dim); font-weight:500;}
-  .hero p{margin-top:22px; max-width:620px; color:var(--text-dim); font-size:16px; line-height:1.75;}
-  .hero-stats{display:flex; gap:36px; margin-top:40px; flex-wrap:wrap;}
-  .hero-stat b{font-family:var(--mono); font-size:26px; display:block; color:var(--text);}
-  .hero-stat span{font-size:12px; color:var(--text-dim);}
-  .diagram-top{margin-top:32px; margin-bottom:44px;}
-
-  /* ---------- Section labels ---------- */
-  .section{margin-top:96px;}
-  .section-head{display:flex; align-items:baseline; gap:14px; margin-bottom:8px; flex-wrap:wrap;}
-  .section-head h2{font-size:24px; font-weight:700;}
-  .section-head .tag{font-family:var(--mono); font-size:11px; color:var(--text-dim); border:1px solid var(--line); padding:3px 9px; border-radius:20px;}
-  .section-sub{color:var(--text-dim); font-size:14px; margin-bottom:36px; max-width:640px; line-height:1.7;}
-
-  /* ---------- Legend ---------- */
-  .legend{display:flex; gap:22px; flex-wrap:wrap; margin-bottom:28px;}
-  .legend-item{display:flex; align-items:center; gap:8px; font-family:var(--mono); font-size:12px; color:var(--text-dim);}
-  .legend-swatch{width:12px; height:12px; border-radius:3px;}
-
-  /* ---------- Log scale chart ---------- */
-  .chart{background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:32px 28px 24px; position:relative; overflow:hidden;}
-  .scale-axis{position:relative; height:26px; margin-left:0; margin-bottom:6px;}
-  .decade-mark{position:absolute; top:0; bottom:0; border-left:1px dashed #2A3140; }
-  .decade-mark span{position:absolute; top:0; left:6px; font-family:var(--mono); font-size:10px; color:var(--text-dim); white-space:nowrap;}
-  .decade-mark.label-right span{left:auto; right:6px;}
-  .bars{position:relative; padding-top:8px;}
-  .bar-row{display:grid; grid-template-columns: 168px 1fr; align-items:center; gap:14px; padding:7px 0; position:relative;}
-  .bar-row .label{font-size:13px; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-  .bar-row .label small{display:block; font-size:10.5px; color:var(--text-dim); margin-top:1px; font-family:var(--mono);}
-  .bar-track{position:relative; height:22px;}
-  .bar-fill{
-    position:absolute; left:0; top:0; height:100%; border-radius:0 5px 5px 0;
-    display:flex; align-items:center; justify-content:flex-end; padding-right:8px;
-    transition: width 1.1s cubic-bezier(.16,1,.3,1);
-    width:0;
-  }
-  .bar-fill .val{font-family:var(--mono); font-size:11.5px; font-weight:500; color:#0A0D12; white-space:nowrap;}
-  .bar-fill.label-outside{justify-content:flex-start; padding-right:0;}
-  .bar-fill.label-outside .val{
-    position:absolute; left:100%; margin-left:8px; color:var(--label-color, var(--text));
-  }
-  .grid-lines{position:absolute; inset:0; pointer-events:none;}
-  .grid-lines .gl{position:absolute; top:0; bottom:0; border-left:1px solid rgba(255,255,255,0.05);}
-
-  .cat-pcie{background:var(--amber); --label-color: var(--amber);}
-  .cat-ram{background:var(--cyan); --label-color: var(--cyan);}
-  .cat-vram{background:var(--green); --label-color: var(--green);}
-  .cat-storage{background:var(--red); --label-color: var(--red);}
-  .cat-pcie .val, .cat-ram .val, .cat-vram .val, .cat-storage .val{color:#0A0D12;}
-  .bar-fill.label-outside.cat-pcie .val, .bar-fill.label-outside.cat-ram .val,
-  .bar-fill.label-outside.cat-vram .val, .bar-fill.label-outside.cat-storage .val{color:var(--label-color);}
-
-  .group-divider{margin: 22px 0 10px; font-family:var(--mono); font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-dim); display:flex; align-items:center; gap:10px;}
-  .group-divider::after{content:''; flex:1; height:1px; background:var(--line);}
-
-  /* ---------- "Your config" highlight ---------- */
-  .bar-row.mine .label{color:var(--text); font-weight:600;}
-  .mine-badge{
-    display:inline-flex; align-items:center; gap:4px; font-family:var(--mono); font-size:9px; font-weight:700;
-    letter-spacing:0.06em; color:var(--bg); background:var(--amber); border-radius:4px; padding:1px 5px;
-    margin-left:7px; vertical-align:1px; text-transform:uppercase;
-  }
-  .bar-fill.mine{box-shadow: 0 0 0 2px rgba(255,178,56,0.9) inset, 0 0 14px rgba(255,178,56,0.45);}
-  .legend-item.mine-legend{color:var(--amber); font-weight:600;}
-
-  /* ---------- Racing-HUD scale mode toggle ---------- */
-  .mode-panel{
-    display:flex; align-items:center; gap:16px; margin-bottom:24px; flex-wrap:wrap;
-  }
-  .mode-panel .mode-caption{
-    font-family:var(--mono); font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color:var(--text-dim);
-    display:flex; align-items:center; gap:8px;
-  }
-  .mode-panel .mode-caption::before{
-    content:''; width:8px; height:8px; background:var(--amber); clip-path:polygon(0 0,100% 20%,100% 100%,0% 80%);
-  }
-  .mode-switch{
-    display:flex; background:#0D1015; border:1px solid var(--line); border-radius:4px; padding:4px; gap:4px;
-    box-shadow: inset 0 1px 3px rgba(0,0,0,0.6);
-  }
-  .mode-btn{
-    position:relative; font-family:var(--mono); font-weight:700; font-size:12px; letter-spacing:0.08em;
-    color:var(--text-dim); background:transparent; border:none; cursor:pointer;
-    padding:10px 22px 10px 26px; text-transform:uppercase;
-    clip-path: polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
-    transition: color .25s ease, background .25s ease;
-    display:flex; flex-direction:column; align-items:flex-start; line-height:1.3;
-  }
-  .mode-btn small{font-size:9px; font-weight:500; letter-spacing:0.05em; color:inherit; opacity:0.75; text-transform:none;}
-  .mode-btn:hover{color:var(--text);}
-  .mode-btn.active{
-    color:#0A0D12; background:var(--amber);
-    box-shadow: 0 0 16px rgba(255,178,56,0.55), 0 0 2px rgba(255,178,56,0.9);
-  }
-  .mode-btn.active small{color:#0A0D12; opacity:0.65;}
-  .mode-btn::after{
-    content:''; position:absolute; top:0; left:0; height:2px; width:100%;
-    background:var(--amber); opacity:0; transition:opacity .2s ease;
-  }
-  .mode-btn.active::after{opacity:0;}
-  .mode-hint{font-size:11.5px; color:var(--text-dim); font-family:var(--mono);}
-
-  /* ---------- Inference journey ---------- */
-  .journey{display:grid; grid-template-columns: repeat(3, 1fr); gap:0; margin-top:8px;}
-  .stage{background:var(--panel); border:1px solid var(--line); padding:26px 22px; position:relative;}
-  .stage:first-child{border-radius:16px 0 0 16px;}
-  .stage:last-child{border-radius:0 16px 16px 0;}
-  .stage:not(:last-child){border-right:none;}
-  .stage-icon{width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; margin-bottom:18px; font-family:var(--mono); font-weight:700; font-size:14px;}
-  .stage h3{font-size:16px; margin-bottom:4px;}
-  .stage .bw{font-family:var(--mono); font-size:13px; color:var(--text-dim); margin-bottom:18px;}
-  .stage .speedbar-label{font-size:11px; color:var(--text-dim); margin-bottom:6px; font-family:var(--mono);}
-  .speedbar-track{height:8px; background:#1D232E; border-radius:4px; overflow:hidden; margin-bottom:14px;}
-  .speedbar-fill{height:100%; border-radius:4px; width:0; transition:width 1.2s cubic-bezier(.16,1,.3,1);}
-  .stage .metric{font-family:var(--mono); font-size:28px; font-weight:700; line-height:1;}
-  .stage .metric-label{font-size:11.5px; color:var(--text-dim); margin-top:6px;}
-  .stage .relative{margin-top:16px; padding-top:16px; border-top:1px solid var(--line); font-size:12.5px; color:var(--text-dim); line-height:1.6;}
-  .arrow-connector{
-    position:absolute; top:50%; right:-13px; transform:translateY(-50%); z-index:2;
-    width:26px; height:26px; border-radius:50%; background:var(--bg); border:1px solid var(--line);
-    display:flex; align-items:center; justify-content:center; font-size:12px; color:var(--text-dim);
-  }
-  .stage:last-child .arrow-connector{display:none;}
-
-  .caveat{margin-top:22px; font-size:12.5px; color:var(--text-dim); line-height:1.7; background:var(--panel-2); border:1px solid var(--line); border-radius:12px; padding:16px 18px;}
-  .caveat b{color:var(--text);}
-
-  /* ---------- Data path diagram ---------- */
-  .pathdiagram{background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:28px; overflow:visible;}
-  .pathdiagram svg{width:100%; height:auto; display:block; overflow:visible;}
-  .domain-label{font-family:var(--mono); font-size:11px; letter-spacing:0.12em; text-transform:uppercase; fill:var(--text-dim);}
-  .node-box{fill:var(--panel-2); stroke:var(--line); stroke-width:1.5;}
-  .node-title{font-family:var(--sans); font-weight:600; font-size:15px; fill:var(--text);}
-  .node-sub{font-family:var(--mono); font-size:10.5px; fill:var(--text-dim);}
-  .bus-label{font-family:var(--mono); font-size:11.5px; font-weight:500;}
-  .bus-label-bg{fill:var(--bg); opacity:0.92;}
-  .bus-note{font-family:var(--sans); font-size:11.5px; fill:var(--text-dim);}
-  .pulse-dot{animation:dashmove 2.4s linear infinite;}
-  @keyframes dashmove{ to{ stroke-dashoffset:-24; } }
-  @media (prefers-reduced-motion: reduce){ .pulse-dot{animation:none;} }
-  .equiv{margin-top:56px; background:linear-gradient(135deg, rgba(255,178,56,0.07), rgba(76,201,240,0.05)); border:1px solid var(--line); border-radius:16px; padding:28px 30px;}
-  .equiv-title{font-family:var(--mono); font-size:12px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-dim); margin-bottom:14px;}
-  .equiv-row{display:flex; align-items:center; gap:14px; flex-wrap:wrap; font-family:var(--mono); font-size:15px;}
-  .equiv-row .chip{background:var(--panel); border:1px solid var(--line); padding:8px 14px; border-radius:8px;}
-  .equiv-row .eq{color:var(--text-dim);}
-
-  footer{margin-top:100px; padding-top:28px; border-top:1px solid var(--line); color:var(--text-dim); font-size:12px; font-family:var(--mono);}
-
-  @media (max-width: 720px){
-    .bar-row{grid-template-columns: 108px 1fr;}
-    .bar-row .label{font-size:11.5px;}
-    .journey{grid-template-columns:1fr;}
-    .stage{border-radius:0 !important; border-right:1px solid var(--line) !important; border-bottom:none;}
-    .stage:first-child{border-radius:16px 16px 0 0 !important;}
-    .stage:last-child{border-radius:0 0 16px 16px !important; border-bottom:1px solid var(--line);}
-    .arrow-connector{top:auto; bottom:-13px; right:50%; transform:translate(50%,0) rotate(90deg);}
-    .hero-stats{gap:24px;}
-    .pathdiagram{padding:16px;}
-    .diagram-top{margin-top:24px; margin-bottom:32px;}
-  }
-  @media (prefers-reduced-motion: reduce){
-    .bar-fill, .speedbar-fill{transition:none;}
-    .eyebrow .dot{animation:none;}
-  }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>带宽阶梯 — PCIe / DDR5 / 显存 / 存储速度全景</title>
+  <link rel="stylesheet" href="styles/theme.css">
+  <link rel="stylesheet" href="styles/bw-ladder.css">
 </head>
 <body>
-<div class="wrap">
+
+<header>
+  <div class="logo-area" onclick="window.location.href='index.html'" style="cursor:pointer"><div class="logo-icon"></div>GPURank.ai</div>
+  <nav>
+    <ul>
+      <li><button class="nav-link" onclick="window.location.href='index.html'">消费级 GPU 矩阵</button></li>
+      <li><button class="nav-link active">带宽阶梯</button></li>
+      <li><button class="nav-link" onclick="window.location.href='vram-calc.html'">LLM 显存计算器</button></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
 
   <section class="hero">
+    <div class="eyebrow"><span class="dot"></span>数据通路带宽参照表</div>
+    <h1>从 <span>PCIe 通道</span> 到 <span>显存</span>，<br>速度差着几个数量级</h1>
 
     <div class="diagram-top">
       <div class="section-head"><h2>数据路径全景</h2><span class="tag">谁跟谁直连 · 谁必须过桥</span></div>
       <p class="section-sub">CPU、GPU 各自守着自己的"地盘"——CPU 直连系统内存，GPU 直连显存。SSD 没有独立总线，插在 PCIe 上。实际的数据搬运是 <b>链式 DMA</b>：CPU 只负责发指令（指挥），数据先由 SSD 直通内存，再由内存直通显存，全程不经过 CPU。</p>
 
       <div class="pathdiagram">
-        <svg viewBox="0 0 1350 370" xmlns="http://www.w3.org/2000/svg">
+        <svg viewBox="0 0 1350 390" xmlns="http://www.w3.org/2000/svg">
           <!-- Storage domain -->
-          <rect x="30" y="25" width="360" height="320" rx="14" fill="none" stroke="#232A36" stroke-width="1.5" stroke-dasharray="5 5"/>
-          <text x="50" y="50" class="domain-label">存储</text>
-          <rect x="110" y="100" width="200" height="80" rx="10" class="node-box" style="stroke:var(--red);"/>
-          <text x="210" y="138" text-anchor="middle" class="node-title">SSD / NVMe</text>
-          <text x="210" y="158" text-anchor="middle" class="node-sub">Lexar Thor Pro 2TB</text>
+          <rect x="30" y="30" width="360" height="330" rx="14" fill="none" stroke="#E2E8F0" stroke-width="1.5" stroke-dasharray="5 5"/>
+          <text x="50" y="55" class="domain-label">存储</text>
+          <rect x="110" y="95" width="200" height="80" rx="10" class="node-box" style="stroke:#FF5D5D;"/>
+          <text x="210" y="133" text-anchor="middle" class="node-title">SSD / NVMe</text>
+          <text x="210" y="153" text-anchor="middle" class="node-sub">Lexar Thor Pro 2TB</text>
 
           <!-- CPU domain -->
-          <rect x="450" y="25" width="360" height="320" rx="14" fill="none" stroke="#232A36" stroke-width="1.5" stroke-dasharray="5 5"/>
-          <text x="470" y="50" class="domain-label">CPU 的地盘</text>
+          <rect x="450" y="30" width="360" height="330" rx="14" fill="none" stroke="#E2E8F0" stroke-width="1.5" stroke-dasharray="5 5"/>
+          <text x="470" y="55" class="domain-label">CPU 的地盘</text>
 
-          <rect x="535" y="65" width="190" height="70" rx="10" class="node-box"/>
-          <text x="630" y="100" text-anchor="middle" class="node-title">DDR5 内存</text>
-          <text x="630" y="118" text-anchor="middle" class="node-sub">系统内存</text>
+          <rect x="535" y="95" width="190" height="80" rx="10" class="node-box"/>
+          <text x="630" y="133" text-anchor="middle" class="node-title">DDR5 内存</text>
+          <text x="630" y="153" text-anchor="middle" class="node-sub">系统内存</text>
 
-          <rect x="535" y="235" width="190" height="70" rx="10" class="node-box"/>
-          <text x="630" y="270" text-anchor="middle" class="node-title">CPU</text>
-          <text x="630" y="288" text-anchor="middle" class="node-sub">Ryzen 5 9600X</text>
+          <rect x="535" y="250" width="190" height="80" rx="10" class="node-box"/>
+          <text x="630" y="288" text-anchor="middle" class="node-title">CPU</text>
+          <text x="630" y="308" text-anchor="middle" class="node-sub">Ryzen 5 9600X</text>
 
           <!-- CPU <-> DDR5 memory bus -->
-          <line x1="630" y1="235" x2="630" y2="135" stroke="var(--cyan)" stroke-width="3" stroke-dasharray="6 5" class="pulse-dot"/>
-          <rect x="650" y="165" width="170" height="34" rx="6" class="bus-label-bg"/>
-          <text x="660" y="186" class="bus-label" fill="var(--cyan)">内存总线 · 96 GB/s</text>
+          <line x1="630" y1="250" x2="630" y2="175" stroke="#4CC9F0" stroke-width="3" stroke-dasharray="6 5" class="pulse-dot"/>
+          <rect x="650" y="185" width="170" height="34" rx="6" class="bus-label-bg"/>
+          <text x="660" y="206" class="bus-label" fill="#319795">内存总线 · 96 GB/s</text>
 
           <!-- GPU domain -->
-          <rect x="880" y="25" width="360" height="320" rx="14" fill="none" stroke="#232A36" stroke-width="1.5" stroke-dasharray="5 5"/>
-          <text x="900" y="50" class="domain-label">GPU 的地盘</text>
+          <rect x="880" y="30" width="360" height="330" rx="14" fill="none" stroke="#E2E8F0" stroke-width="1.5" stroke-dasharray="5 5"/>
+          <text x="900" y="55" class="domain-label">GPU 的地盘</text>
 
-          <rect x="965" y="65" width="190" height="70" rx="10" class="node-box"/>
-          <text x="1060" y="100" text-anchor="middle" class="node-title">显存 VRAM</text>
-          <text x="1060" y="118" text-anchor="middle" class="node-sub">GDDR6</text>
+          <rect x="965" y="95" width="190" height="80" rx="10" class="node-box"/>
+          <text x="1060" y="133" text-anchor="middle" class="node-title">显存 VRAM</text>
+          <text x="1060" y="153" text-anchor="middle" class="node-sub">GDDR6</text>
 
-          <rect x="965" y="235" width="190" height="70" rx="10" class="node-box"/>
-          <text x="1060" y="270" text-anchor="middle" class="node-title">GPU</text>
-          <text x="1060" y="288" text-anchor="middle" class="node-sub">R9700 32GB</text>
+          <rect x="965" y="250" width="190" height="80" rx="10" class="node-box"/>
+          <text x="1060" y="288" text-anchor="middle" class="node-title">GPU</text>
+          <text x="1060" y="308" text-anchor="middle" class="node-sub">R9700 32GB</text>
 
           <!-- GPU <-> VRAM memory bus -->
-          <line x1="1060" y1="235" x2="1060" y2="135" stroke="var(--green)" stroke-width="3" stroke-dasharray="6 5" class="pulse-dot"/>
-          <rect x="1080" y="165" width="170" height="34" rx="6" class="bus-label-bg"/>
-          <text x="1090" y="186" class="bus-label" fill="var(--green)">显存总线 · 640 GB/s</text>
+          <line x1="1060" y1="250" x2="1060" y2="175" stroke="#38A169" stroke-width="3" stroke-dasharray="6 5" class="pulse-dot"/>
+          <rect x="1080" y="185" width="170" height="34" rx="6" class="bus-label-bg"/>
+          <text x="1090" y="206" class="bus-label" fill="#38A169">显存总线 · 640 GB/s</text>
 
           <!-- Data chain: SSD → DDR5 → VRAM (all via PCIe DMA) -->
-          <!-- Step 1: SSD → DDR5 (DMA) -->
-          <line x1="310" y1="140" x2="535" y2="140" stroke="var(--amber)" stroke-width="3" stroke-dasharray="8 6" class="pulse-dot"/>
-          <rect x="155" y="198" width="170" height="34" rx="6" class="bus-label-bg" stroke="var(--amber)" stroke-width="1"/>
-          <text x="240" y="219" text-anchor="middle" class="bus-label" fill="var(--amber)">SSD → 内存 DMA · 约 8 GB/s</text>
+          <line x1="310" y1="135" x2="535" y2="135" stroke="#FFB238" stroke-width="3" stroke-dasharray="8 6" class="pulse-dot"/>
+          <rect x="335" y="160" width="170" height="30" rx="6" class="bus-label-bg" stroke="#FFB238" stroke-width="1"/>
+          <text x="420" y="180" text-anchor="middle" class="bus-label" fill="#FFB238">SSD → 内存 DMA · 约 8 GB/s</text>
 
-          <!-- Step 2: DDR5 → VRAM (DMA) -->
-          <line x1="725" y1="140" x2="965" y2="140" stroke="var(--amber)" stroke-width="3" stroke-dasharray="8 6" class="pulse-dot"/>
-          <rect x="760" y="198" width="170" height="34" rx="6" class="bus-label-bg" stroke="var(--amber)" stroke-width="1"/>
-          <text x="845" y="219" text-anchor="middle" class="bus-label" fill="var(--amber)">内存 → 显存 DMA · 63 GB/s</text>
+          <line x1="725" y1="135" x2="965" y2="135" stroke="#FFB238" stroke-width="3" stroke-dasharray="8 6" class="pulse-dot"/>
+          <rect x="760" y="160" width="170" height="30" rx="6" class="bus-label-bg" stroke="#FFB238" stroke-width="1"/>
+          <text x="845" y="180" text-anchor="middle" class="bus-label" fill="#FFB238">内存 → 显存 DMA · 63 GB/s</text>
 
-          <!-- Visual connector: three dots bridging the gap between two PCIe lanes -->
-          <rect x="555" y="128" width="150" height="24" rx="12" class="bus-label-bg"/>
-          <text x="630" y="145" text-anchor="middle" class="bus-note" font-size="11" font-family="var(--mono)" fill="var(--text-dim)">PCIe 桥接 ⚡ 链路</text>
+          <rect x="555" y="78" width="150" height="24" rx="12" class="bus-label-bg"/>
+          <text x="630" y="95" text-anchor="middle" class="bus-note" font-size="11" font-family="var(--font-mono)" fill="#A0AEC0">PCIe 桥接 · 链路</text>
 
           <!-- CPU as DMA controller -->
-          <line x1="630" y1="235" x2="630" y2="205" stroke="var(--text-dim)" stroke-width="1.5" stroke-dasharray="3 3"/>
-          <rect x="540" y="296" width="180" height="22" rx="6" class="bus-label-bg"/>
-          <text x="630" y="311" text-anchor="middle" class="bus-label" font-size="10.5" fill="var(--text-dim)">CPU 是"指挥者"，不直接搬数据</text>
+          <rect x="540" y="320" width="180" height="22" rx="6" class="bus-label-bg"/>
+          <text x="630" y="335" text-anchor="middle" class="bus-label" font-size="10.5" fill="#A0AEC0">CPU 是"指挥者"，不直接搬数据</text>
         </svg>
       </div>
     </div>
@@ -294,8 +100,6 @@
     </div>
   </section>
 
-  <div class="eyebrow"><span class="dot"></span>数据通路带宽参照表</div>
-    <h1>从 <span>PCIe 通道</span> 到 <span>显存</span>，<br>速度差着几个数量级</h1>
   <section class="section" id="chart-section">
     <div class="section-head"><h2>带宽阶梯</h2><span class="tag">对数刻度 · 单位 GB/s</span></div>
     <p class="section-sub">条形长度按 log₁₀(带宽) 绘制 —— 这意味着每往右移动一段固定距离，速度是乘以 10，不是加 10。刻度线标出了 1 / 10 / 100 / 1000 GB/s 这几个"十倍"分界点。</p>
@@ -305,14 +109,13 @@
       <div class="legend-item"><span class="legend-swatch cat-ram"></span>DDR5 系统内存</div>
       <div class="legend-item"><span class="legend-swatch cat-vram"></span>显卡显存 (VRAM)</div>
       <div class="legend-item"><span class="legend-swatch cat-storage"></span>存储设备</div>
-      <div class="legend-item mine-legend">⬥ 高亮描边 = 你的实际配置</div>
     </div>
 
     <div class="mode-panel">
       <div class="mode-caption">刻度模式</div>
       <div class="mode-switch" role="tablist" aria-label="切换刻度模式">
-        <button class="mode-btn active" data-mode="log" role="tab" aria-selected="true">LOG<small>对数刻度</small></button>
-        <button class="mode-btn" data-mode="linear" role="tab" aria-selected="false">LINEAR<small>线性刻度</small></button>
+        <button class="mode-btn active" data-mode="log" role="tab" aria-selected="true">LOG<small>对数</small></button>
+        <button class="mode-btn" data-mode="linear" role="tab" aria-selected="false">LINEAR<small>线性</small></button>
       </div>
       <span class="mode-hint" id="modeHint">// 每格代表 ×10 —— 小数值也看得清</span>
     </div>
@@ -332,33 +135,33 @@
     <div class="journey">
       <div class="stage">
         <div class="arrow-connector">→</div>
-        <div class="stage-icon" style="background:rgba(82,210,115,0.14); color:var(--green);">①</div>
+        <div class="stage-icon" style="background:rgba(56,161,105,0.12); color:#38A169;">①</div>
         <h3>全部在 GPU 显存</h3>
         <div class="bw">R9700 · 640 GB/s</div>
         <div class="speedbar-label">相对速度</div>
-        <div class="speedbar-track"><div class="speedbar-fill" data-w="100" style="background:var(--green);"></div></div>
-        <div class="metric" style="color:var(--green);">基准 1×</div>
+        <div class="speedbar-track"><div class="speedbar-fill" data-w="100" style="background:#38A169;"></div></div>
+        <div class="metric" style="color:#38A169;">基准 1×</div>
         <div class="metric-label">模型权重、KV Cache 全部常驻显存，GPU 算力全速吞吐</div>
         <div class="relative">27B 模型 Q4 量化下，token 生成速度取决于 GPU 算力本身，不受内存/存储带宽制约。</div>
       </div>
       <div class="stage">
         <div class="arrow-connector">→</div>
-        <div class="stage-icon" style="background:rgba(76,201,240,0.14); color:var(--cyan);">②</div>
+        <div class="stage-icon" style="background:rgba(49,151,149,0.12); color:#319795;">②</div>
         <h3>部分 offload 到系统内存</h3>
         <div class="bw">双通道 DDR5-6000 · 96 GB/s</div>
         <div class="speedbar-label">相对速度</div>
-        <div class="speedbar-track"><div class="speedbar-fill" data-w="15" style="background:var(--cyan);"></div></div>
-        <div class="metric" style="color:var(--cyan);">↓ 约 6-7×</div>
+        <div class="speedbar-track"><div class="speedbar-fill" data-w="15" style="background:#319795;"></div></div>
+        <div class="metric" style="color:#319795;">↓ 约 6-7×</div>
         <div class="metric-label">部分层放不进显存，llama.cpp 等工具把这些层丢给 CPU+内存算</div>
         <div class="relative">每算一个 token 都要在 GPU 和内存之间来回搬数据，速度大致跟着带宽比例掉：640÷96 ≈ 6.7 倍，实际感知往往更慢。</div>
       </div>
       <div class="stage">
-        <div class="stage-icon" style="background:rgba(255,93,93,0.14); color:var(--red);">③</div>
+        <div class="stage-icon" style="background:rgba(220,38,38,0.12); color:#DC2626;">③</div>
         <h3>继续 offload 到 SSD</h3>
         <div class="bw">NVMe Gen4 顺序读 · 约 7 GB/s</div>
         <div class="speedbar-label">相对速度</div>
-        <div class="speedbar-track"><div class="speedbar-fill" data-w="1.5" style="background:var(--red);"></div></div>
-        <div class="metric" style="color:var(--red);">↓ 约 90×</div>
+        <div class="speedbar-track"><div class="speedbar-fill" data-w="1.5" style="background:#DC2626;"></div></div>
+        <div class="metric" style="color:#DC2626;">↓ 约 90×</div>
         <div class="metric-label">显存和内存都不够，只能靠 mmap/swap 从硬盘读取权重</div>
         <div class="relative">SSD 顺序读取带宽只有显存的 1/90 左右，而且模型权重的访问模式接近随机读，实际比顺序读还要再慢一截——这一档基本只适合"能跑就行"，不适合日常使用。</div>
       </div>
@@ -370,174 +173,21 @@
   <section class="equiv">
     <div class="equiv-title">一个容易记住的等价关系</div>
     <div class="equiv-row">
-      <span class="chip" style="color:var(--amber);">PCIe 3.0 x16</span>
+      <span class="chip" style="color:#2D68D9;">PCIe 3.0 x16</span>
       <span class="eq">≈</span>
-      <span class="chip" style="color:var(--amber);">PCIe 4.0 x8</span>
+      <span class="chip" style="color:#2D68D9;">PCIe 4.0 x8</span>
       <span class="eq">≈</span>
-      <span class="chip" style="color:var(--amber);">PCIe 5.0 x4</span>
+      <span class="chip" style="color:#2D68D9;">PCIe 5.0 x4</span>
       <span class="eq" style="margin-left:6px;">— 都约 16 GB/s，每升一代、通道减半，带宽打平</span>
     </div>
   </section>
 
-  <footer>
+  <footer class="page-footer">
     带宽数值为理论峰值（编码开销后），实际吞吐会因控制器、驱动与工作负载而低于此值 · 制作用于个人参考
   </footer>
 
-</div>
+</main>
 
-<script>
-const DATA = [
-  // group, label, sublabel, value(GB/s), category
-  {g:'PCIe 3.0', label:'x2', sub:'PCIe 3.0', v:1.97, c:'pcie'},
-  {g:'PCIe 3.0', label:'x4', sub:'PCIe 3.0', v:3.94, c:'pcie'},
-  {g:'PCIe 3.0', label:'x8', sub:'PCIe 3.0', v:7.88, c:'pcie'},
-  {g:'PCIe 3.0', label:'x16', sub:'PCIe 3.0', v:15.75, c:'pcie'},
-
-  {g:'PCIe 4.0', label:'x2', sub:'PCIe 4.0', v:3.94, c:'pcie'},
-  {g:'PCIe 4.0', label:'x4', sub:'PCIe 4.0', v:7.88, c:'pcie'},
-  {g:'PCIe 4.0', label:'x8', sub:'PCIe 4.0', v:15.75, c:'pcie'},
-  {g:'PCIe 4.0', label:'x16', sub:'PCIe 4.0', v:31.5, c:'pcie'},
-
-  {g:'PCIe 5.0', label:'x2', sub:'PCIe 5.0', v:7.88, c:'pcie'},
-  {g:'PCIe 5.0', label:'x4', sub:'PCIe 5.0', v:15.75, c:'pcie'},
-  {g:'PCIe 5.0', label:'x8', sub:'PCIe 5.0', v:31.5, c:'pcie'},
-  {g:'PCIe 5.0', label:'x16', sub:'PCIe 5.0 · R9700 显卡插槽', v:63, c:'pcie', mine:true},
-
-  {g:'DDR5 内存（双通道）', label:'DDR5-4800', sub:'双通道', v:76.8, c:'ram'},
-  {g:'DDR5 内存（双通道）', label:'DDR5-6000', sub:'双通道 · 你的目标', v:96, c:'ram', mine:true},
-  {g:'DDR5 内存（双通道）', label:'DDR5-8400', sub:'双通道 · Tomahawk Max 上限', v:134.4, c:'ram'},
-  {g:'DDR5 内存（单通道，对照）', label:'DDR5-6000 单通道', sub:'你现在的配置', v:48, c:'ram', mine:true},
-
-  {g:'存储设备', label:'HDD 机械硬盘', sub:'顺序读', v:0.18, c:'storage'},
-  {g:'存储设备', label:'SATA SSD', sub:'顺序读', v:0.55, c:'storage'},
-  {g:'存储设备', label:'NVMe Gen4', sub:'顺序读，如 Lexar Thor Pro', v:7, c:'storage', mine:true},
-  {g:'存储设备', label:'NVMe Gen5', sub:'顺序读', v:13, c:'storage'},
-
-  {g:'GPU 显存 (VRAM)', label:'RTX 5060 Ti 16GB', sub:'GDDR7', v:448, c:'vram'},
-  {g:'GPU 显存 (VRAM)', label:'R9700 32GB', sub:'GDDR6 · 你的主卡', v:640, c:'vram', mine:true},
-];
-
-const MIN_LOG = Math.log10(0.1);   // left edge = 0.1 GB/s
-const MAX_LOG = Math.log10(1000);  // right edge = 1000 GB/s
-const LINEAR_MAX = 700;
-
-let scaleMode = 'log';
-
-function pctLog(v){
-  const l = Math.log10(v);
-  return Math.max(0, Math.min(100, ((l - MIN_LOG) / (MAX_LOG - MIN_LOG)) * 100));
-}
-function pctLinear(v){
-  return Math.max(0, Math.min(100, (v / LINEAR_MAX) * 100));
-}
-function pct(v){
-  return scaleMode === 'log' ? pctLog(v) : pctLinear(v);
-}
-
-const axis = document.getElementById('scaleAxis');
-const grid = document.getElementById('gridLines');
-
-function renderAxis(){
-  axis.innerHTML = '';
-  grid.innerHTML = '';
-  const marks = scaleMode === 'log'
-    ? [0.1, 1, 10, 100, 1000]
-    : [0, 100, 200, 300, 400, 500, 600, 700];
-  marks.forEach((d, i)=>{
-    const realP = scaleMode === 'linear' ? pctLinear(d) : pctLog(d);
-    const mark = document.createElement('div');
-    mark.className = 'decade-mark' + (i === marks.length - 1 ? ' label-right' : '');
-    mark.style.left = realP + '%';
-    mark.innerHTML = `<span>${d.toLocaleString()} GB/s</span>`;
-    axis.appendChild(mark);
-
-    const gl = document.createElement('div');
-    gl.className = 'gl';
-    gl.style.left = realP + '%';
-    grid.appendChild(gl);
-  });
-}
-
-// Group and render bars
-const container = document.getElementById('barsContainer');
-function renderBars(){
-  container.querySelectorAll('.group-divider, .bar-row').forEach(el=>el.remove());
-  let lastGroup = null;
-  DATA.forEach((d)=>{
-    if(d.g !== lastGroup){
-      const gd = document.createElement('div');
-      gd.className = 'group-divider';
-      gd.textContent = d.g;
-      container.appendChild(gd);
-      lastGroup = d.g;
-    }
-    const row = document.createElement('div');
-    row.className = 'bar-row' + (d.mine ? ' mine' : '');
-    row.innerHTML = `
-      <div class="label">${d.label}${d.mine ? '<span class="mine-badge">你的配置</span>' : ''}<small>${d.sub}</small></div>
-      <div class="bar-track">
-        <div class="bar-fill cat-${d.c}${d.mine ? ' mine' : ''}" data-target="${pct(d.v)}">
-          <span class="val">${d.v >= 100 ? Math.round(d.v) : d.v} GB/s</span>
-        </div>
-      </div>
-    `;
-    container.appendChild(row);
-  });
-}
-renderAxis();
-renderBars();
-
-function animateBars(){
-  document.querySelectorAll('.bar-fill').forEach(el=>{
-    el.style.width = el.getAttribute('data-target') + '%';
-  });
-  document.querySelectorAll('.speedbar-fill').forEach(el=>{
-    el.style.width = el.getAttribute('data-w') + '%';
-  });
-  setTimeout(fixLabelFit, 1150);
-}
-function fixLabelFit(){
-  document.querySelectorAll('.bar-fill').forEach(el=>{
-    const val = el.querySelector('.val');
-    if(!val) return;
-    el.classList.remove('label-outside');
-    const barWidth = el.getBoundingClientRect().width;
-    const neededWidth = val.getBoundingClientRect().width + 16;
-    if(neededWidth > barWidth){
-      el.classList.add('label-outside');
-    }
-  });
-}
-const io = new IntersectionObserver((entries)=>{
-  entries.forEach(e=>{
-    if(e.isIntersecting){ animateBars(); io.disconnect(); }
-  });
-}, {threshold:0.15});
-io.observe(document.getElementById('chart-section'));
-setTimeout(animateBars, 300);
-window.addEventListener('resize', ()=>{ setTimeout(fixLabelFit, 50); });
-
-const modeHint = document.getElementById('modeHint');
-const HINTS = {
-  log: '// 每格代表 ×10 —— 小数值也看得清',
-  linear: '// 真实比例，1:1 —— 小数值会被显存"碾平"'
-};
-document.querySelectorAll('.mode-btn').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    const mode = btn.getAttribute('data-mode');
-    if(mode === scaleMode) return;
-    scaleMode = mode;
-    document.querySelectorAll('.mode-btn').forEach(b=>{
-      b.classList.toggle('active', b === btn);
-      b.setAttribute('aria-selected', b === btn ? 'true' : 'false');
-    });
-    modeHint.textContent = HINTS[mode];
-    renderAxis();
-    renderBars();
-    document.querySelectorAll('.bar-fill').forEach(el=>{ el.style.width = '0%'; el.classList.remove('label-outside'); });
-    requestAnimationFrame(()=> requestAnimationFrame(animateBars));
-  });
-});
-</script>
+<script src="scripts/bw-ladder.js"></script>
 </body>
 </html>
