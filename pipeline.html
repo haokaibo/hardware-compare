@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<!-- saved from url=(0045)file:///Users/kaibo/Downloads/pipeline_1.html -->
+<html lang="zh-CN"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PIPELINE ZERO — 软件架构与工作流</title>
+<link rel="stylesheet" href="styles/theme.css">
+<link rel="stylesheet" href="styles/base.css">
+<link rel="stylesheet" href="styles/pipeline.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-logo">RED ONE</div>
+    <div class="nav-links">
+      <a href="red_one.html">硬件</a>
+      <a href="pipeline.html" aria-current="page">软件架构</a>
+      <a href="pipeline.html#topology">节点拓扑</a>
+      <a href="pipeline.html#stack">完整清单</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ========== HERO ========== -->
+<header class="hero">
+  <div class="hero-glow"></div>
+  <div class="eyebrow">LOCAL-FIRST · DISTRIBUTED AI ORCHESTRATION</div>
+  <h1>PIPELINE&nbsp;ZERO</h1>
+  <p class="sub">RED ONE 硬件之上运行的自动化编排系统 —— 三台机器各司其职，把 NASA 数据流转化为可发布的天文内容。</p>
+  <div class="hero-id">
+    <span><b>3</b> 节点</span>
+    <span><b>N8N</b> 编排</span>
+    <span><b>PROXMOX VE</b> 虚拟化</span>
+    <span><b>DEEPSEEK</b> + <b>MLX</b> 双 LLM</span>
+    <span><b>ROCM 7</b> 加速</span>
+  </div>
+  <div class="scroll-cue">
+    <span>SCROLL</span>
+    <div class="arrow"></div>
+  </div>
+</header>
+
+<!-- ========== RIBBON ========== -->
+<div class="ribbon">
+  <div class="ribbon-track">
+    <span><b>PROXMOX VE</b></span><span class="dot">·</span>
+    <span><b>N8N</b></span><span class="dot">·</span>
+    <span><b>DEEPSEEK API</b></span><span class="dot">·</span>
+    <span><b>QWEN / MLX</b></span><span class="dot">·</span>
+    <span><b>FLUX</b></span><span class="dot">·</span>
+    <span><b>ROCM 7</b></span><span class="dot">·</span>
+    <span><b>SAMBA</b></span><span class="dot">·</span>
+    <span><b>OBSIDIAN</b></span><span class="dot">·</span>
+    <span><b>DEBIAN 13 LXC</b></span><span class="dot">·</span>
+    <span><b>RVC</b></span><span class="dot">·</span>
+    <span><b>THREE.JS</b></span><span class="dot">·</span>
+    <!-- duplicate for seamless marquee -->
+    <span><b>PROXMOX VE</b></span><span class="dot">·</span>
+    <span><b>N8N</b></span><span class="dot">·</span>
+    <span><b>DEEPSEEK API</b></span><span class="dot">·</span>
+    <span><b>QWEN / MLX</b></span><span class="dot">·</span>
+    <span><b>FLUX</b></span><span class="dot">·</span>
+    <span><b>ROCM 7</b></span><span class="dot">·</span>
+    <span><b>SAMBA</b></span><span class="dot">·</span>
+    <span><b>OBSIDIAN</b></span><span class="dot">·</span>
+    <span><b>DEBIAN 13 LXC</b></span><span class="dot">·</span>
+    <span><b>RVC</b></span><span class="dot">·</span>
+    <span><b>THREE.JS</b></span><span class="dot">·</span>
+  </div>
+</div>
+
+<!-- ========== TOPOLOGY / THREE NODES ========== -->
+<section id="topology">
+  <div class="section-head reveal visible">
+    <div class="kicker">· 三节点拓扑 ·</div>
+    <h2>算力分层，各司其职</h2>
+    <p>不追求单机堆料，而是按任务的隐私等级与算力需求，把工作分派到最合适的节点。</p>
+  </div>
+
+  <div class="pin-section">
+    <div class="pin-grid">
+      <div class="pin-media">
+        <div class="frame theme-ryzen">
+          <div class="grid-lines"></div>
+          <div class="glow"></div>
+          <div class="icon-stage">
+            <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="10" y="8" width="44" height="14" rx="2"></rect>
+              <rect x="10" y="25" width="44" height="14" rx="2"></rect>
+              <rect x="10" y="42" width="44" height="14" rx="2"></rect>
+              <circle cx="17" cy="15" r="1.6" fill="currentColor" stroke="none"></circle>
+              <circle cx="17" cy="32" r="1.6" fill="currentColor" stroke="none"></circle>
+              <circle cx="17" cy="49" r="1.6" fill="currentColor" stroke="none"></circle>
+              <path d="M32 15h14M32 32h14M32 49h14"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <div class="pin-track">
+
+        <div class="pin-block theme-ryzen reveal">
+          <div class="tag">节点 01 · 常驻编排层</div>
+          <h3>Geekom G3 —— Proxmox VE 调度中枢</h3>
+          <p>低功耗、7×24 常驻的家庭实验室节点。运行 Debian 13 LXC 容器化服务，n8n 工作流从 NASA RSS 源抓取文章、聚合去重，再转交 DeepSeek API 处理，最终把结构化 Markdown 写入 Samba 共享的 Obsidian 知识库。</p>
+          <div class="spec-inline">
+            <div><div class="k">主机</div><div class="v">极摩客 Geekom G3</div></div>
+            <div><div class="k">虚拟化</div><div class="v">Proxmox VE</div></div>
+            <div><div class="k">容器</div><div class="v">Debian 13 · LXC</div></div>
+            <div><div class="k">编排</div><div class="v">n8n</div></div>
+          </div>
+        </div>
+
+        <div class="pin-block theme-radeon reveal">
+          <div class="tag">节点 02 · 隐私推理层</div>
+          <h3>Mac Mini M4 —— 本地私有推理</h3>
+          <p>涉及隐私或本地专属内容的任务不出本地网络，交给这台 24GB 统一内存的 Mac Mini，通过 MLX 运行 Qwen 系列模型完成推理。同时承担视频剪辑，通过 USB4 与 AI 工作站直连。</p>
+          <div class="spec-inline">
+            <div><div class="k">主机</div><div class="v">Mac Mini M4 · 24GB</div></div>
+            <div><div class="k">推理框架</div><div class="v">MLX</div></div>
+            <div><div class="k">模型</div><div class="v">Qwen 系列</div></div>
+            <div><div class="k">定位</div><div class="v">隐私优先</div></div>
+          </div>
+        </div>
+
+        <div class="pin-block theme-ryzen reveal">
+          <div class="tag">节点 03 · 生成核心</div>
+          <h3>RED ONE —— 重算力按需唤醒</h3>
+          <p>不常驻运行，只在需要重算力时被唤醒。承担 FLUX 图像生成、文本转语音与视频合成，由 Radeon AI PRO R9700 经 ROCm 驱动完成本地推理，完事后自动回到休眠。</p>
+          <div class="spec-inline">
+            <div><div class="k">主机</div><div class="v">RED ONE · AM5</div></div>
+            <div><div class="k">GPU</div><div class="v">AI PRO R9700 32GB</div></div>
+            <div><div class="k">驱动栈</div><div class="v">ROCm 7.x</div></div>
+            <div><div class="k">任务</div><div class="v">图像 · 语音 · 视频</div></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== CONTENT PIPELINE FLOW ========== -->
+<section>
+  <div class="section-head reveal">
+    <div class="kicker">· 内容管线 ·</div>
+    <h2>从太空数据到可发布素材</h2>
+    <p>调度层内跑的核心 n8n 工作流 —— 每一步都是一个独立、可单独调试的节点。</p>
+  </div>
+
+  <div class="pipeline-wrap reveal">
+    <div class="pipeline">
+      <div class="pipe-node">
+        <div class="n">STEP 01</div>
+        <h4>NASA RSS</h4>
+        <p>抓取最新航天与天文资讯条目</p>
+      </div>
+      <div class="pipe-connector"></div>
+      <div class="pipe-node">
+        <div class="n">STEP 02</div>
+        <h4>聚合去重</h4>
+        <p>合并多源文章，按时间排序</p>
+      </div>
+      <div class="pipe-connector"></div>
+      <div class="pipe-node">
+        <div class="n">STEP 03</div>
+        <h4>DeepSeek API</h4>
+        <p>摘要、翻译与结构化改写</p>
+      </div>
+      <div class="pipe-connector"></div>
+      <div class="pipe-node">
+        <div class="n">STEP 04</div>
+        <h4>Markdown 落盘</h4>
+        <p>按日期生成结构化笔记文件</p>
+      </div>
+      <div class="pipe-connector"></div>
+      <div class="pipe-node">
+        <div class="n">STEP 05</div>
+        <h4>Obsidian 知识库</h4>
+        <p>经 Samba 挂载，供后续脚本调用</p>
+      </div>
+    </div>
+    <div style="text-align:center; margin-top:22px;">
+      <span class="status-chip dot">当前联调中 · DeepSeek 节点数据接收有待修复</span>
+    </div>
+  </div>
+</section>
+
+<!-- ========== COMPONENT GRID ========== -->
+<section>
+  <div class="section-head reveal">
+    <div class="kicker">· 组件清单 ·</div>
+    <h2>支撑管线的每一层</h2>
+    <p>没有实体照片可拍的部分 —— 但一样是这套系统真正的骨架。</p>
+  </div>
+
+  <div class="comp-grid reveal">
+
+    <div class="comp-card">
+      <div class="comp-img icon-only">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="8" y="8" width="32" height="10" rx="2"></rect>
+          <rect x="8" y="20" width="32" height="10" rx="2"></rect>
+          <rect x="8" y="32" width="32" height="10" rx="2"></rect>
+        </svg>
+      </div>
+      <div class="comp-body">
+        <div class="comp-role">虚拟化平台</div>
+        <div class="comp-name">Proxmox VE</div>
+        <div class="comp-sub">HYPERVISOR</div>
+        <p class="comp-desc">底层虚拟化，宿主全部 LXC 容器化服务，替代了原计划的 Windows 双系统方案。</p>
+        <div class="comp-mini">
+          <div class="row"><span>运行位置</span><span>Geekom G3</span></div>
+          <div class="row"><span>常驻性</span><span>7×24</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-card">
+      <div class="comp-img icon-only">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="10" y="10" width="28" height="28" rx="4"></rect>
+          <path d="M18 20l-4 4 4 4M30 20l4 4-4 4M27 17l-6 14"></path>
+        </svg>
+      </div>
+      <div class="comp-body">
+        <div class="comp-role">容器运行时</div>
+        <div class="comp-name">Debian 13 LXC</div>
+        <div class="comp-sub">UNPRIVILEGED CONTAINERS</div>
+        <p class="comp-desc">非特权容器，UID 偏移 100000，隔离服务运行环境。</p>
+        <div class="comp-mini">
+          <div class="row"><span>类型</span><span>非特权</span></div>
+          <div class="row"><span>UID 偏移</span><span>100000</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-card">
+      <div class="comp-img icon-only">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4"></circle>
+          <circle cx="36" cy="12" r="4"></circle>
+          <circle cx="24" cy="36" r="4"></circle>
+          <path d="M15 14l7 18M33 14l-7 18M16 12h16"></path>
+        </svg>
+      </div>
+      <div class="comp-body">
+        <div class="comp-role">工作流引擎</div>
+        <div class="comp-name">n8n</div>
+        <div class="comp-sub">WORKFLOW AUTOMATION</div>
+        <p class="comp-desc">RSS 抓取、聚合、API 调用、文件写入的可视化编排节点。</p>
+        <div class="comp-mini">
+          <div class="row"><span>部署</span><span>systemd</span></div>
+          <div class="row"><span>触发方式</span><span>定时 / RSS</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-card">
+      <div class="comp-img icon-only">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 34a8 8 0 010-16 10 10 0 0119-4 7 7 0 015 13"></path>
+          <path d="M18 34v6M24 34v6M30 34v6"></path>
+        </svg>
+      </div>
+      <div class="comp-body">
+        <div class="comp-role">网络共享层</div>
+        <div class="comp-name">Samba</div>
+        <div class="comp-sub">CROSS-HOST FILE SHARE</div>
+        <p class="comp-desc">容器内安装并共享，作为 Obsidian 知识库的跨主机挂载点。</p>
+        <div class="comp-mini">
+          <div class="row"><span>用途</span><span>知识库共享</span></div>
+          <div class="row"><span>安装位置</span><span>容器内</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-card">
+      <div class="comp-img icon-only">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M24 8l14 8v16l-14 8-14-8V16z"></path>
+          <path d="M24 8v16m0 0l14-8m-14 8L10 16m14 8v16"></path>
+        </svg>
+      </div>
+      <div class="comp-body">
+        <div class="comp-role">云端 LLM</div>
+        <div class="comp-name">DeepSeek API</div>
+        <div class="comp-sub">NON-SENSITIVE TASKS</div>
+        <p class="comp-desc">承担非隐私内容的摘要、翻译与结构化改写，是 Hermes 层的主力模型。</p>
+        <div class="comp-mini">
+          <div class="row"><span>定位</span><span>非敏感</span></div>
+          <div class="row"><span>调用方</span><span>n8n</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-card">
+      <div class="comp-img icon-only">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="10" y="16" width="28" height="20" rx="3"></rect>
+          <path d="M17 16v-4a7 7 0 0114 0v4"></path>
+          <circle cx="24" cy="26" r="2.4" fill="currentColor" stroke="none"></circle>
+        </svg>
+      </div>
+      <div class="comp-body">
+        <div class="comp-role">本地 LLM</div>
+        <div class="comp-name">Qwen / MLX</div>
+        <div class="comp-sub">PRIVACY-SENSITIVE TASKS</div>
+        <p class="comp-desc">私有内容的推理任务留在本地，不出局域网。</p>
+        <div class="comp-mini">
+          <div class="row"><span>运行位置</span><span>Mac Mini M4</span></div>
+          <div class="row"><span>框架</span><span>MLX</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-card">
+      <div class="comp-img icon-only">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="8" y="10" width="32" height="24" rx="2"></rect>
+          <circle cx="17" cy="21" r="3"></circle>
+          <path d="M10 30l9-8 6 5 8-9 5 5"></path>
+        </svg>
+      </div>
+      <div class="comp-body">
+        <div class="comp-role">图像生成</div>
+        <div class="comp-name">FLUX</div>
+        <div class="comp-sub">DIFFUSION MODEL</div>
+        <p class="comp-desc">在 RED ONE 上经 ROCm 加速运行，产出频道配图与素材。</p>
+        <div class="comp-mini">
+          <div class="row"><span>运行位置</span><span>RED ONE</span></div>
+          <div class="row"><span>加速</span><span>ROCm</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-card">
+      <div class="comp-img icon-only">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 24h6l4-12 6 24 4-16 4 8h12"></path>
+        </svg>
+      </div>
+      <div class="comp-body">
+        <div class="comp-role">语音处理</div>
+        <div class="comp-name">RVC</div>
+        <div class="comp-sub">VOICE CONVERSION</div>
+        <p class="comp-desc">保留原始韵律与节奏，替换音色 —— 用于体育解说类素材的再创作实验。</p>
+        <div class="comp-mini">
+          <div class="row"><span>状态</span><span>实验探索</span></div>
+          <div class="row"><span>保留项</span><span>原始韵律</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-card">
+      <div class="comp-img icon-only">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M24 6l16 9v18l-16 9-16-9V15z"></path>
+          <path d="M24 6v18m0 0l16-9M24 24L8 15m16 9v18"></path>
+        </svg>
+      </div>
+      <div class="comp-body">
+        <div class="comp-role">可视化</div>
+        <div class="comp-name">Three.js</div>
+        <div class="comp-sub">3D PLANET EXPLORER</div>
+        <p class="comp-desc">行星内部结构探索器，支持剖面分层动画，用于频道视频素材。</p>
+        <div class="comp-mini">
+          <div class="row"><span>类型</span><span>WebGL</span></div>
+          <div class="row"><span>特性</span><span>分层剖面动画</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ========== FULL STACK MANIFEST ========== -->
+<section id="stack">
+  <div class="section-head reveal">
+    <div class="kicker">· 完整软件栈清单 ·</div>
+    <h2>每一层，各归其位</h2>
+  </div>
+
+  <div class="spec-table-wrap reveal">
+    <table class="spec-table">
+      <tbody><tr>
+        <td class="spec-role">虚拟化</td>
+        <td class="spec-name">Proxmox VE<span class="sub">底层 Hypervisor</span></td>
+        <td class="spec-detail">Geekom G3 常驻运行，宿主全部服务容器</td>
+      </tr>
+      <tr>
+        <td class="spec-role">容器</td>
+        <td class="spec-name">Debian 13 LXC<span class="sub">非特权容器</span></td>
+        <td class="spec-detail">UID 偏移 100000，隔离运行环境</td>
+      </tr>
+      <tr>
+        <td class="spec-role">编排</td>
+        <td class="spec-name">n8n<span class="sub">工作流自动化引擎</span></td>
+        <td class="spec-detail">RSS 抓取 → 聚合 → API 调用 → 落盘</td>
+      </tr>
+      <tr>
+        <td class="spec-role">云端 LLM</td>
+        <td class="spec-name">DeepSeek API<span class="sub">非敏感内容处理</span></td>
+        <td class="spec-detail">摘要 / 翻译 / 结构化改写</td>
+      </tr>
+      <tr>
+        <td class="spec-role">本地 LLM</td>
+        <td class="spec-name">Qwen（MLX）<span class="sub">隐私推理</span></td>
+        <td class="spec-detail">Mac Mini M4 · 24GB 统一内存本地运行</td>
+      </tr>
+      <tr>
+        <td class="spec-role">存储</td>
+        <td class="spec-name">Samba<span class="sub">跨主机共享卷</span></td>
+        <td class="spec-detail">Obsidian 知识库挂载点</td>
+      </tr>
+      <tr>
+        <td class="spec-role">图像生成</td>
+        <td class="spec-name">FLUX<span class="sub">扩散模型</span></td>
+        <td class="spec-detail">RED ONE · ROCm 7.x 加速</td>
+      </tr>
+      <tr>
+        <td class="spec-role">语音</td>
+        <td class="spec-name">RVC<span class="sub">音色转换</span></td>
+        <td class="spec-detail">保留原始韵律，替换音色</td>
+      </tr>
+      <tr>
+        <td class="spec-role">可视化</td>
+        <td class="spec-name">Three.js<span class="sub">3D 行星结构探索器</span></td>
+        <td class="spec-detail">分层剖面动画</td>
+      </tr>
+      <tr>
+        <td class="spec-role">远程管理</td>
+        <td class="spec-name">SSH / 屏幕共享<span class="sub">MacBook Air M1 管理端</span></td>
+        <td class="spec-detail">USB4 直连 + 局域网远程控制</td>
+      </tr>
+    </tbody></table>
+  </div>
+
+  <div class="directive reveal" style="max-width:900px; margin-left:auto; margin-right:auto;">
+    <div class="k">架构理念</div>
+    <div class="v">常驻服务留在低功耗节点，AI PC 只在真正需要重算力时被唤醒。</div>
+  </div>
+</section>
+
+<footer>
+  <div class="fline">驱动 <b>CosmicSpaceDiary</b>（宇宙空间日志）自动化内容创作</div>
+  <div class="fline"><a class="back-link" href="file:///Users/kaibo/Downloads/red-one.html">← 查看硬件平台 RED ONE</a></div>
+</footer>
+
+<script>
+  // Scroll reveal — same behavior as the RED ONE hardware page
+  const revealEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+  revealEls.forEach(el => io.observe(el));
+</script>
+
+
+
+</body></html>

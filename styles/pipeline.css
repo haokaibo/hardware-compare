@@ -1,0 +1,54 @@
+/* =============================================
+   Pipeline — Page-local styles
+   PIPELINE ZERO (software architecture page)
+   Depends on theme.css + base.css — do not duplicate
+   their tokens or components here, only extend them.
+   ============================================= */
+
+/* Abstract icon frame used in pin-media in place of product photography —
+   the software layer is represented, not photographed. */
+.pin-media .frame .icon-stage {
+  position: relative; z-index: 2; width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+}
+.pin-media .frame .icon-stage svg { width: 42%; height: 42%; }
+.theme-ryzen .icon-stage svg { color: var(--accent-orange-soft); }
+.theme-radeon .icon-stage svg { color: var(--accent-red-soft); }
+.pin-media .frame .grid-lines {
+  position: absolute; inset: 0; opacity: .35;
+  background-image:
+    linear-gradient(var(--border-subtle) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border-subtle) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* comp-img icon replacement (no product photography for software parts) */
+.comp-img.icon-only, .comp-hero .card-img.icon-only {
+  display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(circle at 50% 40%, rgba(242,102,28,0.10), transparent 65%), #050505;
+}
+.comp-img.icon-only svg { width: 34%; height: 34%; color: var(--text-dim); transition: color .4s var(--ease); }
+.comp-card:hover .comp-img.icon-only svg { color: var(--accent-orange-soft); }
+
+/* status chip used sparingly to mark build/dev state honestly */
+.status-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: .5px;
+  color: var(--text-dim); border: 1px solid var(--border-default);
+  border-radius: 999px; padding: 4px 10px; margin-top: 4px;
+}
+.status-chip.dot::before {
+  content: ''; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--warning); flex: none;
+}
+
+.back-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  color: var(--text-muted); text-decoration: none; font-size: 13px;
+  transition: color .2s;
+}
+.back-link:hover { color: var(--accent-orange-soft); }
+
+@media (max-width: 640px) {
+  .pipe-node { padding: 20px 14px; }
+}
