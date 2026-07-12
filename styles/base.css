@@ -264,6 +264,7 @@ section { position: relative; }
 
 @media (max-width: 860px) {
   .comp-hero .card { grid-template-columns: 1fr; }
+  .comp-hero .card.reverse { grid-template-columns: 1fr; }
   .comp-hero .card-img { min-height: 200px; height: 200px; }
   .comp-hero .card-body { padding: 24px; }
   .comp-hero .card-mini { grid-template-columns: 1fr; }
