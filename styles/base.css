@@ -220,6 +220,9 @@ section { position: relative; }
   box-shadow: var(--shadow-card);
   display: grid; grid-template-columns: 360px 1fr; min-height: 260px;
 }
+.comp-hero .card.reverse {
+  grid-template-columns: 1fr 360px;
+}
 .comp-hero .card:hover {
   border-color: var(--border-default);
 }
