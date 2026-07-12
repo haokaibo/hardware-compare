@@ -3,38 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>消费级 AI 硬件基准测试 - GPURank.ai</title>
+    <title>AI 生产力 GPU 跑分榜 - GPURank.ai</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="data/gpu-dataset.js"></script>
     <link rel="stylesheet" href="styles/theme.css">
+    <link rel="stylesheet" href="styles/base.css">
     <link rel="stylesheet" href="styles/index.css">
 </head>
 <body>
 
-<header>
-    <div class="logo-area" onclick="window.location.href='index.html'" style="cursor:pointer"><div class="logo-icon"></div>GPURank.ai</div>
-    <nav>
-        <ul id="top-nav">
-            <li><button class="nav-link active">消费级 GPU 矩阵</button></li>
-            <li><button class="nav-link" onclick="window.location.href='bandwidth_ladder.html'">带宽阶梯</button></li>
-            <li><button class="nav-link" onclick="window.location.href='vram-calc.html'">LLM 显存计算器</button></li>
-        </ul>
-    </nav>
-</header>
+<nav class="nav">
+    <div class="nav-inner">
+        <div class="nav-logo">GPURank.ai</div>
+        <div class="nav-links">
+            <a href="index.html" style="color:var(--text-primary);font-weight:600;">GPU 矩阵</a>
+            <a href="bandwidth_ladder.html">带宽阶梯</a>
+            <a href="vram-calc.html">显存计算器</a>
+        </div>
+    </div>
+</nav>
 
 <main>
-    <div class="header-headline">
+    <div class="hero-slim">
         <h1>AI 生产力 GPU 跑分榜</h1>
         <div class="desc-text">覆盖消费级至数据中心级 GPU · 实测文生图 / 文生视频 / LLM 推理性能表现</div>
     </div>
 
-    <!-- 冠军看板（由 JS 数据驱动渲染） -->
+    <!-- Champion grid -->
     <div class="champion-grid" id="championGrid"></div>
 
-    <!-- 筛选器 -->
+    <!-- Filters -->
     <div class="filter-section">
         <div class="filter-group">
-            <div class="filter-label">任务类型</div>
+            <div class="filter-label">任务</div>
             <button class="filter-chip selected" data-group="task" data-value="all">全部</button>
             <button class="filter-chip" data-group="task" data-value="img">文生图</button>
             <button class="filter-chip" data-group="task" data-value="vid">文生视频</button>
@@ -48,7 +49,7 @@
             <button class="filter-chip" data-group="vram" data-value="24">24GB+</button>
         </div>
         <div class="filter-group">
-            <div class="filter-label">预算 (CAD)</div>
+            <div class="filter-label">预算</div>
             <button class="filter-chip selected" data-group="budget" data-value="all">不限</button>
             <button class="filter-chip" data-group="budget" data-value="800">≤$800</button>
             <button class="filter-chip" data-group="budget" data-value="1500">≤$1500</button>
@@ -56,8 +57,8 @@
     </div>
 
     <div class="view-switcher">
-        <button class="view-tab active" onclick="switchView('table-panel', this)">📊 性能指标总览大表</button>
-        <button class="view-tab" onclick="switchView('chart-panel', this)">📈 象限分析图 (模仿 Artificial Analysis)</button>
+        <button class="view-tab active" onclick="switchView('table-panel', this)">性能指标总览</button>
+        <button class="view-tab" onclick="switchView('chart-panel', this)">象限分析图</button>
     </div>
 
     <div id="table-panel" class="content-panel active">
@@ -65,18 +66,17 @@
             <table>
                 <thead>
                     <tr>
-                        <th style="width: 40px;">#</th>
-                        <th style="width: 24px;">级别</th>
-                        <th style="width: 220px;">硬件型号</th>
+                        <th style="width:40px;">#</th>
+                        <th style="width:24px;">级</th>
+                        <th>硬件型号</th>
                         <th>文生图 (it/s)</th>
-                        <th>文生视频 (5s/720p 耗时)</th>
-                        <th>LLM 推理速度 (tok/s)</th>
-                        <th>市场参考价 (CAD)</th>
-                        <th style="font-weight: 700; color: var(--text-main);">性价比得分</th>
+                        <th>文生视频</th>
+                        <th>LLM 推理 (tok/s)</th>
+                        <th>参考价 (CAD)</th>
+                        <th>性价比</th>
                     </tr>
                 </thead>
-                <tbody id="gpu-rows-target">
-                    </tbody>
+                <tbody id="gpu-rows-target"></tbody>
             </table>
         </div>
     </div>
@@ -87,7 +87,7 @@
         </div>
     </div>
 
-    <footer>
+    <footer class="page-footer">
         <strong>测算规格与基准说明：</strong><br>
         测试日期：2026年5月 | 宿主机环境：Ubuntu 24.04, CUDA 12.8, PyTorch 2.6<br>
         • <strong>文生图</strong>：基于 Flux.1-Dev (FP8 精度) 测算每秒迭代次数 (it/s) | • <strong>文生视频</strong>：基于 GenVideoX-5B 渲染一段 5秒 720p 视频的完整执行耗时 (越小越好) | • <strong>LLM推理</strong>：基于 Llama-4-70B-Q4_K_M 测算首字输出后的持续生成速度 (tok/s)。
@@ -95,22 +95,18 @@
 </main>
 
 <script>
-    // ===== 筛选器状态 =====
     const filters = { task: 'all', vram: 'all', budget: 'all' };
 
-    // 从 desc 提取显存数值
     function extractVRAM(desc) {
         const m = desc.match(/(\d+)\s*GB/i);
         return m ? parseInt(m[1]) : 0;
     }
 
-    // 从 price 提取价格数值
     function extractPrice(price) {
         const m = price.match(/\$?([\d,]+)/);
         return m ? parseInt(m[1].replace(/,/g, '')) : Infinity;
     }
 
-    // 判断一项是否通过当前筛选
     function passesFilter(item) {
         if (filters.vram !== 'all') {
             const gb = extractVRAM(item.desc);
@@ -124,7 +120,6 @@
         return true;
     }
 
-    // 根据排名映射颜色层级（适配 21 项）
     function getTierColors(rank) {
         if (rank <= 3)  return { img: '#2D68D9', vid: '#2D68D9', llm: '#2D68D9' };
         if (rank <= 5)  return { img: '#319795', vid: '#319795', llm: '#319795' };
@@ -133,104 +128,79 @@
         return { img: '#A0AEC0', vid: '#A0AEC0', llm: '#A0AEC0' };
     }
 
-    // 渲染冠军看板
     function renderChampions() {
-        const imgChamp = GPU_BENCHMARKS.reduce((a, b) => a.imgVal >= b.imgVal ? a : b);
-        const vidChamp = GPU_BENCHMARKS.reduce((a, b) => {
+        const imgChamp = GPU_BENCHMARKS.reduce((a,b) => a.imgVal >= b.imgVal ? a : b);
+        const vidChamp = GPU_BENCHMARKS.reduce((a,b) => {
             const at = a.vidText === '显存不足' ? Infinity : parseInt(a.vidText);
             const bt = b.vidText === '显存不足' ? Infinity : parseInt(b.vidText);
             return at <= bt ? a : b;
         });
-        const llmChamp = GPU_BENCHMARKS.reduce((a, b) => a.llmVal >= b.llmVal ? a : b);
-        const valueChamp = GPU_BENCHMARKS.reduce((a, b) => a.ratio >= b.ratio ? a : b);
+        const llmChamp = GPU_BENCHMARKS.reduce((a,b) => a.llmVal >= b.llmVal ? a : b);
+        const valueChamp = GPU_BENCHMARKS.reduce((a,b) => a.ratio >= b.ratio ? a : b);
 
         document.getElementById('championGrid').innerHTML = `
             <div class="champion-card">
-                <div class="champ-header">🖼️ 文生图冠军</div>
+                <div class="champ-header">文生图冠军</div>
                 <div class="gpu-model">${imgChamp.name}</div>
-                <div class="model-details">Flux.1 Dev · 1024px · <span class="highlight-data">${imgChamp.imgVal.toFixed(1)} it/s</span></div>
+                <div class="model-details">Flux.1 Dev · <span class="highlight-data">${imgChamp.imgVal.toFixed(1)} it/s</span></div>
             </div>
             <div class="champion-card">
-                <div class="champ-header">📹 文生视频冠军</div>
+                <div class="champ-header">文生视频冠军</div>
                 <div class="gpu-model">${vidChamp.name}</div>
-                <div class="model-details">5s 720p · <span class="highlight-data">${vidChamp.vidText}</span> 生成时间</div>
+                <div class="model-details">5s 720p · <span class="highlight-data">${vidChamp.vidText}</span></div>
             </div>
             <div class="champion-card">
-                <div class="champ-header">💬 LLM 推理冠军</div>
+                <div class="champ-header">LLM 推理冠军</div>
                 <div class="gpu-model">${llmChamp.name}</div>
                 <div class="model-details">Llama 4 70B · <span class="highlight-data">${llmChamp.llmVal} tok/s</span></div>
             </div>
-            <div class="champion-card champion-value">
-                <div class="champ-header">🏆 性价比之王</div>
-                <div class="gpu-model">${valueChamp.name} ${valueChamp.isHighlight ? '<span class="recommend-tag">💎 推荐</span>' : ''}</div>
+            <div class="champion-card">
+                <div class="champ-header">性价比之王</div>
+                <div class="gpu-model">${valueChamp.name}${valueChamp.isHighlight ? ' <span class="recommend-tag">推荐</span>' : ''}</div>
                 <div class="model-details">${valueChamp.desc} · <span class="highlight-data">${valueChamp.price}</span></div>
             </div>
         `;
     }
 
-    // 渲染表格
     function populateTable() {
         const container = document.getElementById('gpu-rows-target');
         const filtered = GPU_BENCHMARKS.filter(passesFilter);
-
         if (filtered.length === 0) {
-            container.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text-muted);">没有符合筛选条件的显卡</td></tr>';
+            container.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text-dim);">没有符合筛选条件的显卡</td></tr>';
             return;
         }
-
         container.innerHTML = filtered.map(item => {
             const colors = getTierColors(item.rank);
             const imgPct = (item.imgVal / item.imgMax) * 100;
             const llmPct = (item.llmVal / item.llmMax) * 100;
-
             let videoBlock = '';
             if (item.vidText === "显存不足") {
-                videoBlock = `<div class="metric-cell"><div class="cell-bar-container"><div class="cell-bar-fill" style="width:0%"></div></div><span class="oom-label">显存不足(OOM)</span></div>`;
+                videoBlock = `<div class="metric-cell"><div class="cell-bar-container"><div class="cell-bar-fill" style="width:0%"></div></div><span class="oom-label">OOM</span></div>`;
             } else {
-                const vidPct = Math.min((item.vidPct), 100);
-                videoBlock = `<div class="metric-cell"><div class="cell-bar-container"><div class="cell-bar-fill" style="background-color:${colors.vid}; width:${vidPct}%"></div></div><span class="cell-number-label">${item.vidText}</span></div>`;
+                const vidPct = Math.min(item.vidPct, 100);
+                videoBlock = `<div class="metric-cell"><div class="cell-bar-container"><div class="cell-bar-fill" style="background:${colors.vid};width:${vidPct}%"></div></div><span class="cell-number-label">${item.vidText}</span></div>`;
             }
-
             const rowClass = item.isHighlight ? 'class="highlight-row"' : '';
-            const tagHTML = item.isHighlight ? '<span class="tag-badge">核心推荐 💎</span>' : '';
-
-            return `
-                <tr ${rowClass}>
-                    <td style="color:var(--text-muted); font-weight:600;">${item.rank}</td>
-                    <td><span class="badge-index badge-${item.grade.toLowerCase()}">${item.grade}</span></td>
-                    <td>
-                        <div class="gpu-name-main">${item.name} ${tagHTML}</div>
-                        <div class="gpu-spec-sub">${item.desc}</div>
-                    </td>
-                    <td>
-                        <div class="metric-cell">
-                            <div class="cell-bar-container"><div class="cell-bar-fill" style="background-color:${colors.img}; width:${imgPct}%"></div></div>
-                            <span class="cell-number-label">${item.imgVal.toFixed(1)}</span>
-                        </div>
-                    </td>
-                    <td>${videoBlock}</td>
-                    <td>
-                        <div class="metric-cell">
-                            <div class="cell-bar-container"><div class="cell-bar-fill" style="background-color:${colors.llm}; width:${llmPct}%"></div></div>
-                            <span class="cell-number-label">${item.llmVal}</span>
-                        </div>
-                    </td>
-                    <td style="font-weight:500;">${item.price}</td>
-                    <td style="font-weight:700; color:var(--brand-blue);">${item.ratio}</td>
-                </tr>
-            `;
+            const tagHTML = item.isHighlight ? '<span class="tag-badge">核心推荐</span>' : '';
+            return `<tr ${rowClass}>
+                <td style="color:var(--text-dim);font-weight:600;">${item.rank}</td>
+                <td><span class="badge-index badge-${item.grade.toLowerCase()}">${item.grade}</span></td>
+                <td><div class="gpu-name-main">${item.name} ${tagHTML}</div><div class="gpu-spec-sub">${item.desc}</div></td>
+                <td><div class="metric-cell"><div class="cell-bar-container"><div class="cell-bar-fill" style="background:${colors.img};width:${imgPct}%"></div></div><span class="cell-number-label">${item.imgVal.toFixed(1)}</span></div></td>
+                <td>${videoBlock}</td>
+                <td><div class="metric-cell"><div class="cell-bar-container"><div class="cell-bar-fill" style="background:${colors.llm};width:${llmPct}%"></div></div><span class="cell-number-label">${item.llmVal}</span></div></td>
+                <td style="font-weight:500;">${item.price}</td>
+                <td style="font-weight:700;color:var(--accent-orange-soft);">${item.ratio}</td>
+            </tr>`;
         }).join('');
     }
 
-    // 筛选器点击处理
     document.querySelectorAll('.filter-chip').forEach(chip => {
         chip.addEventListener('click', function() {
             const group = this.dataset.group;
             const value = this.dataset.value;
-
-            document.querySelectorAll(`.filter-chip[data-group="${group}"]`).forEach(c => c.classList.remove('selected'));
+            document.querySelectorAll('.filter-chip[data-group="'+group+'"]').forEach(c => c.classList.remove('selected'));
             this.classList.add('selected');
-
             filters[group] = value;
             populateTable();
             renderChampions();
@@ -241,84 +211,41 @@
         });
     });
 
-    // 选项卡切换
     function switchView(panelId, tabButton) {
         document.querySelectorAll('.content-panel').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'));
-
         document.getElementById(panelId).classList.add('active');
         tabButton.classList.add('active');
-
-        if (panelId === 'chart-panel') {
-            initChart();
-        }
+        if (panelId === 'chart-panel') { initChart(); }
     }
 
-    // 头部导航交互
-    document.getElementById('top-nav').addEventListener('click', function(e) {
-        if (e.target.classList.contains('nav-link')) {
-            this.querySelectorAll('.nav-link').forEach(btn => btn.classList.remove('active'));
-            e.target.classList.add('active');
-        }
-    });
-
-    // 散点图
     let chartInstance = null;
     function initChart() {
         if (chartInstance) return;
-
         const filtered = GPU_BENCHMARKS.filter(passesFilter);
         const scatterData = filtered.map(item => {
             const priceNum = extractPrice(item.price);
             return { x: priceNum, y: item.llmVal, label: item.name + (item.isHighlight ? ' (二手价格之王)' : '') };
         });
-
         const maxPrice = Math.max(...scatterData.map(d => d.x), 200);
         const maxTok = Math.max(...scatterData.map(d => d.y), 50);
-
         const ctx = document.getElementById('analysisChart').getContext('2d');
         chartInstance = new Chart(ctx, {
             type: 'scatter',
-            data: {
-                datasets: [{
-                    label: 'GPU (2026年5月)',
-                    data: scatterData,
-                    backgroundColor: '#2D68D9',
-                    pointRadius: 7,
-                    pointHoverRadius: 11
-                }]
-            },
+            data: { datasets: [{ label: 'GPU (2026年5月)', data: scatterData, backgroundColor: '#ff8a45', pointRadius: 7, pointHoverRadius: 11 }] },
             options: {
-                responsive: true,
-                maintainAspectRatio: false,
+                responsive: true, maintainAspectRatio: false,
                 plugins: {
-                    tooltip: {
-                        callbacks: {
-                            label: function(ctx) {
-                                return `${ctx.raw.label}: 价格 $${ctx.raw.x.toLocaleString()} CAD, LLM ${ctx.raw.y} tok/s`;
-                            }
-                        }
-                    }
+                    tooltip: { callbacks: { label: function(ctx) { return ctx.raw.label + ': $' + ctx.raw.x.toLocaleString() + ' CAD, LLM ' + ctx.raw.y + ' tok/s'; } } }
                 },
                 scales: {
-                    x: {
-                        title: { display: true, text: '参考价格 (CAD) - 越左越划算', font: { weight: 'bold' } },
-                        type: 'logarithmic',
-                        min: 200,
-                        max: maxPrice * 1.15,
-                        ticks: { callback: function(v) { return '$' + v.toLocaleString(); } }
-                    },
-                    y: {
-                        title: { display: true, text: 'LLM 推理速度 (tok/s) - 越上越强劲', font: { weight: 'bold' } },
-                        min: 0,
-                        max: maxTok * 1.15
-                    }
+                    x: { title: { display: true, text: '参考价格 (CAD) — 越左越划算', font: { weight: 'bold' } }, type: 'logarithmic', min: 200, max: maxPrice * 1.15, ticks: { callback: function(v) { return '$' + v.toLocaleString(); } } },
+                    y: { title: { display: true, text: 'LLM 推理速度 (tok/s) — 越上越强劲', font: { weight: 'bold' } }, min: 0, max: maxTok * 1.15 }
                 }
             }
         });
     }
 
-    // 初始化
     renderChampions();
     populateTable();
 </script>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>换板成本计算器</title>
+<link rel="stylesheet" href="styles/theme.css">
+<link rel="stylesheet" href="styles/base.css">
+<link rel="stylesheet" href="styles/mobo-calc.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-logo">GPURank.ai</div>
+    <div class="nav-links">
+      <a href="index.html">GPU 矩阵</a>
+      <a href="bandwidth_ladder.html">带宽阶梯</a>
+      <a href="vram-calc.html">显存计算器</a>
+      <a href="motherboard_upgrade_calculator.html" class="active">换板计算</a>
+    </div>
+  </div>
+</nav>
+
+<main style="padding: 100px 24px 60px; max-width: 780px; margin: 0 auto;">
+  <h1>换板成本计算器</h1>
+  <p class="subtitle">单卡板过渡 → 明年底换双卡板,实际净支出是多少</p>
+
+  <div class="grid">
+    <div class="card">
+      <div class="card-label"><span class="dot now"></span>现在:已买入</div>
+      <div class="field">
+        <div>
+          <label>主板购入价</label>
+          <span class="hint">二手翻新,税前</span>
+        </div>
+        <div><span class="prefix">$</span><input type="number" id="boardBuy" value="206" step="1"></div>
+      </div>
+      <div class="field">
+        <div>
+          <label>机箱购入价</label>
+          <span class="hint">Corsair 4000D Airflow</span>
+        </div>
+        <div><span class="prefix">$</span><input type="number" id="caseBuy" value="140" step="1"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label"><span class="dot"></span>明年底:卖出旧件</div>
+      <div class="field">
+        <div>
+          <label>主板残值率</label>
+          <span class="hint">二手板买家较谨慎</span>
+        </div>
+        <div><input type="number" id="boardResalePct" value="45" step="1" style="width:60px"><span class="prefix" style="margin-left:4px">%</span></div>
+      </div>
+      <div class="field">
+        <div>
+          <label>机箱残值率</label>
+          <span class="hint">机箱磨损顾虑较少</span>
+        </div>
+        <div><input type="number" id="caseResalePct" value="55" step="1" style="width:60px"><span class="prefix" style="margin-left:4px">%</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="card-label"><span class="dot"></span>明年底:买入双卡新件</div>
+      <div class="field">
+        <div>
+          <label>ProArt B850-Creator Neo</label>
+          <span class="hint">预计一年后价格</span>
+        </div>
+        <div><span class="prefix">$</span><input type="number" id="newBoard" value="400" step="1"></div>
+      </div>
+      <div class="field">
+        <div>
+          <label>是否需要新机箱</label>
+          <span class="hint">4000D Airflow空间已够用</span>
+        </div>
+        <div><span class="prefix">$</span><input type="number" id="newCase" value="0" step="1"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label"><span class="dot"></span>对照:现在直接买双卡板</div>
+      <div class="field">
+        <div>
+          <label>现在的双卡板价格</label>
+          <span class="hint">已查得的当前价</span>
+        </div>
+        <div><span class="prefix">$</span><input type="number" id="directBoard" value="420" step="1"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="result-panel">
+    <div class="result-row">
+      <span class="label">回收:主板残值</span>
+      <span class="value" id="rBoard">$0</span>
+    </div>
+    <div class="result-row">
+      <span class="label">回收:机箱残值</span>
+      <span class="value" id="rCase">$0</span>
+    </div>
+    <div class="result-row">
+      <span class="label">支出:新主板</span>
+      <span class="value" id="rNewBoard">$0</span>
+    </div>
+    <div class="result-row">
+      <span class="label">支出:新机箱(如需要)</span>
+      <span class="value" id="rNewCase">$0</span>
+    </div>
+
+    <div class="final">
+      <div class="final-row">
+        <span class="final-label">明年换板这一步的净支出</span>
+        <span class="final-value" id="netSwap">$0</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="compare">
+    <div class="box">
+      <div class="t">路线一:先单卡过渡再换双卡(总计)</div>
+      <div class="n" id="pathA">$0</div>
+    </div>
+    <div class="box">
+      <div class="t">路线二:现在直接上双卡板</div>
+      <div class="n" id="pathB">$0</div>
+    </div>
+  </div>
+
+  <div class="result-panel" style="margin-top:16px;">
+    <div class="final-row">
+      <span class="final-label" id="diffLabel">差额</span>
+      <span class="final-value" id="diffValue">$0</span>
+    </div>
+  </div>
+
+  <p class="footnote">所有数字均可编辑 — 到时候用实际报价/成交价替换即可</p>
+</main>
+
+<script src="scripts/mobo-calc.js"></script>
+</body>
+</html>

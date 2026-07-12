@@ -5,20 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LLM 显存计算器 - VRAM Calculator</title>
     <link rel="stylesheet" href="styles/theme.css">
+    <link rel="stylesheet" href="styles/base.css">
     <link rel="stylesheet" href="styles/vram-calc.css">
 </head>
 <body>
 
-<header>
-    <div class="logo-area" onclick="window.location.href='index.html'" style="cursor:pointer"><div class="logo-icon"></div>GPURank.ai</div>
-    <nav>
-        <ul>
-            <li><button class="nav-link" onclick="window.location.href='index.html'">消费级 GPU 矩阵</button></li>
-            <li><button class="nav-link" onclick="window.location.href='bandwidth_ladder.html'">带宽阶梯</button></li>
-            <li><button class="nav-link active">LLM 显存计算器</button></li>
-        </ul>
-    </nav>
-</header>
+<nav class="nav">
+    <div class="nav-inner">
+        <div class="nav-logo">GPURank.ai</div>
+        <div class="nav-links">
+            <a href="index.html">GPU 矩阵</a>
+            <a href="bandwidth_ladder.html">带宽阶梯</a>
+            <a href="vram-calc.html" class="active">显存计算器</a>
+        </div>
+    </div>
+</nav>
 
   <!-- ===== Main Content ===== -->
   <main>

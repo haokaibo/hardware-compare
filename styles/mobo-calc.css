@@ -1,0 +1,158 @@
+/* =============================================
+   Motherboard Upgrade Calculator - Dark Apple
+   Uses CSS variables from theme.css + base.css
+   ============================================= */
+
+.wrap { max-width: 780px; margin: 0 auto; }
+
+h1 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 4px;
+  letter-spacing: -0.01em;
+}
+.subtitle {
+  color: var(--text-muted);
+  font-size: 13px;
+  margin: 0 0 28px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+@media (max-width: 640px) {
+  .grid { grid-template-columns: 1fr; }
+}
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  padding: 18px 20px;
+}
+.card-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent-orange);
+  flex-shrink: 0;
+}
+.dot.now { background: var(--warning); }
+
+.field {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  gap: 10px;
+}
+.field:last-child { margin-bottom: 0; }
+.field label {
+  font-size: 13px;
+  flex: 1;
+}
+.field .hint {
+  display: block;
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 1px;
+}
+
+input[type="number"] {
+  width: 90px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  text-align: right;
+}
+input[type="number"]:focus {
+  outline: none;
+  border-color: var(--accent-orange);
+}
+.prefix { color: var(--text-dim); font-size: 12px; margin-right: 4px; }
+
+.result-panel {
+  background: var(--bg-card);
+  border: 1px solid rgba(242,102,28,0.2);
+  border-radius: 10px;
+  padding: 22px 24px;
+  margin-top: 4px;
+}
+.result-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 13px;
+}
+.result-row:last-of-type { border-bottom: none; }
+.result-row .label { color: var(--text-muted); }
+.result-row .value {
+  font-family: var(--font-mono);
+  font-size: 14px;
+}
+
+.final {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-subtle);
+}
+.final-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.final-label { font-size: 13px; color: var(--text-dim); }
+.final-value {
+  font-family: var(--font-mono);
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--accent-orange-soft);
+}
+.final-value.negative { color: var(--success); }
+
+.compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 20px;
+}
+.compare .box {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+.compare .box .t {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+}
+.compare .box .n {
+  font-family: var(--font-mono);
+  font-size: 18px;
+}
+.compare .box.win { border-color: rgba(242,102,28,0.2); }
+
+.footnote {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 18px;
+  text-align: center;
+}
