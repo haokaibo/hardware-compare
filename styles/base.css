@@ -210,6 +210,62 @@ section { position: relative; }
 @media (max-width: 960px) { .comp-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 620px) { .comp-grid { grid-template-columns: 1fr; } }
 
+/* Hero component — single large card spanning full width */
+.comp-hero {
+  max-width: 1180px; margin: 0 auto 22px; padding: 0 24px;
+}
+.comp-hero .card {
+  background: var(--bg-card); border-radius: 20px; overflow: hidden;
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-card);
+  display: grid; grid-template-columns: 360px 1fr; min-height: 260px;
+}
+.comp-hero .card:hover {
+  border-color: var(--border-default);
+}
+.comp-hero .card-img {
+  overflow: hidden; background: #050505; height: 100%; min-height: 260px;
+}
+.comp-hero .card-img img {
+  width: 100%; height: 100%; object-fit: cover; opacity: .92;
+  transition: transform .6s var(--ease), opacity .6s var(--ease);
+}
+.comp-hero .card:hover .card-img img { transform: scale(1.04); opacity: 1; }
+.comp-hero .card-body {
+  padding: 32px 36px; display: flex; flex-direction: column; justify-content: center;
+}
+.comp-hero .card-role {
+  font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px;
+}
+.comp-hero .card-name {
+  font-size: 24px; font-weight: 700; letter-spacing: -.5px;
+  margin-bottom: 4px; color: var(--text-primary);
+}
+.comp-hero .card-sub {
+  font-size: 12px; color: var(--text-dim);
+  font-family: var(--font-mono); margin-bottom: 14px;
+}
+.comp-hero .card-desc {
+  font-size: 14px; color: var(--text-muted); line-height: 1.65; margin-bottom: 20px;
+}
+.comp-hero .card-mini {
+  border-top: 1px solid var(--border-subtle); padding-top: 16px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px 24px;
+}
+.comp-hero .card-mini .row {
+  display: flex; justify-content: space-between; font-size: 13px;
+}
+.comp-hero .card-mini .row span:first-child { color: var(--text-dim); }
+.comp-hero .card-mini .row span:last-child { font-weight: 600; color: var(--text-primary); }
+
+@media (max-width: 860px) {
+  .comp-hero .card { grid-template-columns: 1fr; }
+  .comp-hero .card-img { min-height: 200px; height: 200px; }
+  .comp-hero .card-body { padding: 24px; }
+  .comp-hero .card-mini { grid-template-columns: 1fr; }
+}
+
 .comp-card {
   background: var(--bg-card); border-radius: 20px; overflow: hidden;
   border: 1px solid var(--border-subtle);
