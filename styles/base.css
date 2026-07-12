@@ -207,7 +207,9 @@ section { position: relative; }
   max-width: 1180px; margin: 0 auto; padding: 20px 24px 120px;
   display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px;
 }
-.comp-grid.half { grid-template-columns: repeat(2, 1fr); }
+@media (min-width: 961px) {
+  .comp-grid.half { grid-template-columns: repeat(2, 1fr); }
+}
 @media (max-width: 960px) { .comp-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 620px) { .comp-grid { grid-template-columns: 1fr; } }
 
