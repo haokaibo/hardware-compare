@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THE MATH BEHIND IT — 权重与上下文空间的计算原理</title>
+<link rel="stylesheet" href="styles/theme.css">
+<link rel="stylesheet" href="styles/base.css">
+<link rel="stylesheet" href="styles/context-math.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-logo">RED ONE</div>
+    <div class="nav-links">
+      <a href="red_one.html">硬件</a>
+      <a href="pipeline.html">软件架构</a>
+      <a href="lifecycle.html">推理生命周期</a>
+      <a href="calculator.html">权重 / 上下文计算器</a>
+      <a href="context-math.html" aria-current="page">计算原理</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ========== HERO ========== -->
+<header class="hero">
+  <div class="hero-glow"></div>
+  <div class="eyebrow">WHY THE HYBRID MODEL CHANGES THE MATH</div>
+  <h1>THE MATH<br/>BEHIND IT</h1>
+  <p class="sub">权重体积怎么算、KV 缓存为什么只看部分层、混合线性注意力又省在哪 —— 计算器背后的完整推导过程。</p>
+  <div class="hero-id">
+    <span><b>bpw</b> 量化位宽换算</span>
+    <span><b>64</b> 层拆解</span>
+    <span><b>16</b> 层真正吃显存</span>
+    <span><b>R9700</b> 实测案例</span>
+  </div>
+  <div class="scroll-cue">
+    <span>SCROLL</span>
+    <div class="arrow"></div>
+  </div>
+</header>
+
+<!-- ========== RIBBON ========== -->
+<div class="ribbon">
+  <div class="ribbon-track">
+    <span><b>BITS PER WEIGHT</b></span><span class="dot">·</span>
+    <span><b>KV HEADS</b></span><span class="dot">·</span>
+    <span><b>HEAD_DIM</b></span><span class="dot">·</span>
+    <span><b>GATED DELTANET</b></span><span class="dot">·</span>
+    <span><b>GATED ATTENTION</b></span><span class="dot">·</span>
+    <span><b>COMPUTE BUFFER</b></span><span class="dot">·</span>
+    <span><b>CONTEXT WINDOW</b></span><span class="dot">·</span>
+    <span><b>BITS PER WEIGHT</b></span><span class="dot">·</span>
+    <span><b>KV HEADS</b></span><span class="dot">·</span>
+    <span><b>HEAD_DIM</b></span><span class="dot">·</span>
+    <span><b>GATED DELTANET</b></span><span class="dot">·</span>
+    <span><b>GATED ATTENTION</b></span><span class="dot">·</span>
+    <span><b>COMPUTE BUFFER</b></span><span class="dot">·</span>
+    <span><b>CONTEXT WINDOW</b></span><span class="dot">·</span>
+  </div>
+</div>
+
+<!-- ========== FIVE STEPS ========== -->
+<section id="steps">
+  <div class="section-head reveal">
+    <div class="kicker">· 推导过程 ·</div>
+    <h2>从参数量到"能开多大上下文"，五步</h2>
+    <p>每一步都可以单独验证，出结果不对时先定位是哪一步的输入填错了。</p>
+  </div>
+
+  <div class="pipeline-wrap reveal">
+    <div class="pipeline">
+      <div class="pipe-node">
+        <div class="n">STEP 01</div>
+        <h4>确定量化位宽</h4>
+        <p>GGUF K-quant 的平均 bits/权重（bpw）</p>
+      </div>
+      <div class="pipe-connector"></div>
+      <div class="pipe-node">
+        <div class="n">STEP 02</div>
+        <h4>算权重体积</h4>
+        <p>参数量 × bpw ÷ 8</p>
+      </div>
+      <div class="pipe-connector"></div>
+      <div class="pipe-node">
+        <div class="n">STEP 03</div>
+        <h4>识别真正吃 KV 的层</h4>
+        <p>混合架构里线性注意力层不计入</p>
+      </div>
+      <div class="pipe-connector"></div>
+      <div class="pipe-node">
+        <div class="n">STEP 04</div>
+        <h4>算每 token KV 开销</h4>
+        <p>2×KV heads×head_dim×精度字节×层数</p>
+      </div>
+      <div class="pipe-connector"></div>
+      <div class="pipe-node">
+        <div class="n">STEP 05</div>
+        <h4>算最大上下文</h4>
+        <p>(显存 − 权重 − 预留) ÷ 每 token 开销</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="formula-wrap reveal">
+    <div class="formula-block"><span class="step-tag">STEP 02 · 权重体积</span>weight_bytes = params × <span class="hl">bpw</span> ÷ 8
+
+例：27B 参数，Q4_K_M ≈ 4.85 bpw
+  27e9 × 4.85 ÷ 8 ≈ <span class="hl">16.4 GB</span></div>
+
+    <div class="formula-block"><span class="step-tag">STEP 04 · 每 token KV 缓存开销</span>kv_bytes_per_token
+  = 2(K+V) × <span class="hl">kv_heads</span> × <span class="hl">head_dim</span> × 精度字节 × <span class="hl2">注意力层数</span>
+
+例：4 个 KV head，head_dim 256，FP16 缓存，16 层真正做注意力
+  2 × 4 × 256 × 2 × 16 = <span class="hl">65,536 字节</span> ≈ 64 KB/token</div>
+
+    <div class="formula-block"><span class="step-tag">STEP 05 · 最大上下文</span>max_tokens = (VRAM − weight_bytes − overhead) ÷ kv_bytes_per_token
+
+例：32GB 显卡，Q4_K_M 权重 16.4GB，预留 1.5GB
+  (32e9 − 16.4e9 − 1.5e9) ÷ 65536 ≈ <span class="hl">225,000 tokens</span></div>
+  </div>
+</section>
+
+<!-- ========== LAYER PATTERN (signature) ========== -->
+<section id="layers">
+  <div class="section-head reveal">
+    <div class="kicker">· 为什么混合架构更省 ·</div>
+    <h2>64 层里，只有 16 层真正占 KV 缓存</h2>
+    <p>下面是 Qwen3.6-27B 的真实层结构：每 4 层一组，重复 16 组。橙色是 Gated DeltaNet（线性注意力，状态大小固定，不随上下文增长），红色才是 Gated Attention（会产生随上下文线性增长的 KV 缓存）。</p>
+  </div>
+
+  <div class="layer-strip-wrap reveal">
+    <div class="layer-strip" id="layerStrip"></div>
+    <div class="layer-legend">
+      <div class="item"><span class="dot linear"></span><b>48 层</b> Gated DeltaNet（线性注意力 · 固定状态）</div>
+      <div class="item"><span class="dot attn"></span><b>16 层</b> Gated Attention（产生 KV 缓存 · 决定上下文空间）</div>
+    </div>
+    <p class="layer-strip-caption">同样是"64 层 27B"，如果按标准稠密架构（64 层全部计入 KV 缓存）来算，同样显存下能开的上下文会缩水到这里的四分之一左右。</p>
+  </div>
+</section>
+
+<!-- ========== CONCEPTS ========== -->
+<section id="concepts">
+  <div class="section-head reveal">
+    <div class="kicker">· 关键变量 ·</div>
+    <h2>结果被这几个变量决定</h2>
+  </div>
+
+  <div class="comp-grid reveal">
+
+    <div class="comp-card">
+      <div class="comp-img icon-only">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="8" y="30" width="7" height="10"></rect>
+          <rect x="18" y="22" width="7" height="18"></rect>
+          <rect x="28" y="14" width="7" height="26"></rect>
+          <rect x="38" y="8" width="2" height="32"></rect>
+        </svg>
+      </div>
+      <div class="comp-body">
+        <div class="comp-role">STEP 01 · 02</div>
+        <div class="comp-name">量化位宽 bpw</div>
+        <div class="comp-sub">BITS PER WEIGHT</div>
+        <p class="comp-desc">GGUF 的 K-quant 是混合精度，"bpw"是平均值：Q4_K_M ≈4.85、Q5_K_M ≈5.69、Q6_K ≈6.59、Q8_0 ≈8.5。bpw 越高，权重越大，但精度损失越小。</p>
+        <div class="comp-mini">
+          <div class="row"><span>换算</span><span>体积 = 参数量×bpw/8</span></div>
+          <div class="row"><span>取舍</span><span>体积 vs 精度</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-card">
+      <div class="comp-img icon-only">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="14" cy="24" r="5"></circle>
+          <circle cx="34" cy="14" r="3"></circle>
+          <circle cx="34" cy="24" r="3"></circle>
+          <circle cx="34" cy="34" r="3"></circle>
+          <path d="M18 22l13-6M19 24h11M18 26l13 6"></path>
+        </svg>
+      </div>
+      <div class="comp-body">
+        <div class="comp-role">STEP 03 · 04</div>
+        <div class="comp-name">KV heads 数</div>
+        <div class="comp-sub">GQA / MQA</div>
+        <p class="comp-desc">分组查询注意力（GQA）下 KV heads 通常远少于 Q heads——比如 24 个 Q head 只对应 4 个 KV head，KV 缓存只按 KV heads 数计算，这也是它比 Q heads 数省的原因。</p>
+        <div class="comp-mini">
+          <div class="row"><span>决定</span><span>每层 KV 开销</span></div>
+          <div class="row"><span>越少</span><span>同显存能开越长</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-card">
+      <div class="comp-img icon-only">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 24c4-10 8-10 12 0s8 10 12 0 8-10 12 0 6 10 6 10"></path>
+          <path d="M6 34c4-6 8-6 12 0"></path>
+        </svg>
+      </div>
+      <div class="comp-body">
+        <div class="comp-role">跨阶段</div>
+        <div class="comp-name">混合线性注意力</div>
+        <div class="comp-sub">GATED DELTANET</div>
+        <p class="comp-desc">线性注意力层维护的是固定大小的循环状态，不随 token 数增长，所以不计入"上下文越长、显存越大"的那部分账，只有真正的 Gated Attention 层才计入。</p>
+        <div class="comp-mini">
+          <div class="row"><span>状态大小</span><span>固定，不随上下文变</span></div>
+          <div class="row"><span>本例占比</span><span>48 / 64 层</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-card">
+      <div class="comp-img icon-only">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="10" y="8" width="28" height="32" rx="3"></rect>
+          <path d="M16 18h16M16 24h16M16 30h10"></path>
+        </svg>
+      </div>
+      <div class="comp-body">
+        <div class="comp-role">STEP 04</div>
+        <div class="comp-name">KV 缓存量化</div>
+        <div class="comp-sub">FP16 / Q8_0 / Q4_0</div>
+        <p class="comp-desc">KV 缓存本身也能量化：FP16 每元素 2 字节，Q8_0 减半到 1 字节，Q4_0 再减半到 0.5 字节 —— 同样显存下上下文空间成倍增长，代价是长上下文场景下的精度损失。</p>
+        <div class="comp-mini">
+          <div class="row"><span>Q8_0</span><span>上下文空间 ×2</span></div>
+          <div class="row"><span>Q4_0</span><span>上下文空间 ×4</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-card">
+      <div class="comp-img icon-only">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M8 40V16a4 4 0 0 1 4-4h24a4 4 0 0 1 4 4v24"></path>
+          <path d="M8 40h32M16 40v-8M24 40v-14M32 40v-6"></path>
+        </svg>
+      </div>
+      <div class="comp-body">
+        <div class="comp-role">STEP 05</div>
+        <div class="comp-name">计算缓冲预留</div>
+        <div class="comp-sub">COMPUTE BUFFER</div>
+        <p class="comp-desc">llama.cpp 跑推理时还需要一块计算缓冲区（受 batch / ubatch 影响），加上驱动和其他常驻进程的开销，实际可用显存要比标称值留出余量，不能全部算给 KV 缓存。</p>
+        <div class="comp-mini">
+          <div class="row"><span>常见预留</span><span>1 ~ 2 GB</span></div>
+          <div class="row"><span>受影响于</span><span>batch / ubatch 设置</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-card">
+      <div class="comp-img icon-only">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 24h10M32 24h10M6 18l4 6-4 6M32 18l4 6-4 6"></path>
+          <rect x="18" y="16" width="12" height="16" rx="2"></rect>
+        </svg>
+      </div>
+      <div class="comp-body">
+        <div class="comp-role">上限</div>
+        <div class="comp-name">模型原生上下文</div>
+        <div class="comp-sub">NATIVE MAX</div>
+        <p class="comp-desc">就算显存怎么堆都够，上下文也不会超过模型训练时的原生上限（这里是 262,144 tokens）——算出来的理论值要跟这个上限取较小者。</p>
+        <div class="comp-mini">
+          <div class="row"><span>本例上限</span><span>262,144 tokens</span></div>
+          <div class="row"><span>超出部分</span><span>需要 YaRN 等外推</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ========== WORKED EXAMPLE ========== -->
+<section id="example">
+  <div class="section-head reveal">
+    <div class="kicker">· 实测案例 ·</div>
+    <h2>Qwen3.6-27B · R9700 32GB</h2>
+    <p>把上面五步套进这张卡的真实参数，两种常用量化方案分别能开多大上下文。</p>
+  </div>
+
+  <div class="example-wrap reveal">
+    <div class="example-grid">
+      <div class="example-card">
+        <div class="tag">Q4_K_M</div>
+        <div class="row"><span>权重体积</span><span>≈ 16.4 GB</span></div>
+        <div class="row"><span>剩余可用于 KV 缓存</span><span>≈ 14.1 GB</span></div>
+        <div class="row"><span>FP16 KV 缓存上下文</span><span>≈ 225K tokens</span></div>
+        <div class="row"><span>Q8_0 KV 缓存上下文</span><span>262K（打满原生上限）</span></div>
+      </div>
+      <div class="example-card">
+        <div class="tag">Q5_K_M</div>
+        <div class="row"><span>权重体积</span><span>≈ 19.2 GB</span></div>
+        <div class="row"><span>剩余可用于 KV 缓存</span><span>≈ 11.3 GB</span></div>
+        <div class="row"><span>FP16 KV 缓存上下文</span><span>≈ 180K tokens</span></div>
+        <div class="row"><span>Q8_0 KV 缓存上下文</span><span>262K（打满原生上限）</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="directive reveal" style="max-width:900px; margin-left:auto; margin-right:auto;">
+    <div class="k">核心结论</div>
+    <div class="v">得益于混合线性注意力，Q4_K_M 光靠 FP16 KV 缓存就已接近满血原生上下文；Q5_K_M 只要把 KV 缓存量化到 Q8_0，同样能轻松打满 262K —— 32GB 显存在这颗模型上，基本不用担心上下文不够用。</div>
+  </div>
+</section>
+
+<footer>
+  <div class="fline">看懂了推导，去 <b>计算器</b> 里换成你自己的模型试试</div>
+  <div class="fline"><a class="back-link" href="calculator.html">→ 打开权重 / 上下文计算器</a> &nbsp;·&nbsp; <a class="back-link" href="lifecycle.html">推理生命周期 →</a></div>
+</footer>
+
+<script>
+  // 生成 64 格层结构可视化：每 4 格一组（3 linear + 1 attn）
+  const strip = document.getElementById('layerStrip');
+  for (let i = 0; i < 64; i++) {
+    const blk = document.createElement('div');
+    blk.className = 'blk ' + ((i % 4 === 3) ? 'attn' : 'linear');
+    strip.appendChild(blk);
+  }
+</script>
+
+<script>
+  // Scroll reveal
+  const revealEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+  revealEls.forEach(el => io.observe(el));
+</script>
+
+</body></html>

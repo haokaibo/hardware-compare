@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>INFERENCE LIFECYCLE — 一次对话的处理生命周期</title>
+<link rel="stylesheet" href="styles/theme.css">
+<link rel="stylesheet" href="styles/base.css">
+<link rel="stylesheet" href="styles/lifecycle.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-logo">RED ONE</div>
+    <div class="nav-links">
+      <a href="red_one.html">硬件</a>
+      <a href="pipeline.html">软件架构</a>
+      <a href="lifecycle.html" aria-current="page">推理生命周期</a>
+      <a href="lifecycle.html#breakdown">时间占比</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ========== HERO ========== -->
+<header class="hero">
+  <div class="hero-glow"></div>
+  <div class="eyebrow">ONE CONVERSATION TURN, DECOMPOSED</div>
+  <h1>INFERENCE&nbsp;<br/>LIFECYCLE</h1>
+  <p class="sub">从按下发送到屏幕上出现最后一个字 —— 一次人机对话背后，请求依次流过的每一个阶段，以及时间究竟花在了哪里。</p>
+  <div class="hero-id">
+    <span><b>TTFT</b> 首字延迟</span>
+    <span><b>TPOT</b> 逐字延迟</span>
+    <span><b>5</b> 个可测阶段</span>
+    <span><b>R9700</b> 实测数据</span>
+  </div>
+  <div class="scroll-cue">
+    <span>SCROLL</span>
+    <div class="arrow"></div>
+  </div>
+</header>
+
+<!-- ========== RIBBON ========== -->
+<div class="ribbon">
+  <div class="ribbon-track">
+    <span><b>TOKENIZE</b></span><span class="dot">·</span>
+    <span><b>PREFILL</b></span><span class="dot">·</span>
+    <span><b>KV CACHE</b></span><span class="dot">·</span>
+    <span><b>DECODE</b></span><span class="dot">·</span>
+    <span><b>DETOKENIZE</b></span><span class="dot">·</span>
+    <span><b>TTFT</b></span><span class="dot">·</span>
+    <span><b>TPOT</b></span><span class="dot">·</span>
+    <span><b>STREAMING</b></span><span class="dot">·</span>
+    <span><b>CONTEXT WINDOW</b></span><span class="dot">·</span>
+    <span><b>TOKENIZE</b></span><span class="dot">·</span>
+    <span><b>PREFILL</b></span><span class="dot">·</span>
+    <span><b>KV CACHE</b></span><span class="dot">·</span>
+    <span><b>DECODE</b></span><span class="dot">·</span>
+    <span><b>DETOKENIZE</b></span><span class="dot">·</span>
+    <span><b>TTFT</b></span><span class="dot">·</span>
+    <span><b>TPOT</b></span><span class="dot">·</span>
+    <span><b>STREAMING</b></span><span class="dot">·</span>
+    <span><b>CONTEXT WINDOW</b></span><span class="dot">·</span>
+  </div>
+</div>
+
+<!-- ========== TIMELINE / PIPELINE ========== -->
+<section id="timeline">
+  <div class="section-head reveal">
+    <div class="kicker">· 处理管线 ·</div>
+    <h2>一次请求，六个阶段</h2>
+    <p>用户按下发送后，请求依次流过以下节点，每一步都可以单独测量耗时。</p>
+  </div>
+
+  <div class="pipeline-wrap reveal">
+    <div class="pipeline">
+      <div class="pipe-node">
+        <div class="n">STEP 01</div>
+        <h4>用户输入</h4>
+        <p>文本经网络传输到推理服务</p>
+      </div>
+      <div class="pipe-connector"></div>
+      <div class="pipe-node">
+        <div class="n">STEP 02</div>
+        <h4>Tokenization</h4>
+        <p>文本切分为模型可处理的 token 序列</p>
+      </div>
+      <div class="pipe-connector"></div>
+      <div class="pipe-node">
+        <div class="n">STEP 03</div>
+        <h4>Prefill</h4>
+        <p>并行处理全部输入 token，写入 KV Cache</p>
+      </div>
+      <div class="pipe-connector"></div>
+      <div class="pipe-node">
+        <div class="n">STEP 04</div>
+        <h4>Decode</h4>
+        <p>逐个生成输出 token，依赖上一步结果</p>
+      </div>
+      <div class="pipe-connector"></div>
+      <div class="pipe-node">
+        <div class="n">STEP 05</div>
+        <h4>Detokenization</h4>
+        <p>token 还原为可读文本</p>
+      </div>
+      <div class="pipe-connector"></div>
+      <div class="pipe-node">
+        <div class="n">STEP 06</div>
+        <h4>流式返回</h4>
+        <p>逐块推送到客户端，边生成边显示</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== TIME BREAKDOWN ========== -->
+<section id="breakdown">
+  <div class="section-head reveal">
+    <div class="kicker">· 时间占比 ·</div>
+    <h2>同样是一次对话，时间花在哪不一样</h2>
+    <p>Prompt 越长，Prefill 占比越高；输出越长，Decode 占比越高 —— 同一张显卡，在不同场景下"快"的定义完全不同。</p>
+  </div>
+
+  <div class="time-breakdown reveal">
+    <div class="time-columns">
+
+      <div class="time-col">
+        <div class="time-col-head">
+          <div class="time-col-title">短问答 · 长回复</div>
+          <div class="time-col-total">端到端总耗时 <b>2.40 s</b></div>
+        </div>
+        <div class="time-bar-vert">
+          <div class="time-seg stage-misc narrow" style="flex-grow:1"><span class="pct">1%</span><span class="lbl">Tokenization</span></div>
+          <div class="time-seg stage-prefill" style="flex-grow:5"><span class="pct">5%</span><span class="lbl">Prefill</span></div>
+          <div class="time-seg stage-decode" style="flex-grow:87"><span class="pct">87%</span><span class="lbl">Decode</span></div>
+          <div class="time-seg stage-misc narrow" style="flex-grow:2"><span class="pct">2%</span><span class="lbl">Detokenization</span></div>
+          <div class="time-seg stage-misc narrow" style="flex-grow:5"><span class="pct">5%</span><span class="lbl">Streaming</span></div>
+        </div>
+        <p class="time-col-note">Prompt 很短、输出很长，Decode（逐字生成）几乎主导了整个耗时，Text Generation Speed 更关键。</p>
+      </div>
+
+      <div class="time-col">
+        <div class="time-col-head">
+          <div class="time-col-title">长文档 · 短摘要（RAG）</div>
+          <div class="time-col-total">端到端总耗时 <b>3.20 s</b></div>
+        </div>
+        <div class="time-bar-vert">
+          <div class="time-seg stage-misc narrow" style="flex-grow:3"><span class="pct">3%</span><span class="lbl">Tokenization</span></div>
+          <div class="time-seg stage-prefill" style="flex-grow:68"><span class="pct">68%</span><span class="lbl">Prefill</span></div>
+          <div class="time-seg stage-decode" style="flex-grow:22"><span class="pct">22%</span><span class="lbl">Decode</span></div>
+          <div class="time-seg stage-misc narrow" style="flex-grow:2"><span class="pct">2%</span><span class="lbl">Detokenization</span></div>
+          <div class="time-seg stage-misc narrow" style="flex-grow:5"><span class="pct">5%</span><span class="lbl">Streaming</span></div>
+        </div>
+        <p class="time-col-note">Prompt 可达数千 token，Prefill（处理输入）占据了大部分耗时，Prompt Processing Speed 更关键。</p>
+      </div>
+
+    </div>
+
+    <div class="time-legend">
+      <div class="item"><span class="dot misc"></span>Tokenization / Detokenization / Streaming（固定开销，通常很小）</div>
+      <div class="item"><span class="dot prefill"></span>Prefill（处理输入 — Prompt Processing Speed）</div>
+      <div class="item"><span class="dot decode"></span>Decode（生成输出 — Text Generation Speed）</div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== STAGE DETAILS ========== -->
+<section>
+  <div class="section-head reveal">
+    <div class="kicker">· 阶段详解 ·</div>
+    <h2>每个阶段，决定速度的因素不同</h2>
+    <p>Prefill 是并行计算密集型，Decode 是显存带宽密集型 —— 这也是同一张 GPU 在两项跑分上表现不同的根本原因。</p>
+  </div>
+
+  <div class="comp-grid reveal">
+
+    <div class="comp-card">
+      <div class="comp-img icon-only">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10 14h10M24 14h4M32 14h6M10 24h6M20 24h4M28 24h10M10 34h14M28 34h10"></path>
+        </svg>
+      </div>
+      <div class="comp-body">
+        <div class="comp-role">STEP 02</div>
+        <div class="comp-name">Tokenization</div>
+        <div class="comp-sub">TEXT → TOKEN IDS</div>
+        <p class="comp-desc">按分词器词表把文本切成 token，CPU 上完成，耗时通常在毫秒级，占比极小。</p>
+        <div class="comp-mini">
+          <div class="row"><span>计算类型</span><span>CPU · 轻量</span></div>
+          <div class="row"><span>占比</span><span>通常 &lt;3%</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-card">
+      <div class="comp-img icon-only">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="8" y="10" width="9" height="28" rx="1.5"></rect>
+          <rect x="19.5" y="10" width="9" height="28" rx="1.5"></rect>
+          <rect x="31" y="10" width="9" height="28" rx="1.5"></rect>
+        </svg>
+      </div>
+      <div class="comp-body">
+        <div class="comp-role">STEP 03</div>
+        <div class="comp-name">Prefill</div>
+        <div class="comp-sub">PROMPT PROCESSING SPEED</div>
+        <p class="comp-desc">全部输入 token 一次性并行送入模型计算，写入 KV Cache。属于计算密集型（compute-bound），吃算力和并行矩阵吞吐。</p>
+        <div class="comp-mini">
+          <div class="row"><span>瓶颈</span><span>算力 / 矩阵吞吐</span></div>
+          <div class="row"><span>Prompt 越长</span><span>占比越高</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-card">
+      <div class="comp-img icon-only">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="10" cy="24" r="3" fill="currentColor" stroke="none"></circle>
+          <circle cx="20" cy="24" r="3" fill="currentColor" stroke="none" opacity="0.7"></circle>
+          <circle cx="30" cy="24" r="3" fill="currentColor" stroke="none" opacity="0.45"></circle>
+          <path d="M35 24h5M36 20l4 4-4 4"></path>
+        </svg>
+      </div>
+      <div class="comp-body">
+        <div class="comp-role">STEP 04</div>
+        <div class="comp-name">Decode</div>
+        <div class="comp-sub">TEXT GENERATION SPEED</div>
+        <p class="comp-desc">逐个生成 token，每一步都依赖上一步的结果，无法并行。属于显存带宽密集型（memory-bound），吃 VRAM 带宽。</p>
+        <div class="comp-mini">
+          <div class="row"><span>瓶颈</span><span>显存带宽</span></div>
+          <div class="row"><span>输出越长</span><span>占比越高</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-card">
+      <div class="comp-img icon-only">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10 14l14 10 14-10M10 34l14-10 14 10"></path>
+        </svg>
+      </div>
+      <div class="comp-body">
+        <div class="comp-role">STEP 05</div>
+        <div class="comp-name">Detokenization</div>
+        <div class="comp-sub">TOKEN IDS → TEXT</div>
+        <p class="comp-desc">把模型输出的 token id 还原成可读文本，与分词一样是轻量级 CPU 操作。</p>
+        <div class="comp-mini">
+          <div class="row"><span>计算类型</span><span>CPU · 轻量</span></div>
+          <div class="row"><span>占比</span><span>通常 &lt;3%</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-card">
+      <div class="comp-img icon-only">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M8 24h10M22 24h10M8 18l4 6-4 6M22 18l4 6-4 6"></path>
+          <path d="M36 24h4M40 24l-3-3M40 24l-3 3"></path>
+        </svg>
+      </div>
+      <div class="comp-body">
+        <div class="comp-role">STEP 01 · 06</div>
+        <div class="comp-name">网络传输</div>
+        <div class="comp-sub">REQUEST / STREAMING</div>
+        <p class="comp-desc">请求上行与逐块流式返回，局域网内通常可忽略，跨公网或高延迟链路会放大占比。</p>
+        <div class="comp-mini">
+          <div class="row"><span>影响因素</span><span>网络延迟</span></div>
+          <div class="row"><span>本地部署</span><span>占比极小</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-card">
+      <div class="comp-img icon-only">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="10" y="8" width="28" height="32" rx="3"></rect>
+          <path d="M16 18h16M16 24h16M16 30h10"></path>
+        </svg>
+      </div>
+      <div class="comp-body">
+        <div class="comp-role">跨阶段</div>
+        <div class="comp-name">KV Cache</div>
+        <div class="comp-sub">SHARED STATE</div>
+        <p class="comp-desc">Prefill 阶段写入、Decode 阶段持续读取的中间状态，随上下文长度线性增长，占用显存并影响两个阶段的速度。</p>
+        <div class="comp-mini">
+          <div class="row"><span>存放位置</span><span>VRAM</span></div>
+          <div class="row"><span>随上下文</span><span>线性增长</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ========== METRICS TABLE ========== -->
+<section id="metrics">
+  <div class="section-head reveal">
+    <div class="kicker">· 关键指标 ·</div>
+    <h2>评测报告里这些词到底在测什么</h2>
+  </div>
+
+  <div class="spec-table-wrap reveal">
+    <table class="spec-table">
+      <tbody>
+      <tr>
+        <td class="spec-role">TTFT</td>
+        <td class="spec-name">Time To First Token<span class="sub">首字延迟</span></td>
+        <td class="spec-detail">从发出请求到收到第一个输出 token 的时间，主要由 Prefill 速度决定</td>
+      </tr>
+      <tr>
+        <td class="spec-role">TPOT / ITL</td>
+        <td class="spec-name">Time Per Output Token<span class="sub">逐字延迟</span></td>
+        <td class="spec-detail">生成每个后续 token 的平均间隔，即 Text Generation Speed 的倒数</td>
+      </tr>
+      <tr>
+        <td class="spec-role">吞吐量</td>
+        <td class="spec-name">Throughput<span class="sub">Tokens / Second</span></td>
+        <td class="spec-detail">Prefill 与 Decode 分别有各自的 tokens/s，不能混用同一个数字</td>
+      </tr>
+      <tr>
+        <td class="spec-role">端到端延迟</td>
+        <td class="spec-name">End-to-End Latency<span class="sub">总耗时</span></td>
+        <td class="spec-detail">TTFT + 输出长度 × TPOT + 网络与分词开销</td>
+      </tr>
+      <tr>
+        <td class="spec-role">上下文长度</td>
+        <td class="spec-name">Context Window<span class="sub">Prompt + 输出总长</span></td>
+        <td class="spec-detail">越长，KV Cache 越大，Prefill 占比越高，对显存带宽与容量要求越高</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="directive reveal" style="max-width:900px; margin-left:auto; margin-right:auto;">
+    <div class="k">核心结论</div>
+    <div class="v">Prefill 决定长文档 / RAG 场景的响应速度，Decode 决定长对话 / 长输出场景的流畅度 —— 选硬件前，先看清自己的场景更接近哪一种。</div>
+  </div>
+</section>
+
+<footer>
+  <div class="fline">拆解 <b>一次人机对话</b> 背后的推理生命周期</div>
+  <div class="fline"><a class="back-link" href="pipeline.html">← 查看软件架构 PIPELINE ZERO</a></div>
+</footer>
+
+<script>
+  // Scroll reveal
+  const revealEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+  revealEls.forEach(el => io.observe(el));
+</script>
+
+</body></html>

@@ -1,0 +1,73 @@
+/* =============================================
+   Context-math — Page-local styles
+   THE MATH BEHIND WEIGHTS & CONTEXT
+   Depends on theme.css + base.css — do not duplicate
+   their tokens or components here, only extend them.
+   ============================================= */
+
+/* ---------- Formula blocks ---------- */
+.formula-wrap { max-width: 820px; margin: 0 auto; padding: 0 24px 30px; }
+.formula-block {
+  background: var(--bg-secondary); border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg); padding: 22px 26px; margin-bottom: 14px;
+  font-family: var(--font-mono); font-size: 14px; color: var(--text-secondary);
+  line-height: 1.8; overflow-x: auto; white-space: pre;
+}
+.formula-block .step-tag {
+  display: inline-block; font-family: var(--font-sans); font-size: 11px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase; color: var(--accent-orange-soft);
+  margin-bottom: 8px; white-space: normal;
+}
+.formula-block .hl { color: var(--accent-orange-soft); font-weight: 700; }
+.formula-block .hl2 { color: var(--accent-red-soft); font-weight: 700; }
+
+/* ---------- Layer pattern strip (signature element) ---------- */
+.layer-strip-wrap { max-width: 1000px; margin: 0 auto; padding: 10px 24px 30px; }
+.layer-strip {
+  display: grid; grid-template-columns: repeat(64, 1fr); gap: 3px;
+  border-radius: var(--radius); overflow: hidden; padding: 14px;
+  background: var(--bg-card); border: 1px solid var(--border-subtle);
+}
+.layer-strip .blk { height: 34px; border-radius: 3px; }
+.layer-strip .blk.linear {
+  background: rgba(255,138,69,0.22);
+}
+.layer-strip .blk.attn {
+  background: var(--accent-red-soft);
+  box-shadow: 0 0 10px rgba(255,59,48,0.45);
+}
+@media (max-width: 760px) {
+  .layer-strip { grid-template-columns: repeat(32, 1fr); }
+  .layer-strip .blk { height: 22px; }
+}
+@media (max-width: 460px) {
+  .layer-strip { grid-template-columns: repeat(16, 1fr); }
+}
+
+.layer-legend {
+  display: flex; flex-wrap: wrap; gap: 10px 28px; justify-content: center;
+  margin-top: 18px; font-size: 13px; color: var(--text-muted);
+}
+.layer-legend .item { display: flex; align-items: center; gap: 8px; }
+.layer-legend .dot { width: 12px; height: 12px; border-radius: 3px; flex: none; }
+.layer-legend .dot.linear { background: rgba(255,138,69,0.5); }
+.layer-legend .dot.attn { background: var(--accent-red-soft); }
+.layer-legend b { color: var(--text-primary); }
+
+.layer-strip-caption {
+  text-align: center; color: var(--text-dim); font-size: 12.5px; margin-top: 14px; line-height: 1.6;
+}
+
+/* ---------- Worked example ---------- */
+.example-wrap { max-width: 900px; margin: 0 auto; padding: 0 24px 40px; }
+.example-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.example-card {
+  background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg);
+  padding: 24px 26px;
+}
+.example-card .tag { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--accent-orange-soft); margin-bottom: 14px; }
+.example-card .row { display: flex; justify-content: space-between; font-size: 13.5px; padding: 8px 0; border-bottom: 1px solid var(--border-subtle); }
+.example-card .row:last-child { border-bottom: none; }
+.example-card .row span:first-child { color: var(--text-dim); }
+.example-card .row span:last-child { font-weight: 700; font-family: var(--font-mono); color: var(--text-primary); }
+@media (max-width: 700px) { .example-grid { grid-template-columns: 1fr; } }
