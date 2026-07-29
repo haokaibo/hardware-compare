@@ -307,6 +307,7 @@
     $('outKvPer1k').textContent = (r.kvBytesPerToken * 1000 / 1e6).toFixed(1) + ' MB';
 
     const fitRow = $('outFitRow'), fitCell = $('outFit');
+    fitRow.style.display = '';  // Reset from any previous hidden state
     fitRow.classList.remove('ok','warn');
     if (nMax > 0) {
       if (r.maxTokens >= nMax) { fitCell.textContent = '可以，还有富余'; fitRow.classList.add('ok'); }
@@ -354,18 +355,6 @@
 })();
 </script>
 
-<script>
-  // Scroll reveal
-  const revealEls = document.querySelectorAll('.reveal');
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        io.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
-  revealEls.forEach(el => io.observe(el));
-</script>
+<script src="scripts/reveal.js"></script>
 
 </body></html>

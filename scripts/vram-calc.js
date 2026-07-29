@@ -6,6 +6,12 @@
 (function () {
   'use strict';
 
+  // Data loading safety check
+  if (typeof GPU_VRAM_LIST === 'undefined') {
+    document.body.innerHTML = '<div style="text-align:center;padding:120px 24px;color:#86868b;"><h2>GPU 数据未能加载</h2><p>请确保 data/gpu-dataset.js 文件存在，然后刷新页面重试。</p></div>';
+    return;
+  }
+
   // ===== Constants =====
 
   const BYTES_PER_GB = 1073741824; // 1024^3
@@ -533,6 +539,30 @@
     });
   });
 
+  // --- Precision button state (enable/disable for training mode) ---
+  function updatePrecisionUI() {
+    const isTrain = state.mode === 'train';
+    $$('#precisionGroup .btn-option').forEach(function (b) {
+      if (isTrain && b.dataset.value !== 'fp16') {
+        b.disabled = true;
+        b.style.opacity = '0.35';
+        b.style.cursor = 'not-allowed';
+        b.classList.remove('active');
+      } else {
+        b.disabled = false;
+        b.style.opacity = '';
+        b.style.cursor = '';
+      }
+    });
+    if (isTrain) {
+      // Force FP16 as active in training mode
+      $$('#precisionGroup .btn-option').forEach(function (b) {
+        if (b.dataset.value === 'fp16') b.classList.add('active');
+      });
+      state.precision = 'fp16';
+    }
+  }
+
   // --- Mode buttons ---
   $$('#modeGroup .btn-option').forEach(btn => {
     btn.addEventListener('click', function () {
@@ -547,6 +577,7 @@
         dom.activationOptions.style.display = 'none';
       }
 
+      updatePrecisionUI();
       render();
     });
   });
@@ -620,6 +651,7 @@
     dom.moeOptions.style.display = 'none';
     dom.activationOptions.style.display = 'none';
 
+    updatePrecisionUI();
     render();
   }
 

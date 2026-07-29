@@ -99,6 +99,12 @@
 </main>
 
 <script>
+    // Data loading safety check
+    if (typeof GPU_BENCHMARKS === 'undefined') {
+      document.querySelector('main').innerHTML = '<div style="text-align:center;padding:120px 24px;color:var(--text-dim);"><h2>数据文件未能加载</h2><p>请确保 data/gpu-dataset.js 文件存在，然后刷新页面重试。</p></div>';
+      throw new Error('GPU_BENCHMARKS data not loaded');
+    }
+
     const filters = { task: 'all', vram: 'all', budget: 'all' };
 
     function extractVRAM(desc) {

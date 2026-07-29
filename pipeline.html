@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0045)file:///Users/kaibo/Downloads/pipeline_1.html -->
-<html lang="zh-CN"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<html lang="zh-CN"><head>
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PIPELINE ZERO — 软件架构与工作流</title>
@@ -444,22 +443,10 @@
 
 <footer>
   <div class="fline">驱动 <b>CosmicSpaceDiary</b>（宇宙空间日志）自动化内容创作</div>
-  <div class="fline"><a class="back-link" href="file:///Users/kaibo/Downloads/red-one.html">← 查看硬件平台 RED ONE</a></div>
+  <div class="fline"><a class="back-link" href="red_one.html">← 查看硬件平台 RED ONE</a></div>
 </footer>
 
-<script>
-  // Scroll reveal — same behavior as the RED ONE hardware page
-  const revealEls = document.querySelectorAll('.reveal');
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        io.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
-  revealEls.forEach(el => io.observe(el));
-</script>
+<script src="scripts/reveal.js"></script>
 
 
 
