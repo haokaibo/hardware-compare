@@ -218,13 +218,13 @@ main {
   border-radius: var(--radius); padding: 24px; overflow-x: auto;
 }
 .pathdiagram svg { width: 100%; height: auto; display: block; overflow: visible; min-width: 1100px; }
-.domain-label { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; fill: var(--text-dim); }
+.domain-label { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; fill: var(--text-dim); }
 .node-box { fill: rgba(255,255,255,0.04); stroke: var(--border-subtle); stroke-width: 1.5; }
-.node-title { font-weight: 600; font-size: 14px; fill: var(--text-primary); }
-.node-sub { font-family: var(--font-mono); font-size: 10px; fill: var(--text-dim); }
-.bus-label { font-family: var(--font-mono); font-size: 11px; font-weight: 500; fill: var(--text-muted); }
+.node-title { font-weight: 600; font-size: 16px; fill: var(--text-primary); }
+.node-sub { font-family: var(--font-mono); font-size: 12px; fill: var(--text-dim); }
+.bus-label { font-family: var(--font-mono); font-size: 13px; font-weight: 500; fill: var(--text-muted); }
 .bus-label-bg { fill: var(--bg-secondary); opacity: 0.9; }
-.bus-note { font-family: var(--font-mono); font-size: 11px; fill: var(--text-dim); }
+.bus-note { font-family: var(--font-mono); font-size: 13px; fill: var(--text-dim); }
 .pulse-dot { animation: dashmove 2.4s linear infinite; }
 @keyframes dashmove { to { stroke-dashoffset: -24; } }
 @media (prefers-reduced-motion: reduce) { .pulse-dot { animation: none; } }
