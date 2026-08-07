@@ -6,9 +6,11 @@
 (function () {
   'use strict';
 
+  const _t = (key) => typeof t === 'function' ? t(key) : key;
+
   // Data loading safety check
   if (typeof GPU_VRAM_LIST === 'undefined') {
-    document.body.innerHTML = '<div style="text-align:center;padding:120px 24px;color:#86868b;"><h2>GPU 数据未能加载</h2><p>请确保 data/gpu-dataset.js 文件存在，然后刷新页面重试。</p></div>';
+    document.body.innerHTML = '<div style="text-align:center;padding:120px 24px;color:#86868b;"><h2>' + _t('vram.data-error') + '</h2><p>' + _t('vram.data-error-desc') + '</p></div>';
     return;
   }
 
@@ -24,7 +26,7 @@
   };
 
   const MODEL_PRESETS = {
-    custom: { name: '自定义', params: 7, layers: 32, hidden: 4096, type: 'dense' },
+    custom: { name: 'custom', params: 7, layers: 32, hidden: 4096, type: 'dense' },
     llama3_8b: { name: 'LLaMA 3.1 8B', params: 8, layers: 32, hidden: 4096, type: 'dense' },
     llama3_70b: { name: 'LLaMA 3.1 70B', params: 70, layers: 80, hidden: 8192, type: 'dense' },
     llama3_405b: { name: 'LLaMA 3.1 405B', params: 405, layers: 126, hidden: 16384, type: 'dense' },
@@ -316,21 +318,21 @@
 
     // --- Breakdown ---
     const items = [
-      { key: 'weights', label: '模型权重', color: 'color-weights', value: displayResult.weights },
-      { key: 'kvCache', label: 'KV Cache', color: 'color-kvcache', value: displayResult.kvCache },
+      { key: 'weights', label: 'vram.bw.weights', color: 'color-weights', value: displayResult.weights },
+      { key: 'kvCache', label: 'vram.bw.kvcache', color: 'color-kvcache', value: displayResult.kvCache },
     ];
 
     if (state.mode === 'train') {
-      items.push({ key: 'optimizer', label: '优化器状态', color: 'color-optimizer', value: displayResult.optimizer });
-      items.push({ key: 'gradients', label: '梯度', color: 'color-gradients', value: displayResult.gradients });
-      items.push({ key: 'activations', label: '激活值', color: 'color-activations', value: displayResult.activations });
+      items.push({ key: 'optimizer', label: 'vram.bw.optimizer', color: 'color-optimizer', value: displayResult.optimizer });
+      items.push({ key: 'gradients', label: 'vram.bw.gradients', color: 'color-gradients', value: displayResult.gradients });
+      items.push({ key: 'activations', label: 'vram.bw.activations', color: 'color-activations', value: displayResult.activations });
     } else if (state.mode === 'lora') {
-      items.push({ key: 'loraWeights', label: 'LoRA 权重', color: 'color-gradients', value: displayResult.loraWeights });
-      items.push({ key: 'loraOpt', label: 'LoRA 优化器', color: 'color-optimizer', value: displayResult.loraOpt });
-      items.push({ key: 'activations', label: '激活值', color: 'color-activations', value: displayResult.activations });
+      items.push({ key: 'loraWeights', label: 'vram.bw.lora-weights', color: 'color-gradients', value: displayResult.loraWeights });
+      items.push({ key: 'loraOpt', label: 'vram.bw.lora-opt', color: 'color-optimizer', value: displayResult.loraOpt });
+      items.push({ key: 'activations', label: 'vram.bw.activations', color: 'color-activations', value: displayResult.activations });
     }
 
-    items.push({ key: 'overhead', label: '框架开销', color: 'color-overhead', value: displayResult.overhead });
+    items.push({ key: 'overhead', label: 'vram.bw.overhead', color: 'color-overhead', value: displayResult.overhead });
 
     const breakdownHTML = items
       .map((item) => {
@@ -338,7 +340,7 @@
         return `
           <div class="breakdown-item">
             <span class="breakdown-color ${item.color}"></span>
-            <span class="breakdown-label">${item.label}</span>
+            <span class="breakdown-label">${_t(item.label)}</span>
             <div class="breakdown-bar-item">
               <div class="fill ${item.color}" style="width:${pct}%"></div>
             </div>
@@ -352,31 +354,31 @@
 
     // --- GPU Compatibility ---
     const vendorOrder = ['nvidia', 'amd', 'apple'];
-    const vendorLabels = { nvidia: 'NVIDIA', amd: 'AMD', apple: 'Apple' };
+    const vendorLabels = { nvidia: 'vram.vendor.nvidia', amd: 'vram.vendor.amd', apple: 'vram.vendor.apple' };
 
     const gpuHTML = vendorOrder.map(vendor => {
       const items = GPU_VRAM_LIST.filter(g => g.vendor === vendor);
       if (!items.length) return '';
       return `
         <div class="gpu-group">
-          <div class="gpu-group-label">${vendorLabels[vendor]}</div>
+          <div class="gpu-group-label">${_t(vendorLabels[vendor])}</div>
           ${items.map(gpu => {
             const ratio = total / gpu.vram;
             let status = 'compatible';
-            let badge = '✓ 可运行';
+            let badge = 'vram.status-compatible';
             if (ratio > 0.95 && ratio <= 1.2) {
               status = 'partial';
-              badge = '△ 勉强可用';
+              badge = 'vram.status-partial';
             } else if (ratio > 1.2) {
               status = 'incompatible';
-              badge = '✗ 显存不足';
+              badge = 'vram.status-incompatible';
             }
             return `
               <div class="gpu-item ${status}">
                 <span class="gpu-name">${gpu.name}</span>
                 <span>
                   <span class="gpu-vram">${gpu.vram} GiB</span>
-                  <span class="gpu-badge">${badge}</span>
+                  <span class="gpu-badge">${_t(badge)}</span>
                 </span>
               </div>
             `;
@@ -388,58 +390,58 @@
 
     // --- Detail Table ---
     const rows = [
-      { label: '模型参数量', value: `${paramsB.toFixed(1)} B`, note: isMoE ? `(MoE, 活跃: ${activeParams}B)` : '' },
-      { label: '权重精度', value: displayResult.precision, note: `${PRECISION[state.precision === 'train' ? 'fp16' : state.precision].bytesPerParam} 字节/参数` },
-      { label: '模型权重', value: `${displayResult.weights.toFixed(2)} GiB`, note: `${(paramsB * 1e9 * PRECISION[state.precision === 'train' ? 'fp16' : state.precision].bytesPerParam).toLocaleString()} 字节` },
-      { label: 'KV Cache', value: `${displayResult.kvCache.toFixed(2)} GiB`, note: `${state.mode === 'train' ? '训练时也需缓存中间 KV' : '推理时存储 Key/Value'} · ${batchSize} batch × ${contextLen} tokens` },
+      { label: 'vram.detail-params', value: `${paramsB.toFixed(1)} B`, note: isMoE ? _t('vram.note-moe').replace('%s', activeParams) : '' },
+      { label: 'vram.detail-precision', value: displayResult.precision, note: _t('vram.note-bytes-per-param').replace('%s', PRECISION[state.precision === 'train' ? 'fp16' : state.precision].bytesPerParam) },
+      { label: 'vram.detail-weights', value: `${displayResult.weights.toFixed(2)} GiB`, note: `${(paramsB * 1e9 * PRECISION[state.precision === 'train' ? 'fp16' : state.precision].bytesPerParam).toLocaleString()} 字节` },
+      { label: 'vram.detail-kvcache', value: `${displayResult.kvCache.toFixed(2)} GiB`, note: `${state.mode === 'train' ? _t('vram.note-kv-train') : _t('vram.note-kv-inference')} · ${batchSize} batch × ${contextLen} tokens` },
     ];
 
     if (state.mode === 'train') {
       rows.push(
-        { label: '梯度', value: `${displayResult.gradients.toFixed(2)} GiB`, note: 'FP16 精度' },
-        { label: '优化器状态 (Adam)', value: `${displayResult.optimizer.toFixed(2)} GiB`, note: 'FP32 主权重 + 动量 + 方差' },
-        { label: '激活值', value: `${displayResult.activations.toFixed(2)} GiB`, note: useAC ? '已启用激活检查点' : '未启用激活检查点' },
+        { label: 'vram.bw.gradients', value: `${displayResult.gradients.toFixed(2)} GiB`, note: _t('vram.note-fp16') },
+        { label: 'vram.detail-optimizer', value: `${displayResult.optimizer.toFixed(2)} GiB`, note: _t('vram.note-adam') },
+        { label: 'vram.bw.activations', value: `${displayResult.activations.toFixed(2)} GiB`, note: useAC ? _t('vram.note-ac-enabled') : _t('vram.note-ac-disabled') },
       );
     } else if (state.mode === 'lora') {
       rows.push(
-        { label: 'LoRA 权重', value: `${displayResult.loraWeights.toFixed(3)} GiB`, note: '~0.2% 参数量, FP16' },
-        { label: 'LoRA 优化器', value: `${displayResult.loraOpt.toFixed(3)} GiB`, note: 'Adam, FP32' },
-        { label: '激活值', value: `${displayResult.activations.toFixed(2)} GiB`, note: 'LoRA 微调' },
+        { label: 'vram.bw.lora-weights', value: `${displayResult.loraWeights.toFixed(3)} GiB`, note: _t('vram.note-lora') },
+        { label: 'vram.bw.lora-opt', value: `${displayResult.loraOpt.toFixed(3)} GiB`, note: _t('vram.note-lora-opt') },
+        { label: 'vram.bw.activations', value: `${displayResult.activations.toFixed(2)} GiB`, note: _t('vram.note-lora-finetune') },
       );
     }
 
-    rows.push({ label: '框架开销', value: `${displayResult.overhead.toFixed(1)} GiB`, note: 'CUDA 上下文 + PyTorch 框架' });
+    rows.push({ label: 'vram.bw.overhead', value: `${displayResult.overhead.toFixed(1)} GiB`, note: _t('vram.note-cuda-pytorch') });
 
     // Add model architecture info
     rows.push(
-      { label: '网络层数', value: `${layers}`, note: '' },
-      { label: '隐藏维度', value: `${hiddenDim}`, note: '' },
+      { label: 'vram.detail-layers', value: `${layers}`, note: '' },
+      { label: 'vram.detail-hidden', value: `${hiddenDim}`, note: '' },
     );
 
-    const modeLabels = { inference: '推理', train: '完整训练', lora: 'LoRA 微调' };
-    rows.push({ label: '使用场景', value: modeLabels[state.mode] || state.mode, note: '' });
+    const modeLabels = { inference: 'vram.mode.inference', train: 'vram.mode.train', lora: 'vram.mode.lora' };
+    rows.push({ label: 'vram.detail-use-case', value: _t(modeLabels[state.mode] || state.mode), note: '' });
 
-    const totalRow = { label: '所需总显存', value: `${displayResult.total.toFixed(2)} GiB`, note: '', total: true };
+    const totalRow = { label: 'vram.detail-total', value: `${displayResult.total.toFixed(2)} GiB`, note: '', total: true };
 
     const tableHTML = `
       <table class="detail-table">
         <thead>
           <tr>
-            <th>项目</th>
-            <th>数值</th>
-            <th>备注</th>
+            <th>${_t('vram.table-item')}</th>
+            <th>${_t('vram.table-value')}</th>
+            <th>${_t('vram.table-note')}</th>
           </tr>
         </thead>
         <tbody>
           ${rows.map(r => `
             <tr class="${r.total ? 'total-row' : ''}">
-              <td>${r.label}</td>
+              <td>${_t(r.label)}</td>
               <td>${r.value}</td>
               <td>${r.note || ''}</td>
             </tr>
           `).join('')}
           <tr class="total-row">
-            <td>${totalRow.label}</td>
+            <td>${_t(totalRow.label)}</td>
             <td>${totalRow.value}</td>
             <td>${totalRow.note || ''}</td>
           </tr>
@@ -635,9 +637,10 @@
     }
     keys.forEach(key => {
       const preset = MODEL_PRESETS[key];
+      const name = key === 'custom' ? _t(preset.name) : preset.name;
       const opt = document.createElement('option');
       opt.value = key;
-      opt.textContent = preset.type === 'moe' ? `${preset.name} (MoE)` : preset.name;
+      opt.textContent = preset.type === 'moe' ? `${name} (MoE)` : name;
       select.appendChild(opt);
     });
 

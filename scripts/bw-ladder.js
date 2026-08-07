@@ -65,8 +65,10 @@ function getSubText(d) {
 
 const axis = document.getElementById('scaleAxis');
 const grid = document.getElementById('gridLines');
+const container = document.getElementById('barsContainer');
 
 function renderAxis() {
+  if (!axis || !grid) return;
   axis.innerHTML = '';
   grid.innerHTML = '';
   const marks = scaleMode === 'log'
@@ -86,8 +88,8 @@ function renderAxis() {
   });
 }
 
-const container = document.getElementById('barsContainer');
 function renderBars() {
+  if (!container) return;
   container.querySelectorAll('.group-divider, .bar-row').forEach(el => el.remove());
   let lastGroup = null;
   DATA.forEach(d => {
@@ -126,12 +128,13 @@ function init() {
   renderAxis();
   renderBars();
 
+  const chartSection = document.getElementById('chart-section');
   const io = new IntersectionObserver((entries) => {
     entries.forEach(e => {
       if (e.isIntersecting) { animateBars(); io.disconnect(); }
     });
   }, { threshold: 0.15 });
-  io.observe(document.getElementById('chart-section'));
+  if (chartSection) io.observe(chartSection);
   setTimeout(animateBars, 300);
 
   // Mode toggle
@@ -145,7 +148,7 @@ function init() {
         b.classList.toggle('active', b === btn);
         b.setAttribute('aria-selected', b === btn ? 'true' : 'false');
       });
-      modeHint.textContent = _t('bw.chart.mode-hint-' + scaleMode);
+      if (modeHint) modeHint.textContent = _t('bw.chart.mode-hint-' + scaleMode);
       renderAxis();
       renderBars();
       document.querySelectorAll('.bar-fill').forEach(el => { el.style.width = '0%'; });
@@ -154,7 +157,7 @@ function init() {
   });
 
   // Set initial mode hint
-  modeHint.textContent = _t('bw.chart.mode-hint-' + scaleMode);
+  if (modeHint) modeHint.textContent = _t('bw.chart.mode-hint-' + scaleMode);
 }
 
 // Re-render on language switch

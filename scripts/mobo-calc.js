@@ -4,6 +4,8 @@
 (function () {
   'use strict';
 
+  const _t = (key) => typeof t === 'function' ? t(key) : key;
+
   const ids = ['boardBuy','caseBuy','boardResalePct','caseResalePct','newBoard','newCase','directBoard'];
   ids.forEach(function (id) {
     var el = document.getElementById(id);
@@ -64,13 +66,13 @@
     var diffValueEl = document.getElementById('diffValue');
     if (diffLabelEl && diffValueEl) {
       if (diff > 0) {
-        diffLabelEl.textContent = '路线一比路线二多花';
+        diffLabelEl.textContent = _t('mobo.diff-more');
         diffValueEl.className = 'final-value';
       } else if (diff < 0) {
-        diffLabelEl.textContent = '路线一比路线二反而省下';
+        diffLabelEl.textContent = _t('mobo.diff-less');
         diffValueEl.className = 'final-value negative';
       } else {
-        diffLabelEl.textContent = '两条路线花费相同';
+        diffLabelEl.textContent = _t('mobo.diff-same');
         diffValueEl.className = 'final-value';
       }
       diffValueEl.textContent = fmt(Math.abs(diff));
