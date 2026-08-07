@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" class="i18n-ready">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RED ONE — Local AI Workstation</title>
-<meta name="description" content="RED ONE — 从零构建的本地 AI 神经工作站，搭载 AMD Ryzen 5 9600X 与 Radeon AI PRO R9700 32GB。">
+<title data-i18n="red.title">RED ONE — Local AI Workstation</title>
+<meta name="description" data-i18n="red.meta-desc" content="RED ONE — 从零构建的本地 AI 神经工作站，搭载 AMD Ryzen 5 9600X 与 Radeon AI PRO R9700 32GB。">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="stylesheet" href="styles/theme.css">
 <link rel="stylesheet" href="styles/base.css">
@@ -15,12 +15,12 @@
     <div class="nav-inner">
       <div class="nav-logo">RED ONE</div>
       <div class="nav-links">
-        <a href="#cpu">锐龙</a>
-        <a href="#gpu">显卡</a>
-        <a href="#components">组件</a>
-        <a href="#specs">规格</a>
-        <a href="#stack">软件矩阵</a>
-        <a href="index.html">Hardware.ai</a>
+        <a href="#cpu" data-i18n="nav.ryzen">锐龙</a>
+        <a href="#gpu" data-i18n="nav.gpu">显卡</a>
+        <a href="#components" data-i18n="nav.components">组件</a>
+        <a href="#specs" data-i18n="nav.specs">规格</a>
+        <a href="#stack" data-i18n="nav.stack">软件矩阵</a>
+        <a href="index.html" data-i18n="nav.hardware-ai">Hardware.ai</a>
       </div>
     </div>
   </nav>
@@ -28,31 +28,31 @@
   <!-- ================= HERO ================= -->
   <header class="hero">
     <div class="hero-glow"></div>
-    <div class="eyebrow">AMD Advantage Platform Integration</div>
-    <h1>RED ONE</h1>
-    <p class="sub">一台从零构建的本地 AI 神经工作站。Ryzen 主导调度，Radeon 承担推理，一切运算留在桌面之内。</p>
+    <div class="eyebrow" data-i18n="red.hero-eyebrow">AMD Advantage Platform Integration</div>
+    <h1 data-i18n="red.hero-title">RED ONE</h1>
+    <p class="sub" data-i18n="red.hero-sub">一台从零构建的本地 AI 神经工作站。Ryzen 主导调度，Radeon 承担推理，一切运算留在桌面之内。</p>
     <div class="hero-id">
-      <div>SYSTEM OPERATOR&nbsp;<b>KEVIN</b></div>
-      <div>ARCHITECTURE&nbsp;<b>x86_64 · NEURAL WORKSTATION</b></div>
-      <div>STATUS&nbsp;<b>STABLE · CALIBRATED</b></div>
+      <div><span data-i18n="red.hero-operator">SYSTEM OPERATOR</span>&nbsp;<b>KEVIN</b></div>
+      <div><span data-i18n="red.hero-arch">ARCHITECTURE</span>&nbsp;<b data-i18n="red.hero-arch-val">x86_64 · NEURAL WORKSTATION</b></div>
+      <div><span data-i18n="red.hero-status">STATUS</span>&nbsp;<b data-i18n="red.hero-status-val">STABLE · CALIBRATED</b></div>
     </div>
-    <div class="scroll-cue"><span>SCROLL</span><div class="arrow"></div></div>
+    <div class="scroll-cue"><span data-i18n="red.scroll">SCROLL</span><div class="arrow"></div></div>
   </header>
 
   <!-- ================= RIBBON ================= -->
   <div class="ribbon">
     <div class="ribbon-track">
-      <span><b>32GB</b> GDDR6 显存 <span class="dot">·</span> <b>65W</b> CPU TDP <span class="dot">·</span> <b>PCIe 5.0</b> 全链路 <span class="dot">·</span> <b>1000W</b> ATX 3.1 电源 <span class="dot">·</span> <b>6C/12T</b> Zen 5 架构 <span class="dot">·</span> <b>256-bit</b> 显存位宽</span>
-      <span><b>32GB</b> GDDR6 显存 <span class="dot">·</span> <b>65W</b> CPU TDP <span class="dot">·</span> <b>PCIe 5.0</b> 全链路 <span class="dot">·</span> <b>1000W</b> ATX 3.1 电源 <span class="dot">·</span> <b>6C/12T</b> Zen 5 架构 <span class="dot">·</span> <b>256-bit</b> 显存位宽</span>
+      <span data-i18n="red.ribbon-line" data-i18n-html="true"><b>32GB</b> GDDR6 <span class="dot">·</span> <b>65W</b> CPU TDP <span class="dot">·</span> <b>PCIe 5.0</b> <span class="dot">·</span> <b>1000W</b> ATX 3.1 <span class="dot">·</span> <b>6C/12T</b> Zen 5 <span class="dot">·</span> <b>256-bit</b> </span>
+      <span data-i18n="red.ribbon-line" data-i18n-html="true"><b>32GB</b> GDDR6 <span class="dot">·</span> <b>65W</b> CPU TDP <span class="dot">·</span> <b>PCIe 5.0</b> <span class="dot">·</span> <b>1000W</b> ATX 3.1 <span class="dot">·</span> <b>6C/12T</b> Zen 5 <span class="dot">·</span> <b>256-bit</b> </span>
     </div>
   </div>
 
   <!-- ================= CPU PIN SECTION ================= -->
   <section id="cpu" class="pin-section theme-ryzen">
     <div class="section-head reveal">
-      <div class="kicker">01 · AMD Ryzen™</div>
-      <h2>中央神经中枢</h2>
-      <p>Ryzen 5 9600X 负责调度整套本地管线——从 n8n 编排到模型加载，一切复杂工作流的起点都在这里。</p>
+      <div class="kicker" data-i18n="red.cpu-kicker">01 · AMD Ryzen™</div>
+      <h2 data-i18n="red.cpu-title">中央神经中枢</h2>
+      <p data-i18n="red.cpu-desc">Ryzen 5 9600X 负责调度整套本地管线——从 n8n 编排到模型加载，一切复杂工作流的起点都在这里。</p>
     </div>
 
     <div class="pin-grid">
@@ -65,26 +65,26 @@
 
       <div class="pin-track">
         <div class="pin-block reveal">
-          <div class="tag">Ryzen 5 9600X</div>
-          <h3>Zen 5 架构<br>6 核心 / 12 线程</h3>
-          <p>基础频率 3.9GHz，最高加速可达 5.4GHz。极强的单核调度能力，驾驭本地 AI 管线与自动化工作流毫不吃力。</p>
+          <div class="tag" data-i18n="red.cpu-block1-tag">Ryzen 5 9600X</div>
+          <h3 data-i18n="red.cpu-block1-title" data-i18n-html="true">Zen 5 架构<br>6 核心 / 12 线程</h3>
+          <p data-i18n="red.cpu-block1-desc">基础频率 3.9GHz，最高加速可达 5.4GHz。极强的单核调度能力，驾驭本地 AI 管线与自动化工作流毫不吃力。</p>
         </div>
         <div class="pin-block reveal">
-          <h3>4nm 工艺<br>精密制造</h3>
-          <p>台积电 4nm 制程带来的能效比，是整机长时间满载运行的基础，也是选择它而非更高功耗型号的原因。</p>
+          <h3 data-i18n="red.cpu-block2-title" data-i18n-html="true">4nm 工艺<br>精密制造</h3>
+          <p data-i18n="red.cpu-block2-desc">台积电 4nm 制程带来的能效比，是整机长时间满载运行的基础，也是选择它而非更高功耗型号的原因。</p>
           <div class="spec-inline">
-            <div><div class="k">架构 / 制程</div><div class="v">Zen 5 · TSMC 4nm</div></div>
-            <div><div class="k">核心 / 线程</div><div class="v">6C / 12T</div></div>
+            <div><div class="k" data-i18n="red.cpu-spec-arch">架构 / 制程</div><div class="v">Zen 5 · TSMC 4nm</div></div>
+            <div><div class="k" data-i18n="red.cpu-spec-cores">核心 / 线程</div><div class="v">6C / 12T</div></div>
           </div>
         </div>
         <div class="pin-block reveal">
-          <h3>65W TDP<br>为长期运行而生</h3>
-          <p>相较更高功耗型号，65W 的设计换来更低的热量堆积与更长的平台寿命，这是安静运行数月推理任务的关键前提。</p>
+          <h3 data-i18n="red.cpu-block3-title" data-i18n-html="true">65W TDP<br>为长期运行而生</h3>
+          <p data-i18n="red.cpu-block3-desc">相较更高功耗型号，65W 的设计换来更低的热量堆积与更长的平台寿命，这是安静运行数月推理任务的关键前提。</p>
           <div class="spec-inline">
-            <div><div class="k">基础 / 加速频率</div><div class="v">3.9GHz / 5.4GHz</div></div>
-            <div><div class="k">缓存</div><div class="v">6MB L2 + 32MB L3</div></div>
-            <div><div class="k">核显</div><div class="v">AMD Radeon Graphics</div></div>
-            <div><div class="k">插槽 / TDP</div><div class="v">Socket AM5 · 65W</div></div>
+            <div><div class="k" data-i18n="red.cpu-spec-freq">基础 / 加速频率</div><div class="v">3.9GHz / 5.4GHz</div></div>
+            <div><div class="k" data-i18n="red.cpu-spec-cache">缓存</div><div class="v">6MB L2 + 32MB L3</div></div>
+            <div><div class="k" data-i18n="red.cpu-spec-igpu">核显</div><div class="v">AMD Radeon Graphics</div></div>
+            <div><div class="k" data-i18n="red.cpu-spec-socket">插槽 / TDP</div><div class="v">Socket AM5 · 65W</div></div>
           </div>
         </div>
       </div>
@@ -94,9 +94,9 @@
   <!-- ================= GPU PIN SECTION ================= -->
   <section id="gpu" class="pin-section theme-radeon">
     <div class="section-head reveal">
-      <div class="kicker">02 · AMD Radeon™ AI PRO</div>
-      <h2>神经加速核心</h2>
-      <p>ASRock Creator Radeon AI PRO R9700 承担全部本地推理与生成任务，模型不必再为显存精简自己。</p>
+      <div class="kicker" data-i18n="red.gpu-kicker">02 · AMD Radeon™ AI PRO</div>
+      <h2 data-i18n="red.gpu-title">神经加速核心</h2>
+      <p data-i18n="red.gpu-desc">ASRock Creator Radeon AI PRO R9700 承担全部本地推理与生成任务，模型不必再为显存精简自己。</p>
     </div>
 
     <div class="pin-grid">
@@ -109,26 +109,26 @@
 
       <div class="pin-track">
         <div class="pin-block reveal">
-          <div class="tag">Radeon AI PRO R9700</div>
-          <h3>32GB GDDR6<br>256-bit 位宽</h3>
-          <p>充裕的显存容量意味着 Qwen3-27B 这类模型可以整块加载，不必在推理途中反复换页。</p>
+          <div class="tag" data-i18n="red.gpu-block1-tag">Radeon AI PRO R9700</div>
+          <h3 data-i18n="red.gpu-block1-title" data-i18n-html="true">32GB GDDR6<br>256-bit 位宽</h3>
+          <p data-i18n="red.gpu-block1-desc">充裕的显存容量意味着 Qwen3-27B 这类模型可以整块加载，不必在推理途中反复换页。</p>
         </div>
         <div class="pin-block reveal">
-          <h3>RDNA 4 架构<br>64 组计算单元</h3>
-          <p>面对扩散模型渲染或大参数语言模型推理，皆可全量运算，不必担心显存溢出而中断。</p>
+          <h3 data-i18n="red.gpu-block2-title" data-i18n-html="true">RDNA 4 架构<br>64 组计算单元</h3>
+          <p data-i18n="red.gpu-block2-desc">面对扩散模型渲染或大参数语言模型推理，皆可全量运算，不必担心显存溢出而中断。</p>
           <div class="spec-inline">
-            <div><div class="k">架构</div><div class="v">AMD RDNA 4</div></div>
-            <div><div class="k">计算单元</div><div class="v">64 CU</div></div>
+            <div><div class="k" data-i18n="red.gpu-spec-arch">架构</div><div class="v">AMD RDNA 4</div></div>
+            <div><div class="k" data-i18n="red.gpu-spec-cu">计算单元</div><div class="v">64 CU</div></div>
           </div>
         </div>
         <div class="pin-block reveal">
-          <h3>PCIe 5.0 x16<br>全速直连</h3>
-          <p>主板到显卡的全链路 5.0 带宽，配合 Blower 单向导流散热，专为持续满载的生成任务设计。</p>
+          <h3 data-i18n="red.gpu-block3-title" data-i18n-html="true">PCIe 5.0 x16<br>全速直连</h3>
+          <p data-i18n="red.gpu-block3-desc">主板到显卡的全链路 5.0 带宽，配合 Blower 单向导流散热，专为持续满载的生成任务设计。</p>
           <div class="spec-inline">
-            <div><div class="k">显存</div><div class="v">32GB GDDR6 · 256-bit</div></div>
-            <div><div class="k">加速 / 游戏频率</div><div class="v">2920MHz / 2350MHz</div></div>
-            <div><div class="k">总线</div><div class="v">PCIe 5.0 x16</div></div>
-            <div><div class="k">散热 / 输出</div><div class="v">Blower · 4x DP 2.1a</div></div>
+            <div><div class="k" data-i18n="red.gpu-spec-vram">显存</div><div class="v">32GB GDDR6 · 256-bit</div></div>
+            <div><div class="k" data-i18n="red.gpu-spec-clocks">加速 / 游戏频率</div><div class="v">2920MHz / 2350MHz</div></div>
+            <div><div class="k" data-i18n="red.gpu-spec-bus">总线</div><div class="v">PCIe 5.0 x16</div></div>
+            <div><div class="k" data-i18n="red.gpu-spec-thermal">散热 / 输出</div><div class="v">Blower · 4x DP 2.1a</div></div>
           </div>
         </div>
       </div>
@@ -139,31 +139,31 @@
   <section id="components">
     <div class="section-head">
       <div class="kicker reveal">03 · Full Platform Build</div>
-      <h2 class="reveal">支撑起整机的<br>每一个部件</h2>
-      <p class="reveal">从主板到散热，每一件都为长时间本地推理而选。</p>
+      <h2 class="reveal" data-i18n="red.comp-title" data-i18n-html="true">支撑起整机的<br>每一个部件</h2>
+      <p class="reveal" data-i18n="red.comp-desc">从主板到散热，每一件都为长时间本地推理而选。</p>
     </div>
 
     <div class="comp-hero reveal scale-in">
       <div class="card">
         <div class="card-img"><img src="images/msi-x870-p-wifi.jpg" alt="MSI PRO X870 P-WIFI motherboard"></div>
         <div class="card-body">
-          <div class="card-role">Motherboard</div>
+          <div class="card-role" data-i18n="red.comp-mobo-role">Motherboard</div>
           <div class="card-name">MSI PRO X870 P-WIFI</div>
           <div class="card-sub">AMD X870 · Socket AM5</div>
-          <div class="card-desc">承载 Ryzen 9000 系全速运行的主控中枢，PCIe 5.0 全链路直连显卡与硬盘。</div>
+          <div class="card-desc" data-i18n="red.comp-mobo-desc">承载 Ryzen 9000 系全速运行的主控中枢，PCIe 5.0 全链路直连显卡与硬盘。</div>
           <div class="card-mini">
-            <div class="row"><span>芯片组</span><span>AMD X870</span></div>
-            <div class="row"><span>内存支持</span><span>DDR5 双通道</span></div>
-            <div class="row"><span>显卡插槽</span><span>PCIe 5.0 x16 (64 GB/s)</span></div>
-            <div class="row"><span>网络</span><span>WiFi 7 (≤46 Gbps) + 5G LAN (5 Gbps)</span></div>
+            <div class="row"><span data-i18n="red.comp-mobo-chipset">芯片组</span><span>AMD X870</span></div>
+            <div class="row"><span data-i18n="red.comp-mobo-ram">内存支持</span><span data-i18n="red.comp-mobo-ram-val">DDR5 双通道</span></div>
+            <div class="row"><span data-i18n="red.comp-mobo-slot">显卡插槽</span><span>PCIe 5.0 x16 (64 GB/s)</span></div>
+            <div class="row"><span data-i18n="red.comp-mobo-net">网络</span><span>WiFi 7 (≤46 Gbps) + 5G LAN (5 Gbps)</span></div>
           </div>
-          <div style="margin-top:14px; font-size:11px; color:var(--text-dim); letter-spacing:0.5px; text-transform:uppercase;">M.2 插槽一览</div>
+          <div style="margin-top:14px; font-size:11px; color:var(--text-dim); letter-spacing:0.5px; text-transform:uppercase;" data-i18n="red.comp-mobo-slots">M.2 插槽一览</div>
           <div class="card-mini" style="margin-top:6px;">
             <div class="row"><span>M2_1</span><span>PCIe Gen5 x4 (16 GB/s) · CPU</span></div>
             <div class="row"><span>M2_2</span><span>PCIe Gen4 x4 (8 GB/s) · CPU</span></div>
-            <div class="row"><span>M2_3</span><span>PCIe Gen4 x4 (8 GB/s) · 芯片组</span></div>
-            <div class="row"><span>M2_4</span><span>PCIe Gen3 x4 (4 GB/s) · 芯片组</span></div>
-            <div class="row"><span>SATA</span><span>4× SATA3 6Gb/s · 芯片组</span></div>
+            <div class="row"><span>M2_3</span><span>PCIe Gen4 x4 (8 GB/s) · <span data-i18n="red.comp-chipset">芯片组</span></span></div>
+            <div class="row"><span>M2_4</span><span>PCIe Gen3 x4 (4 GB/s) · <span data-i18n="red.comp-chipset">芯片组</span></span></div>
+            <div class="row"><span>SATA</span><span>4× SATA3 6Gb/s · <span data-i18n="red.comp-chipset">芯片组</span></span></div>
           </div>
         </div>
       </div>
@@ -173,14 +173,14 @@
       <div class="comp-card reveal scale-in">
         <div class="comp-img"><img src="images/colorful-ddr5.avif" alt="Colorful DDR5 memory module"></div>
         <div class="comp-body">
-          <div class="comp-role">Memory</div>
-          <div class="comp-name">七彩虹 32GB DDR5 6000MHz</div>
-          <div class="comp-sub">Micron 镁光颗粒 · 单条</div>
-          <p class="comp-desc">镁光原厂颗粒保障稳定性，为本地大模型加载与多任务缓存预留充裕带宽。</p>
+          <div class="comp-role" data-i18n="red.comp-memo-role">Memory</div>
+          <div class="comp-name" data-i18n="red.comp-memo-name">七彩虹 32GB DDR5 6000MHz</div>
+          <div class="comp-sub" data-i18n="red.comp-memo-sub">Micron 镁光颗粒 · 单条</div>
+          <p class="comp-desc" data-i18n="red.comp-memo-desc">镁光原厂颗粒保障稳定性，为本地大模型加载与多任务缓存预留充裕带宽。</p>
           <div class="comp-mini">
-            <div class="row"><span>容量</span><span>32GB（单条）</span></div>
-            <div class="row"><span>规格</span><span>DDR5-6000</span></div>
-            <div class="row"><span>颗粒</span><span>Micron 镁光</span></div>
+            <div class="row"><span data-i18n="red.comp-capacity">容量</span><span><span data-i18n="red.comp-memo-capacity">32GB（单条）</span></span></div>
+            <div class="row"><span data-i18n="red.comp-specs">规格</span><span>DDR5-6000</span></div>
+            <div class="row"><span data-i18n="red.comp-parts">颗粒</span><span data-i18n="red.comp-memo-particles">Micron 镁光</span></div>
           </div>
         </div>
       </div>
@@ -188,10 +188,10 @@
       <div class="comp-card reveal scale-in">
         <div class="comp-img"><img src="images/lexar-thor-pro.avif" alt="Lexar THOR PRO NVMe M.2 SSD"></div>
         <div class="comp-body">
-          <div class="comp-role">Storage</div>
-          <div class="comp-name">雷克沙 Lexar THOR PRO 2TB</div>
-          <div class="comp-sub">M.2 NVMe · 系统主盘 · 最快速</div>
-          <p class="comp-desc">四盘齐驱：雷克沙 2TB 主盘装载系统和模型权重，镁光 512GB / 雷克沙 512GB 做数据分盘，金维胜 128GB 作缓存。</p>
+          <div class="comp-role" data-i18n="red.comp-storage-role">Storage</div>
+          <div class="comp-name" data-i18n="red.comp-storage-name">雷克沙 Lexar THOR PRO 2TB</div>
+          <div class="comp-sub" data-i18n="red.comp-storage-sub">M.2 NVMe · 系统主盘 · 最快速</div>
+          <p class="comp-desc" data-i18n="red.comp-storage-desc">四盘齐驱：雷克沙 2TB 主盘装载系统和模型权重，镁光 512GB / 雷克沙 512GB 做数据分盘，金维胜 128GB 作缓存。</p>
           <div class="comp-mini">
             <div class="row"><span>Lexar THOR 2TB</span><span>7000/5000 MB/s · PCIe 4.0</span></div>
             <div class="row"><span>镁光 512GB</span><span>3100/1800 MB/s · PCIe 3.0 x4</span></div>
@@ -207,13 +207,13 @@
     <div class="comp-hero reveal scale-in">
       <div class="card reverse">
         <div class="card-body">
-          <div class="card-role">Case</div>
+          <div class="card-role" data-i18n="red.comp-case-role">Case</div>
           <div class="card-name">Corsair 4000D Airflow</div>
-          <div class="card-sub">美商海盗船 · 中塔 ATX</div>
-          <div class="card-desc">高透风前面板设计，为满载运转的显卡与散热塔提供持续新鲜气流。</div>
+          <div class="card-sub" data-i18n="red.spec-detail-case">美商海盗船 · 中塔 ATX</div>
+          <div class="card-desc" data-i18n="red.comp-case-desc">高透风前面板设计，为满载运转的显卡与散热塔提供持续新鲜气流。</div>
           <div class="card-mini">
-            <div class="row"><span>机箱类型</span><span>中塔 ATX</span></div>
-            <div class="row"><span>侧板</span><span>钢化玻璃</span></div>
+            <div class="row"><span data-i18n="red.comp-case-type">机箱类型</span><span data-i18n="red.comp-case-type-val">中塔 ATX</span></div>
+            <div class="row"><span data-i18n="red.comp-side-panel">侧板</span><span data-i18n="red.comp-side-panel-val">钢化玻璃</span></div>
           </div>
         </div>
         <div class="card-img"><img src="images/corsair-4000d.webp" alt="Corsair 4000D Airflow case"></div>
@@ -225,13 +225,13 @@
       <div class="card">
         <div class="card-img"><img src="images/sama-g1000w.webp" alt="SAMA G1000W ATX 3.1 power supply"></div>
         <div class="card-body">
-          <div class="card-role">Power Supply</div>
+          <div class="card-role" data-i18n="red.comp-psu-role">Power Supply</div>
           <div class="card-name">SAMA G1000W</div>
-          <div class="card-sub">ATX 3.1 标准</div>
-          <div class="card-desc">充裕的功率余量覆盖 CPU 满载与 32GB 显存显卡的瞬时峰值功耗需求。</div>
+          <div class="card-sub" data-i18n="red.spec-detail-psu">ATX 3.1 标准</div>
+          <div class="card-desc" data-i18n="red.comp-psu-desc">充裕的功率余量覆盖 CPU 满载与 32GB 显存显卡的瞬时峰值功耗需求。</div>
           <div class="card-mini">
-            <div class="row"><span>额定功率</span><span>1000W</span></div>
-            <div class="row"><span>标准</span><span>ATX 3.1</span></div>
+            <div class="row"><span data-i18n="red.comp-rated-power">额定功率</span><span>1000W</span></div>
+            <div class="row"><span data-i18n="red.comp-standard">标准</span><span>ATX 3.1</span></div>
           </div>
         </div>
       </div>
@@ -243,14 +243,14 @@
     <div class="comp-hero reveal scale-in">
       <div class="card reverse">
         <div class="card-body">
-          <div class="card-role">CPU Cooler</div>
+          <div class="card-role" data-i18n="red.comp-cooler-role">CPU Cooler</div>
           <div class="card-name">Thermalright AK120 SE ARGB</div>
-          <div class="card-sub">Assassin King 120 SE · 双塔风冷</div>
-          <div class="card-desc">5 热管双塔风冷架构，S-FDB 轴承静音 PWM 风扇，持续压制长时间推理负载下的核心温度。</div>
+          <div class="card-sub">Assassin King 120 SE · <span data-i18n="red.spec-detail-cooler">双塔风冷</span></div>
+          <div class="card-desc" data-i18n="red.comp-cooler-desc">5 热管双塔风冷架构，S-FDB 轴承静音 PWM 风扇，持续压制长时间推理负载下的核心温度。</div>
           <div class="card-mini">
-            <div class="row"><span>热管数量</span><span>5 根</span></div>
-            <div class="row"><span>轴承</span><span>S-FDB</span></div>
-            <div class="row"><span>兼容平台</span><span>AM4 / AM5</span></div>
+            <div class="row"><span data-i18n="red.comp-num-heatpipes">热管数量</span><span>5 根</span></div>
+            <div class="row"><span data-i18n="red.comp-bearing">轴承</span><span>S-FDB</span></div>
+            <div class="row"><span data-i18n="red.comp-platform">兼容平台</span><span>AM4 / AM5</span></div>
           </div>
         </div>
         <div class="card-img"><img src="images/thermalright-ak120.webp" alt="Thermalright Assassin King AK120 SE ARGB CPU cooler"></div>
@@ -261,52 +261,52 @@
   <!-- ================= FULL SPEC TABLE ================= -->
   <section id="specs">
     <div class="section-head">
-      <div class="kicker reveal">04 · Full Bill of Materials</div>
-      <h2 class="reveal">完整硬件清单</h2>
-      <p class="reveal">一张表看完整台机器。</p>
+      <div class="kicker reveal" data-i18n="red.specs-kicker">04 · Full Bill of Materials</div>
+      <h2 class="reveal" data-i18n="red.specs-title">完整硬件清单</h2>
+      <p class="reveal" data-i18n="red.specs-desc">一张表看完整台机器。</p>
     </div>
     <div class="spec-table-wrap">
       <table class="spec-table">
         <tbody>
           <tr class="reveal">
-            <td class="spec-role">CPU</td>
+            <td class="spec-role" data-i18n="red.specs-cpu">CPU</td>
             <td class="spec-name">AMD Ryzen 5 9600X<span class="sub">6-Core 3.9GHz, Radeon Graphics</span></td>
-            <td class="spec-detail">6C/12T · 基础 3.9GHz / 加速 5.4GHz · Socket AM5</td>
+            <td class="spec-detail" data-i18n="red.spec-detail-cpu">6C/12T · 基础 3.9GHz / 加速 5.4GHz · Socket AM5</td>
           </tr>
           <tr class="reveal">
-            <td class="spec-role">GPU</td>
+            <td class="spec-role" data-i18n="red.specs-gpu">GPU</td>
             <td class="spec-name">ASRock Creator Radeon AI PRO R9700<span class="sub">R9700 CT 32GB</span></td>
-            <td class="spec-detail">32GB GDDR6 · 256-bit · PCIe 5.0 x16</td>
+            <td class="spec-detail" data-i18n="red.spec-detail-gpu">32GB GDDR6 · 256-bit · PCIe 5.0 x16</td>
           </tr>
           <tr class="reveal">
-            <td class="spec-role">主板</td>
+            <td class="spec-role" data-i18n="red.specs-mobo">主板</td>
             <td class="spec-name">MSI PRO X870 P-WIFI<span class="sub">Gaming Motherboard</span></td>
-            <td class="spec-detail">AMD X870 芯片组 · DDR5 · WiFi 内置</td>
+            <td class="spec-detail" data-i18n="red.spec-detail-mobo">AMD X870 芯片组 · DDR5 · WiFi 内置</td>
           </tr>
           <tr class="reveal">
-            <td class="spec-role">内存</td>
-            <td class="spec-name">七彩虹 32GB DDR5 6000MHz<span class="sub">Micron 镁光颗粒 · 单条</span></td>
-            <td class="spec-detail">32GB · DDR5-6000 · 镁光原厂颗粒</td>
+            <td class="spec-role" data-i18n="red.specs-ram">内存</td>
+            <td class="spec-name" data-i18n="red.comp-memo-name">七彩虹 32GB DDR5 6000MHz</td>
+            <td class="spec-detail" data-i18n="red.spec-detail-ram">32GB · DDR5-6000 · 镁光原厂颗粒</td>
           </tr>
           <tr class="reveal">
-            <td class="spec-role">硬盘</td>
-            <td class="spec-name">Lexar THOR PRO 2TB<span class="sub">官翻 95新</span></td>
-            <td class="spec-detail">M.2 NVMe · PCIe 4.0 x4 · 2TB</td>
+            <td class="spec-role" data-i18n="red.specs-storage">硬盘</td>
+            <td class="spec-name">Lexar THOR PRO 2TB<span class="sub" data-i18n="red.spec-detail-storage-sub">官翻 95新</span></td>
+            <td class="spec-detail" data-i18n="red.spec-detail-storage">M.2 NVMe · PCIe 4.0 x4 · 2TB</td>
           </tr>
           <tr class="reveal">
-            <td class="spec-role">机箱</td>
-            <td class="spec-name">Corsair 4000D Airflow<span class="sub">美商海盗船</span></td>
-            <td class="spec-detail">中塔 ATX · 高气流前面板</td>
+            <td class="spec-role" data-i18n="red.specs-case">机箱</td>
+            <td class="spec-name">Corsair 4000D Airflow<span class="sub" data-i18n="red.spec-detail-case-sub">美商海盗船</span></td>
+            <td class="spec-detail" data-i18n="red.spec-detail-case">中塔 ATX · 高气流前面板</td>
           </tr>
           <tr class="reveal">
-            <td class="spec-role">电源</td>
+            <td class="spec-role" data-i18n="red.specs-psu">电源</td>
             <td class="spec-name">SAMA G1000W<span class="sub">ATX 3.1</span></td>
-            <td class="spec-detail">1000W · ATX 3.1 标准</td>
+            <td class="spec-detail" data-i18n="red.spec-detail-psu">1000W · ATX 3.1 标准</td>
           </tr>
           <tr class="reveal">
-            <td class="spec-role">散热器</td>
+            <td class="spec-role" data-i18n="red.specs-cooler">散热器</td>
             <td class="spec-name">Thermalright AK120 SE ARGB<span class="sub">Assassin King 120 SE, 5 Heatpipes</span></td>
-            <td class="spec-detail">双塔风冷 · TL-C12C-S PWM 风扇 · S-FDB 轴承 · AM4/AM5</td>
+            <td class="spec-detail" data-i18n="red.spec-detail-cooler">双塔风冷 · TL-C12C-S PWM 风扇 · S-FDB 轴承 · AM4/AM5</td>
           </tr>
         </tbody>
       </table>
@@ -316,45 +316,40 @@
   <!-- ================= SOFTWARE STACK ================= -->
   <section id="stack">
     <div class="section-head">
-      <div class="kicker reveal">05 · Local Stack Activation</div>
-      <h2 class="reveal">本地 AI 神经矩阵</h2>
-      <p class="reveal">从文字到图像，从图像到成片，全部运算留在这台机器里。</p>
+      <div class="kicker reveal" data-i18n="red.stack-kicker">05 · Local Stack Activation</div>
+      <h2 class="reveal" data-i18n="red.stack-title">本地 AI 神经矩阵</h2>
+      <p class="reveal" data-i18n="red.stack-desc">从文字到图像，从图像到成片，全部运算留在这台机器里。</p>
     </div>
 
     <div class="pipeline-wrap">
       <div class="pipeline">
         <div class="pipe-node reveal">
           <div class="n">Step 01</div>
-          <h4>本地大模型</h4>
-          <p>DeepSeek / Qwen 全离线沙箱环境，独立孤岛式推理核心。</p>
+          <h4 data-i18n="red.stack-step1">本地大模型</h4>
+          <p data-i18n="red.stack-step1-desc">DeepSeek / Qwen 全离线沙箱环境，独立孤岛式推理核心。</p>
         </div>
         <div class="pipe-connector"></div>
         <div class="pipe-node reveal">
           <div class="n">Step 02</div>
-          <h4>文本至图像</h4>
-          <p>FLUX.1-schnell，本地秒级生图。</p>
+          <h4 data-i18n="red.stack-step2">文本至图像</h4>
+          <p data-i18n="red.stack-step2-desc">FLUX.1-schnell，本地秒级生图。</p>
         </div>
         <div class="pipe-connector"></div>
         <div class="pipe-node reveal">
           <div class="n">Step 03</div>
-          <h4>时序视频生成</h4>
-          <p>Neural Video Gen，自动化序列输出。</p>
+          <h4 data-i18n="red.stack-step3">时序视频生成</h4>
+          <p data-i18n="red.stack-step3-desc">Neural Video Gen，自动化序列输出。</p>
         </div>
       </div>
-
-      <div class="directive reveal">
-        <div class="k">Production Directive</div>
-        <div class="v">驱动 CosmicSpaceDiary（宇宙空间日志）自动化内容创作</div>
-      </div>
-    </div>
   </section>
 
   <footer>
-    <div class="fline">© 2026 RED ONE AMD INTEGRATION NODE. ALL RIGHTS RESERVED.</div>
-    <div class="fline"><b>LEAD WITH RYZEN. ACCELERATE WITH RADEON.</b> Powered by X870 Chipset.</div>
+    <div class="fline" data-i18n="red.footer-line1">© 2026 RED ONE AMD INTEGRATION NODE. ALL RIGHTS RESERVED.</div>
+    <div class="fline" data-i18n="red.footer-line2"><b>LEAD WITH RYZEN. ACCELERATE WITH RADEON.</b> Powered by X870 Chipset.</div>
   </footer>
 
 <script src="scripts/reveal.js"></script>
 <script src="scripts/red-one.js"></script>
+<script src="scripts/i18n.js"></script>
 </body>
 </html>

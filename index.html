@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" class="i18n-ready">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,19 +18,19 @@
     <div class="nav-inner">
         <div class="nav-logo">Hardware.ai</div>
         <div class="nav-links">
-            <a href="index.html" class="active">GPU 矩阵</a>
-            <a href="bandwidth_ladder.html">带宽阶梯</a>
-            <a href="vram-calc.html">显存计算器</a>
-            <a href="motherboard_upgrade_calculator.html">换板计算</a>
-            <a href="red_one.html">RED ONE</a>
+            <a href="index.html" class="active" data-i18n="nav.gpu-matrix">GPU 矩阵</a>
+            <a href="bandwidth_ladder.html" data-i18n="nav.bw-ladder">带宽阶梯</a>
+            <a href="vram-calc.html" data-i18n="nav.vram-calc">显存计算器</a>
+            <a href="motherboard_upgrade_calculator.html" data-i18n="nav.mobo-calc">换板计算</a>
+            <a href="red_one.html" data-i18n="nav.red-one">RED ONE</a>
         </div>
     </div>
 </nav>
 
 <main>
     <div class="hero-slim">
-        <h1>AI 生产力 GPU 跑分榜</h1>
-        <div class="desc-text">覆盖消费级至数据中心级 GPU · 实测文生图 / 文生视频 / LLM 推理性能表现</div>
+        <h1 data-i18n="index.hero-title">AI 生产力 GPU 跑分榜</h1>
+        <div class="desc-text" data-i18n="index.hero-desc">覆盖消费级至数据中心级 GPU · 实测文生图 / 文生视频 / LLM 推理性能表现</div>
     </div>
 
     <!-- Champion grid -->
@@ -39,30 +39,30 @@
     <!-- Filters -->
     <div class="filter-section">
         <div class="filter-group">
-            <div class="filter-label">任务</div>
-            <button class="filter-chip selected" data-group="task" data-value="all">全部</button>
-            <button class="filter-chip" data-group="task" data-value="img">文生图</button>
-            <button class="filter-chip" data-group="task" data-value="vid">文生视频</button>
-            <button class="filter-chip" data-group="task" data-value="llm">LLM 推理</button>
+            <div class="filter-label" data-i18n="index.filter-task">任务</div>
+            <button class="filter-chip selected" data-group="task" data-value="all" data-i18n="index.filter-all">全部</button>
+            <button class="filter-chip" data-group="task" data-value="img" data-i18n="index.filter-t2i">文生图</button>
+            <button class="filter-chip" data-group="task" data-value="vid" data-i18n="index.filter-t2v">文生视频</button>
+            <button class="filter-chip" data-group="task" data-value="llm" data-i18n="index.filter-llm">LLM 推理</button>
         </div>
         <div class="filter-group">
-            <div class="filter-label">显存</div>
-            <button class="filter-chip selected" data-group="vram" data-value="all">全部</button>
-            <button class="filter-chip" data-group="vram" data-value="8">8GB+</button>
-            <button class="filter-chip" data-group="vram" data-value="16">16GB+</button>
-            <button class="filter-chip" data-group="vram" data-value="24">24GB+</button>
+            <div class="filter-label" data-i18n="index.filter-vram">显存</div>
+            <button class="filter-chip selected" data-group="vram" data-value="all" data-i18n="index.filter-all">全部</button>
+            <button class="filter-chip" data-group="vram" data-value="8" data-i18n="index.filter-8">8GB+</button>
+            <button class="filter-chip" data-group="vram" data-value="16" data-i18n="index.filter-16">16GB+</button>
+            <button class="filter-chip" data-group="vram" data-value="24" data-i18n="index.filter-24">24GB+</button>
         </div>
         <div class="filter-group">
-            <div class="filter-label">预算</div>
-            <button class="filter-chip selected" data-group="budget" data-value="all">不限</button>
-            <button class="filter-chip" data-group="budget" data-value="800">≤$800</button>
-            <button class="filter-chip" data-group="budget" data-value="1500">≤$1500</button>
+            <div class="filter-label" data-i18n="index.filter-budget">预算</div>
+            <button class="filter-chip selected" data-group="budget" data-value="all" data-i18n="index.budget-all">不限</button>
+            <button class="filter-chip" data-group="budget" data-value="800" data-i18n="index.budget-800">≤$800</button>
+            <button class="filter-chip" data-group="budget" data-value="1500" data-i18n="index.budget-1500">≤$1500</button>
         </div>
     </div>
 
     <div class="view-switcher">
-        <button class="view-tab active" onclick="switchView('table-panel', this)">性能指标总览</button>
-        <button class="view-tab" onclick="switchView('chart-panel', this)">象限分析图</button>
+        <button class="view-tab active" onclick="switchView('table-panel', this)" data-i18n="index.view-table">性能指标总览</button>
+        <button class="view-tab" onclick="switchView('chart-panel', this)" data-i18n="index.view-chart">象限分析图</button>
     </div>
 
     <div id="table-panel" class="content-panel active">
@@ -71,13 +71,13 @@
                 <thead>
                     <tr>
                         <th style="width:40px;">#</th>
-                        <th style="width:24px;">级</th>
-                        <th>硬件型号</th>
-                        <th>文生图 (it/s)</th>
-                        <th>文生视频</th>
-                        <th>LLM 推理 (tok/s)</th>
-                        <th>参考价 (CAD)</th>
-                        <th>性价比</th>
+                        <th style="width:24px;" data-i18n="index.table-rank">级</th>
+                        <th data-i18n="index.table-model">硬件型号</th>
+                        <th data-i18n="index.table-t2i">文生图 (it/s)</th>
+                        <th data-i18n="index.table-t2v">文生视频</th>
+                        <th data-i18n="index.table-llm">LLM 推理 (tok/s)</th>
+                        <th data-i18n="index.table-price">参考价 (CAD)</th>
+                        <th data-i18n="index.table-value">性价比</th>
                     </tr>
                 </thead>
                 <tbody id="gpu-rows-target"></tbody>
@@ -92,16 +92,17 @@
     </div>
 
     <footer class="page-footer">
-        <strong>测算规格与基准说明：</strong><br>
-        测试日期：2026年5月 | 宿主机环境：Ubuntu 24.04, CUDA 12.8, PyTorch 2.6<br>
-        • <strong>文生图</strong>：基于 Flux.1-Dev (FP8 精度) 测算每秒迭代次数 (it/s) | • <strong>文生视频</strong>：基于 GenVideoX-5B 渲染一段 5秒 720p 视频的完整执行耗时 (越小越好) | • <strong>LLM推理</strong>：基于 Llama-4-70B-Q4_K_M 测算首字输出后的持续生成速度 (tok/s)。
+        <strong data-i18n="index.footer-title">测算规格与基准说明：</strong><br>
+        <span data-i18n="index.footer-date">测试日期：2026年5月 | 宿主机环境：Ubuntu 24.04, CUDA 12.8, PyTorch 2.6</span><br>
+        • <strong data-i18n="index.footer-t2i">文生图</strong><span data-i18n="index.footer-t2i-desc">：基于 Flux.1-Dev (FP8 精度) 测算每秒迭代次数 (it/s)</span> | • <strong data-i18n="index.footer-t2v">文生视频</strong><span data-i18n="index.footer-t2v-desc">：基于 GenVideoX-5B 渲染一段 5秒 720p 视频的完整执行耗时 (越小越好)</span> | • <strong data-i18n="index.footer-llm">LLM推理</strong><span data-i18n="index.footer-llm-desc">：基于 Llama-4-70B-Q4_K_M 测算首字输出后的持续生成速度 (tok/s)。</span>
     </footer>
 </main>
 
+<script src="scripts/i18n.js"></script>
 <script>
-    // Data loading safety check
+    // Data loading safety check — uses t() from i18n.js
     if (typeof GPU_BENCHMARKS === 'undefined') {
-      document.querySelector('main').innerHTML = '<div style="text-align:center;padding:120px 24px;color:var(--text-dim);"><h2>数据文件未能加载</h2><p>请确保 data/gpu-dataset.js 文件存在，然后刷新页面重试。</p></div>';
+      document.querySelector('main').innerHTML = '<div style="text-align:center;padding:120px 24px;color:var(--text-dim);"><h2>'+t('index.data-error-title')+'</h2><p>'+t('index.data-error-desc')+'</p></div>';
       throw new Error('GPU_BENCHMARKS data not loaded');
     }
 
@@ -138,11 +139,13 @@
         return { img: '#A0AEC0', vid: '#A0AEC0', llm: '#A0AEC0' };
     }
 
+    var OOM_ZH = '显存不足';
+
     function renderChampions() {
         const imgChamp = GPU_BENCHMARKS.reduce((a,b) => a.imgVal >= b.imgVal ? a : b);
         const vidChamp = GPU_BENCHMARKS.reduce((a,b) => {
-            const at = a.vidText === '显存不足' ? Infinity : parseInt(a.vidText);
-            const bt = b.vidText === '显存不足' ? Infinity : parseInt(b.vidText);
+            const at = a.vidText === OOM_ZH ? Infinity : parseInt(a.vidText);
+            const bt = b.vidText === OOM_ZH ? Infinity : parseInt(b.vidText);
             return at <= bt ? a : b;
         });
         const llmChamp = GPU_BENCHMARKS.reduce((a,b) => a.llmVal >= b.llmVal ? a : b);
@@ -150,23 +153,23 @@
 
         document.getElementById('championGrid').innerHTML = `
             <div class="champion-card">
-                <div class="champ-header">文生图冠军</div>
+                <div class="champ-header">${t('index.champ-t2i')}</div>
                 <div class="gpu-model">${imgChamp.name}</div>
                 <div class="model-details">Flux.1 Dev · <span class="highlight-data">${imgChamp.imgVal.toFixed(1)} it/s</span></div>
             </div>
             <div class="champion-card">
-                <div class="champ-header">文生视频冠军</div>
+                <div class="champ-header">${t('index.champ-t2v')}</div>
                 <div class="gpu-model">${vidChamp.name}</div>
                 <div class="model-details">5s 720p · <span class="highlight-data">${vidChamp.vidText}</span></div>
             </div>
             <div class="champion-card">
-                <div class="champ-header">LLM 推理冠军</div>
+                <div class="champ-header">${t('index.champ-llm')}</div>
                 <div class="gpu-model">${llmChamp.name}</div>
                 <div class="model-details">Llama 4 70B · <span class="highlight-data">${llmChamp.llmVal} tok/s</span></div>
             </div>
             <div class="champion-card">
-                <div class="champ-header">性价比之王</div>
-                <div class="gpu-model">${valueChamp.name}${valueChamp.isHighlight ? ' <span class="recommend-tag">推荐</span>' : ''}</div>
+                <div class="champ-header">${t('index.champ-value')}</div>
+                <div class="gpu-model">${valueChamp.name}${valueChamp.isHighlight ? ' <span class="recommend-tag">'+t('index.recommend-tag')+'</span>' : ''}</div>
                 <div class="model-details">${valueChamp.desc} · <span class="highlight-data">${valueChamp.price}</span></div>
             </div>
         `;
@@ -176,7 +179,7 @@
         const container = document.getElementById('gpu-rows-target');
         const filtered = GPU_BENCHMARKS.filter(passesFilter);
         if (filtered.length === 0) {
-            container.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text-dim);">没有符合筛选条件的显卡</td></tr>';
+            container.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text-dim);">'+t('index.empty-filter')+'</td></tr>';
             return;
         }
         container.innerHTML = filtered.map(item => {
@@ -184,14 +187,14 @@
             const imgPct = (item.imgVal / item.imgMax) * 100;
             const llmPct = (item.llmVal / item.llmMax) * 100;
             let videoBlock = '';
-            if (item.vidText === "显存不足") {
+            if (item.vidText === OOM_ZH) {
                 videoBlock = `<div class="metric-cell"><div class="cell-bar-container"><div class="cell-bar-fill" style="width:0%"></div></div><span class="oom-label">OOM</span></div>`;
             } else {
                 const vidPct = Math.min(item.vidPct, 100);
                 videoBlock = `<div class="metric-cell"><div class="cell-bar-container"><div class="cell-bar-fill" style="background:${colors.vid};width:${vidPct}%"></div></div><span class="cell-number-label">${item.vidText}</span></div>`;
             }
             const rowClass = item.isHighlight ? 'class="highlight-row"' : '';
-            const tagHTML = item.isHighlight ? '<span class="tag-badge">核心推荐</span>' : '';
+            const tagHTML = item.isHighlight ? '<span class="tag-badge">'+t('index.recommend-tag')+'</span>' : '';
             return `<tr ${rowClass}>
                 <td style="color:var(--text-dim);font-weight:600;">${item.rank}</td>
                 <td><span class="badge-index badge-${item.grade.toLowerCase()}">${item.grade}</span></td>
@@ -235,22 +238,22 @@
         const filtered = GPU_BENCHMARKS.filter(passesFilter);
         const scatterData = filtered.map(item => {
             const priceNum = extractPrice(item.price);
-            return { x: priceNum, y: item.llmVal, label: item.name + (item.isHighlight ? ' (二手价格之王)' : '') };
+            return { x: priceNum, y: item.llmVal, label: item.name + (item.isHighlight ? t('index.chart-price-king') : '') };
         });
         const maxPrice = Math.max(...scatterData.map(d => d.x), 200);
         const maxTok = Math.max(...scatterData.map(d => d.y), 50);
         const ctx = document.getElementById('analysisChart').getContext('2d');
         chartInstance = new Chart(ctx, {
             type: 'scatter',
-            data: { datasets: [{ label: 'GPU (2026年5月)', data: scatterData, backgroundColor: '#ff8a45', pointRadius: 7, pointHoverRadius: 11 }] },
+            data: { datasets: [{ label: t('index.chart-dataset-label'), data: scatterData, backgroundColor: '#ff8a45', pointRadius: 7, pointHoverRadius: 11 }] },
             options: {
                 responsive: true, maintainAspectRatio: false,
                 plugins: {
                     tooltip: { callbacks: { label: function(ctx) { return ctx.raw.label + ': $' + ctx.raw.x.toLocaleString() + ' CAD, LLM ' + ctx.raw.y + ' tok/s'; } } }
                 },
                 scales: {
-                    x: { title: { display: true, text: '参考价格 (CAD) — 越左越划算', font: { weight: 'bold' } }, type: 'logarithmic', min: 200, max: maxPrice * 1.15, ticks: { callback: function(v) { return '$' + v.toLocaleString(); } } },
-                    y: { title: { display: true, text: 'LLM 推理速度 (tok/s) — 越上越强劲', font: { weight: 'bold' } }, min: 0, max: maxTok * 1.15 }
+                    x: { title: { display: true, text: t('index.scatter-price'), font: { weight: 'bold' } }, type: 'logarithmic', min: 200, max: maxPrice * 1.15, ticks: { callback: function(v) { return '$' + v.toLocaleString(); } } },
+                    y: { title: { display: true, text: t('index.scatter-speed'), font: { weight: 'bold' } }, min: 0, max: maxTok * 1.15 }
                 }
             }
         });
@@ -258,6 +261,14 @@
 
     renderChampions();
     populateTable();
+
+    // Re-render on language switch
+    document.addEventListener('i18n:changed', function() {
+      renderChampions();
+      populateTable();
+      if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
+      if (document.getElementById('chart-panel').classList.contains('active')) initChart();
+    });
 </script>
 </body>
 </html>

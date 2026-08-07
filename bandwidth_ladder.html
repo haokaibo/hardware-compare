@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>带宽阶梯 — PCIe / DDR5 / 显存 / 存储速度全景</title>
-<meta name="description" content="PCIe / DDR5 / 显存 / 存储设备带宽对照表，对数刻度展示数据通路速度差距。">
+  <title data-i18n="bw.page-title">带宽阶梯 — PCIe / DDR5 / 显存 / 存储速度全景</title>
+<meta name="description" data-i18n="bw.meta-desc" content="PCIe / DDR5 / 显存 / 存储设备带宽对照表，对数刻度展示数据通路速度差距。">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="stylesheet" href="styles/theme.css">
   <link rel="stylesheet" href="styles/base.css">
@@ -16,11 +16,11 @@
   <div class="nav-inner">
     <div class="nav-logo">Hardware.ai</div>
     <div class="nav-links">
-      <a href="index.html">GPU 矩阵</a>
-      <a href="bandwidth_ladder.html" class="active">带宽阶梯</a>
-      <a href="vram-calc.html">显存计算器</a>
-      <a href="motherboard_upgrade_calculator.html">换板计算</a>
-      <a href="red_one.html">RED ONE</a>
+      <a href="index.html" data-i18n="nav.gpu-matrix">GPU 矩阵</a>
+      <a href="bandwidth_ladder.html" class="active" data-i18n="nav.bw-ladder">带宽阶梯</a>
+      <a href="vram-calc.html" data-i18n="nav.vram-calc">显存计算器</a>
+      <a href="motherboard_upgrade_calculator.html" data-i18n="nav.mobo-calc">换板计算</a>
+      <a href="red_one.html" data-i18n="nav.red-one">RED ONE</a>
     </div>
   </div>
 </nav>
@@ -28,12 +28,12 @@
 <main>
 
   <section class="hero">
-    <div class="eyebrow"><span class="dot"></span>数据通路带宽参照表</div>
-    <h1>从 <span>PCIe 通道</span> 到 <span>显存</span>，<br>速度差着几个数量级</h1>
+    <div class="eyebrow"><span class="dot"></span><span data-i18n="bw.hero-eyebrow">数据通路带宽参照表</span></div>
+    <h1 data-i18n="bw.hero-title" data-i18n-html="true">从 <span>PCIe 通道</span> 到 <span>显存</span>，<br>速度差着几个数量级</h1>
 
     <div class="diagram-top">
-      <div class="section-head"><h2>数据路径全景</h2><span class="tag">谁跟谁直连 · 谁必须过桥</span></div>
-      <p class="section-sub">CPU、GPU 各自守着自己的"地盘"——CPU 直连系统内存，GPU 直连显存。SSD 没有独立总线，插在 PCIe 上。实际的数据搬运是 <b>链式 DMA</b>：CPU 只负责发指令（指挥），数据先由 SSD 直通内存，再由内存直通显存，全程不经过 CPU。</p>
+      <div class="section-head"><div class="kicker" data-i18n="bw.diagram-tag">谁跟谁直连 · 谁必须过桥</div><h2 data-i18n="bw.diagram-title">数据路径全景</h2></div>
+      <p class="section-sub" data-i18n="bw.diagram-desc" data-i18n-html="true">CPU、GPU 各自守着自己的"地盘"——CPU 直连系统内存，GPU 直连显存。SSD 没有独立总线，插在 PCIe 上。实际的数据搬运是 <b>链式 DMA</b>：CPU 只负责发指令（指挥），数据先由 SSD 直通内存，再由内存直通显存，全程不经过 CPU。</p>
 
       <div class="pathdiagram">
         <svg viewBox="0 0 1350 390" xmlns="http://www.w3.org/2000/svg">
@@ -97,30 +97,30 @@
       </div>
     </div>
 
-    <p>同样叫"快"，PCIe 4.0 x4、双通道 DDR5 和显卡显存之间可能差出 10 倍以上。下面用对数刻度把它们摆在同一把尺子上，再看看大模型推理时，数据从显存被挤到内存、再被挤到硬盘时，速度是怎么断崖式下跌的。</p>
+    <p data-i18n="bw.hero-intro">同样叫"快"，PCIe 4.0 x4、双通道 DDR5 和显卡显存之间可能差出 10 倍以上。下面用对数刻度把它们摆在同一把尺子上，再看看大模型推理时，数据从显存被挤到内存、再被挤到硬盘时，速度是怎么断崖式下跌的。</p>
     <div class="hero-stats">
-      <div class="hero-stat"><b>0.15 → 640</b><span>GB/s 覆盖范围（约4300倍）</span></div>
-      <div class="hero-stat"><b>4</b><span>类通路：PCIe / DDR5 / 显存 / 存储</span></div>
-      <div class="hero-stat"><b>log10</b><span>刻度，否则显存会把其他都压成一条线</span></div>
+      <div class="hero-stat"><b>0.15 → 640</b><span data-i18n="bw.hero-stat-range">GB/s 覆盖范围（约4300倍）</span></div>
+      <div class="hero-stat"><b>4</b><span data-i18n="bw.hero-stat-types">类通路：PCIe / DDR5 / 显存 / 存储</span></div>
+      <div class="hero-stat"><b>log10</b><span data-i18n="bw.hero-stat-scale">刻度，否则显存会把其他都压成一条线</span></div>
     </div>
   </section>
 
   <section class="section" id="chart-section">
-    <div class="section-head"><h2>带宽阶梯</h2><span class="tag">对数刻度 · 单位 GB/s</span></div>
-    <p class="section-sub">条形长度按 log₁₀(带宽) 绘制 —— 这意味着每往右移动一段固定距离，速度是乘以 10，不是加 10。刻度线标出了 1 / 10 / 100 / 1000 GB/s 这几个"十倍"分界点。</p>
+    <div class="section-head"><div class="kicker" data-i18n="bw.chart-tag">对数刻度 · 单位 GB/s</div><h2 data-i18n="bw.section-chart-title">带宽阶梯</h2></div>
+    <p class="section-sub" data-i18n="bw.section-chart-desc">条形长度按 log₁₀(带宽) 绘制 —— 这意味着每往右移动一段固定距离，速度是乘以 10，不是加 10。刻度线标出了 1 / 10 / 100 / 1000 GB/s 这几个"十倍"分界点。</p>
 
     <div class="legend">
-      <div class="legend-item"><span class="legend-swatch cat-pcie"></span>PCIe 插槽</div>
-      <div class="legend-item"><span class="legend-swatch cat-ram"></span>DDR5 系统内存</div>
-      <div class="legend-item"><span class="legend-swatch cat-vram"></span>显卡显存 (VRAM)</div>
-      <div class="legend-item"><span class="legend-swatch cat-storage"></span>存储设备</div>
+      <div class="legend-item"><span class="legend-swatch cat-pcie"></span><span data-i18n="bw.legend-pcie">PCIe 插槽</span></div>
+      <div class="legend-item"><span class="legend-swatch cat-ram"></span><span data-i18n="bw.legend-ddr5">DDR5 系统内存</span></div>
+      <div class="legend-item"><span class="legend-swatch cat-vram"></span><span data-i18n="bw.legend-vram">显卡显存 (VRAM)</span></div>
+      <div class="legend-item"><span class="legend-swatch cat-storage"></span><span data-i18n="bw.legend-storage">存储设备</span></div>
     </div>
 
     <div class="mode-panel">
-      <div class="mode-caption">刻度模式</div>
+      <div class="mode-caption" data-i18n="bw.mode-caption">刻度模式</div>
       <div class="mode-switch" role="tablist" aria-label="切换刻度模式">
-        <button class="mode-btn active" data-mode="log" role="tab" aria-selected="true">LOG<small>对数</small></button>
-        <button class="mode-btn" data-mode="linear" role="tab" aria-selected="false">LINEAR<small>线性</small></button>
+        <button class="mode-btn active" data-mode="log" role="tab" aria-selected="true">LOG<small data-i18n="bw.mode-log-small">对数</small></button>
+        <button class="mode-btn" data-mode="linear" role="tab" aria-selected="false">LINEAR<small data-i18n="bw.mode-linear-small">线性</small></button>
       </div>
       <span class="mode-hint" id="modeHint">// 每格代表 ×10 —— 小数值也看得清</span>
     </div>
@@ -134,56 +134,56 @@
   </section>
 
   <section class="section">
-    <div class="section-head"><h2>大模型推理：数据放在哪，速度差多少</h2><span class="tag">示意 · 按带宽比例估算</span></div>
-    <p class="section-sub">27B 级别模型全部塞进 32GB 显存时，推理只在 GPU 内部完成，几乎不受这张表左边那些"慢通路"影响。一旦显存不够、需要 offload，数据就得沿着更窄的通路来回搬运——这张图展示的是这条通路本身的带宽差距，也是推理速度断崖式下跌的根源。</p>
+    <div class="section-head"><div class="kicker" data-i18n="bw.journey-tag">示意 · 按带宽比例估算</div><h2 data-i18n="bw.journey-title">大模型推理：数据放在哪，速度差多少</h2></div>
+    <p class="section-sub" data-i18n="bw.journey-desc">27B 级别模型全部塞进 32GB 显存时，推理只在 GPU 内部完成，几乎不受这张表左边那些"慢通路"影响。一旦显存不够、需要 offload，数据就得沿着更窄的通路来回搬运——这张图展示的是这条通路本身的带宽差距，也是推理速度断崖式下跌的根源。</p>
 
     <div class="journey">
       <div class="stage">
         <div class="arrow-connector">→</div>
         <div class="stage-icon" style="background:rgba(56,161,105,0.12); color:#38A169;">①</div>
-        <h3>全部在 GPU 显存</h3>
+        <h3 data-i18n="bw.journey-stage1-title">全部在 GPU 显存</h3>
         <div class="bw">R9700 · 640 GB/s</div>
-        <div class="speedbar-label">相对速度</div>
+        <div class="speedbar-label" data-i18n="bw.journey-speed-label">相对速度</div>
         <div class="speedbar-track"><div class="speedbar-fill" data-w="100" style="background:#38A169;"></div></div>
-        <div class="metric" style="color:#38A169;">基准 1×</div>
-        <div class="metric-label">模型权重、KV Cache 全部常驻显存，GPU 算力全速吞吐</div>
-        <div class="relative">27B 模型 Q4 量化下，token 生成速度取决于 GPU 算力本身，不受内存/存储带宽制约。</div>
+        <div class="metric" style="color:#38A169;" data-i18n="bw.journey-stage1-metric">基准 1×</div>
+        <div class="metric-label" data-i18n="bw.journey-stage1-label">模型权重、KV Cache 全部常驻显存，GPU 算力全速吞吐</div>
+        <div class="relative" data-i18n="bw.journey-stage1-relative">27B 模型 Q4 量化下，token 生成速度取决于 GPU 算力本身，不受内存/存储带宽制约。</div>
       </div>
       <div class="stage">
         <div class="arrow-connector">→</div>
         <div class="stage-icon" style="background:rgba(49,151,149,0.12); color:#319795;">②</div>
-        <h3>部分 offload 到系统内存</h3>
-        <div class="bw">双通道 DDR5-6000 · 96 GB/s</div>
-        <div class="speedbar-label">相对速度</div>
+        <h3 data-i18n="bw.journey-stage2-title">部分 offload 到系统内存</h3>
+        <div class="bw" data-i18n="bw.journey-stage2-bw">双通道 DDR5-6000 · 96 GB/s</div>
+        <div class="speedbar-label" data-i18n="bw.journey-speed-label">相对速度</div>
         <div class="speedbar-track"><div class="speedbar-fill" data-w="15" style="background:#319795;"></div></div>
-        <div class="metric" style="color:#319795;">↓ 约 6-7×</div>
-        <div class="metric-label">部分层放不进显存，llama.cpp 等工具把这些层丢给 CPU+内存算</div>
-        <div class="relative">每算一个 token 都要在 GPU 和内存之间来回搬数据，速度大致跟着带宽比例掉：640÷96 ≈ 6.7 倍，实际感知往往更慢。</div>
+        <div class="metric" style="color:#319795;" data-i18n="bw.journey-stage2-metric">↓ 约 6-7×</div>
+        <div class="metric-label" data-i18n="bw.journey-stage2-label">部分层放不进显存，llama.cpp 等工具把这些层丢给 CPU+内存算</div>
+        <div class="relative" data-i18n="bw.journey-stage2-relative">每算一个 token 都要在 GPU 和内存之间来回搬数据，速度大致跟着带宽比例掉：640÷96 ≈ 6.7 倍，实际感知往往更慢。</div>
       </div>
       <div class="stage">
         <div class="stage-icon" style="background:rgba(220,38,38,0.12); color:#DC2626;">③</div>
-        <h3>继续 offload 到 SSD</h3>
-        <div class="bw">NVMe Gen4 顺序读 · 约 7 GB/s</div>
-        <div class="speedbar-label">相对速度</div>
+        <h3 data-i18n="bw.journey-stage3-title">继续 offload 到 SSD</h3>
+        <div class="bw" data-i18n="bw.journey-stage3-bw">NVMe Gen4 顺序读 · 约 7 GB/s</div>
+        <div class="speedbar-label" data-i18n="bw.journey-speed-label">相对速度</div>
         <div class="speedbar-track"><div class="speedbar-fill" data-w="1.5" style="background:#DC2626;"></div></div>
-        <div class="metric" style="color:#DC2626;">↓ 约 90×</div>
-        <div class="metric-label">显存和内存都不够，只能靠 mmap/swap 从硬盘读取权重</div>
-        <div class="relative">SSD 顺序读取带宽只有显存的 1/90 左右，而且模型权重的访问模式接近随机读，实际比顺序读还要再慢一截——这一档基本只适合"能跑就行"，不适合日常使用。</div>
+        <div class="metric" style="color:#DC2626;" data-i18n="bw.journey-stage3-metric">↓ 约 90×</div>
+        <div class="metric-label" data-i18n="bw.journey-stage3-label">显存和内存都不够，只能靠 mmap/swap 从硬盘读取权重</div>
+        <div class="relative" data-i18n="bw.journey-stage3-relative">SSD 顺序读取带宽只有显存的 1/90 左右，而且模型权重的访问模式接近随机读，实际比顺序读还要再慢一截——这一档基本只适合"能跑就行"，不适合日常使用。</div>
       </div>
     </div>
 
-    <div class="caveat"><b>关于这组数字：</b>①②③ 三档的相对速度是按各自通路的理论带宽比例简化估算的，用来直观展示"差一个数量级"是什么概念，不是某个具体模型的实测跑分——真实场景里还有显存/内存/SSD之间的调度开销、随机读放大等因素，实际速度通常比纯带宽比例算出来的更慢，尤其是③这一档。</div>
+    <div class="caveat" data-i18n="bw.journey-caveat" data-i18n-html="true"><b>关于这组数字：</b>①②③ 三档的相对速度是按各自通路的理论带宽比例简化估算的，用来直观展示"差一个数量级"是什么概念，不是某个具体模型的实测跑分——真实场景里还有显存/内存/SSD之间的调度开销、随机读放大等因素，实际速度通常比纯带宽比例算出来的更慢，尤其是③这一档。</div>
   </section>
 
   <section class="equiv">
-    <div class="equiv-title">一个容易记住的等价关系</div>
+    <div class="equiv-title" data-i18n="bw.equiv-title">一个容易记住的等价关系</div>
     <div class="equiv-row">
       <span class="chip" style="color:#2D68D9;">PCIe 3.0 x16</span>
       <span class="eq">≈</span>
       <span class="chip" style="color:#2D68D9;">PCIe 4.0 x8</span>
       <span class="eq">≈</span>
       <span class="chip" style="color:#2D68D9;">PCIe 5.0 x4</span>
-      <span class="eq" style="margin-left:6px;">— 都约 16 GB/s，每升一代、通道减半，带宽打平</span>
+      <span class="eq" style="margin-left:6px;" data-i18n="bw.equiv-desc">— 都约 16 GB/s，每升一代、通道减半，带宽打平</span>
     </div>
   </section>
 
@@ -193,6 +193,7 @@
 
 </main>
 
+<script src="scripts/i18n.js"></script>
 <script src="scripts/bw-ladder.js"></script>
 </body>
 </html>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN"><head><meta charset="UTF-8">
+<html lang="zh-CN" class="i18n-ready"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>INFERENCE LIFECYCLE — 一次对话的处理生命周期</title>
 <link rel="stylesheet" href="styles/theme.css">
@@ -12,10 +12,10 @@
   <div class="nav-inner">
     <div class="nav-logo">RED ONE</div>
     <div class="nav-links">
-      <a href="red_one.html">硬件</a>
-      <a href="pipeline.html">软件架构</a>
-      <a href="lifecycle.html" aria-current="page">推理生命周期</a>
-      <a href="lifecycle.html#breakdown">时间占比</a>
+      <a href="red_one.html" data-i18n="nav.hardware">硬件</a>
+      <a href="pipeline.html" data-i18n="nav.software-arch">软件架构</a>
+      <a href="lifecycle.html" aria-current="page" data-i18n="nav.inference-lifecycle">推理生命周期</a>
+      <a href="lifecycle.html#breakdown" data-i18n="nav.time-breakdown">时间占比</a>
     </div>
   </div>
 </nav>
@@ -23,14 +23,14 @@
 <!-- ========== HERO ========== -->
 <header class="hero">
   <div class="hero-glow"></div>
-  <div class="eyebrow">ONE CONVERSATION TURN, DECOMPOSED</div>
-  <h1>INFERENCE&nbsp;<br/>LIFECYCLE</h1>
-  <p class="sub">从按下发送到屏幕上出现最后一个字 —— 一次人机对话背后，请求依次流过的每一个阶段，以及时间究竟花在了哪里。</p>
+  <div class="eyebrow" data-i18n="life.hero-eyebrow">ONE CONVERSATION TURN, DECOMPOSED</div>
+  <h1 data-i18n="life.hero-title">INFERENCE&nbsp;<br/>LIFECYCLE</h1>
+  <p class="sub" data-i18n="life.hero-sub">从按下发送到屏幕上出现最后一个字 —— 一次人机对话背后，请求依次流过的每一个阶段，以及时间究竟花在了哪里。</p>
   <div class="hero-id">
-    <span><b>TTFT</b> 首字延迟</span>
-    <span><b>TPOT</b> 逐字延迟</span>
-    <span><b>5</b> 个可测阶段</span>
-    <span><b>R9700</b> 实测数据</span>
+    <span><b>TTFT</b> <span data-i18n="life.hero-ttft">首字延迟</span></span>
+    <span><b>TPOT</b> <span data-i18n="life.hero-tpot">逐字延迟</span></span>
+    <span><b>5</b> <span data-i18n="life.hero-stages">个可测阶段</span></span>
+    <span><b>R9700</b> <span data-i18n="life.hero-data">实测数据</span></span>
   </div>
   <div class="scroll-cue">
     <span>SCROLL</span>
@@ -65,47 +65,47 @@
 <!-- ========== TIMELINE / PIPELINE ========== -->
 <section id="timeline">
   <div class="section-head reveal">
-    <div class="kicker">· 处理管线 ·</div>
-    <h2>一次请求，六个阶段</h2>
-    <p>用户按下发送后，请求依次流过以下节点，每一步都可以单独测量耗时。</p>
+    <div class="kicker" data-i18n="life.section-timeline-kicker">· 处理管线 ·</div>
+    <h2 data-i18n="life.section-timeline-title">一次请求，六个阶段</h2>
+    <p data-i18n="life.section-timeline-desc">用户按下发送后，请求依次流过以下节点，每一步都可以单独测量耗时。</p>
   </div>
 
   <div class="pipeline-wrap reveal">
     <div class="pipeline">
       <div class="pipe-node">
         <div class="n">STEP 01</div>
-        <h4>用户输入</h4>
-        <p>文本经网络传输到推理服务</p>
+        <h4 data-i18n="life.step1">用户输入</h4>
+        <p data-i18n="life.step1-desc">文本经网络传输到推理服务</p>
       </div>
       <div class="pipe-connector"></div>
       <div class="pipe-node">
         <div class="n">STEP 02</div>
-        <h4>Tokenization</h4>
-        <p>文本切分为模型可处理的 token 序列</p>
+        <h4 data-i18n="life.step2">Tokenization</h4>
+        <p data-i18n="life.step2-desc">文本切分为模型可处理的 token 序列</p>
       </div>
       <div class="pipe-connector"></div>
       <div class="pipe-node">
         <div class="n">STEP 03</div>
-        <h4>Prefill</h4>
-        <p>并行处理全部输入 token，写入 KV Cache</p>
+        <h4 data-i18n="life.step3">Prefill</h4>
+        <p data-i18n="life.step3-desc">并行处理全部输入 token，写入 KV Cache</p>
       </div>
       <div class="pipe-connector"></div>
       <div class="pipe-node">
         <div class="n">STEP 04</div>
-        <h4>Decode</h4>
-        <p>逐个生成输出 token，依赖上一步结果</p>
+        <h4 data-i18n="life.step4">Decode</h4>
+        <p data-i18n="life.step4-desc">逐个生成输出 token，依赖上一步结果</p>
       </div>
       <div class="pipe-connector"></div>
       <div class="pipe-node">
         <div class="n">STEP 05</div>
-        <h4>Detokenization</h4>
-        <p>token 还原为可读文本</p>
+        <h4 data-i18n="life.step5">Detokenization</h4>
+        <p data-i18n="life.step5-desc">token 还原为可读文本</p>
       </div>
       <div class="pipe-connector"></div>
       <div class="pipe-node">
         <div class="n">STEP 06</div>
-        <h4>流式返回</h4>
-        <p>逐块推送到客户端，边生成边显示</p>
+        <h4 data-i18n="life.step6">流式返回</h4>
+        <p data-i18n="life.step6-desc">逐块推送到客户端，边生成边显示</p>
       </div>
     </div>
   </div>
@@ -114,9 +114,9 @@
 <!-- ========== TIME BREAKDOWN ========== -->
 <section id="breakdown">
   <div class="section-head reveal">
-    <div class="kicker">· 时间占比 ·</div>
-    <h2>同样是一次对话，时间花在哪不一样</h2>
-    <p>Prompt 越长，Prefill 占比越高；输出越长，Decode 占比越高 —— 同一张显卡，在不同场景下"快"的定义完全不同。</p>
+    <div class="kicker" data-i18n="life.section-breakdown-kicker">· 时间占比 ·</div>
+    <h2 data-i18n="life.section-breakdown-title">同样是一次对话，时间花在哪不一样</h2>
+    <p data-i18n="life.section-breakdown-desc">Prompt 越长，Prefill 占比越高；输出越长，Decode 占比越高 —— 同一张显卡，在不同场景下"快"的定义完全不同。</p>
   </div>
 
   <div class="time-breakdown reveal">
@@ -124,7 +124,7 @@
 
       <div class="time-col">
         <div class="time-col-head">
-          <div class="time-col-title">短问答 · 长回复</div>
+          <div class="time-col-title" data-i18n="life.scenario1-title">短问答 · 长回复</div>
           <div class="time-col-total">端到端总耗时 <b>2.40 s</b></div>
         </div>
         <div class="time-bar-vert">
@@ -139,7 +139,7 @@
 
       <div class="time-col">
         <div class="time-col-head">
-          <div class="time-col-title">长文档 · 短摘要（RAG）</div>
+          <div class="time-col-title" data-i18n="life.scenario2-title">长文档 · 短摘要（RAG）</div>
           <div class="time-col-total">端到端总耗时 <b>3.20 s</b></div>
         </div>
         <div class="time-bar-vert">
@@ -165,9 +165,9 @@
 <!-- ========== STAGE DETAILS ========== -->
 <section>
   <div class="section-head reveal">
-    <div class="kicker">· 阶段详解 ·</div>
-    <h2>每个阶段，决定速度的因素不同</h2>
-    <p>Prefill 是并行计算密集型，Decode 是显存带宽密集型 —— 这也是同一张 GPU 在两项跑分上表现不同的根本原因。</p>
+    <div class="kicker" data-i18n="life.section-detail-kicker">· 阶段详解 ·</div>
+    <h2 data-i18n="life.section-detail-title">每个阶段，决定速度的因素不同</h2>
+    <p data-i18n="life.section-detail-desc">Prefill 是并行计算密集型，Decode 是显存带宽密集型 —— 这也是同一张 GPU 在两项跑分上表现不同的根本原因。</p>
   </div>
 
   <div class="comp-grid reveal">
@@ -293,8 +293,8 @@
 <!-- ========== METRICS TABLE ========== -->
 <section id="metrics">
   <div class="section-head reveal">
-    <div class="kicker">· 关键指标 ·</div>
-    <h2>评测报告里这些词到底在测什么</h2>
+    <div class="kicker" data-i18n="life.section-metrics-kicker">· 关键指标 ·</div>
+    <h2 data-i18n="life.section-metrics-title">评测报告里这些词到底在测什么</h2>
   </div>
 
   <div class="spec-table-wrap reveal">
@@ -330,16 +330,17 @@
   </div>
 
   <div class="directive reveal" style="max-width:900px; margin-left:auto; margin-right:auto;">
-    <div class="k">核心结论</div>
-    <div class="v">Prefill 决定长文档 / RAG 场景的响应速度，Decode 决定长对话 / 长输出场景的流畅度 —— 选硬件前，先看清自己的场景更接近哪一种。</div>
+    <div class="k" data-i18n="life.directive-k">核心结论</div>
+    <div class="v" data-i18n="life.directive-v">Prefill 决定长文档 / RAG 场景的响应速度，Decode 决定长对话 / 长输出场景的流畅度 —— 选硬件前，先看清自己的场景更接近哪一种。</div>
   </div>
 </section>
 
 <footer>
-  <div class="fline">拆解 <b>一次人机对话</b> 背后的推理生命周期</div>
-  <div class="fline"><a class="back-link" href="pipeline.html">← 查看软件架构 PIPELINE ZERO</a></div>
+  <div class="fline" data-i18n="life.footer-line1">拆解 <b>一次人机对话</b> 背后的推理生命周期</div>
+  <div class="fline"><a class="back-link" href="pipeline.html">← <span data-i18n="nav.software-arch">软件架构</span></a></div>
 </footer>
 
 <script src="scripts/reveal.js"></script>
+<script src="scripts/i18n.js"></script>
 
 </body></html>

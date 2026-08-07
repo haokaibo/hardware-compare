@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="zh-CN"><head>
+<html lang="zh-CN" class="i18n-ready"><head>
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PIPELINE ZERO — 软件架构与工作流</title>
+<title data-i18n="pipe.title">PIPELINE ZERO — 软件架构与工作流</title>
 <link rel="stylesheet" href="styles/theme.css">
 <link rel="stylesheet" href="styles/base.css">
 <link rel="stylesheet" href="styles/pipeline.css">
@@ -13,10 +13,10 @@
   <div class="nav-inner">
     <div class="nav-logo">RED ONE</div>
     <div class="nav-links">
-      <a href="red_one.html">硬件</a>
-      <a href="pipeline.html" aria-current="page">软件架构</a>
-      <a href="pipeline.html#topology">节点拓扑</a>
-      <a href="pipeline.html#stack">完整清单</a>
+      <a href="red_one.html" data-i18n="nav.hardware">硬件</a>
+      <a href="pipeline.html" aria-current="page" data-i18n="nav.software-arch">软件架构</a>
+      <a href="pipeline.html#topology" data-i18n="nav.topology">节点拓扑</a>
+      <a href="pipeline.html#stack" data-i18n="nav.full-list">完整清单</a>
     </div>
   </div>
 </nav>
@@ -24,15 +24,15 @@
 <!-- ========== HERO ========== -->
 <header class="hero">
   <div class="hero-glow"></div>
-  <div class="eyebrow">LOCAL-FIRST · DISTRIBUTED AI ORCHESTRATION</div>
-  <h1>PIPELINE&nbsp;ZERO</h1>
-  <p class="sub">RED ONE 硬件之上运行的自动化编排系统 —— 三台机器各司其职，把 NASA 数据流转化为可发布的天文内容。</p>
+  <div class="eyebrow" data-i18n="pipe.hero-eyebrow">LOCAL-FIRST · DISTRIBUTED AI ORCHESTRATION</div>
+  <h1 data-i18n="pipe.hero-title">PIPELINE&nbsp;ZERO</h1>
+  <p class="sub" data-i18n="pipe.hero-sub">RED ONE 硬件之上运行的自动化编排系统 —— 三台机器各司其职，把 NASA 数据流转化为可发布的天文内容。</p>
   <div class="hero-id">
-    <span><b>3</b> 节点</span>
-    <span><b>N8N</b> 编排</span>
-    <span><b>PROXMOX VE</b> 虚拟化</span>
-    <span><b>DEEPSEEK</b> + <b>MLX</b> 双 LLM</span>
-    <span><b>ROCM 7</b> 加速</span>
+    <span><b>3</b> <span data-i18n="pipe.hero-nodes">节点</span></span>
+    <span><b>N8N</b> <span data-i18n="pipe.hero-orch">编排</span></span>
+    <span><b>PROXMOX VE</b> <span data-i18n="pipe.hero-virt">虚拟化</span></span>
+    <span><b>DEEPSEEK</b> + <b>MLX</b> <span data-i18n="pipe.hero-llm">双 LLM</span></span>
+    <span><b>ROCM 7</b> <span data-i18n="pipe.hero-accel">加速</span></span>
   </div>
   <div class="scroll-cue">
     <span>SCROLL</span>
@@ -72,9 +72,9 @@
 <!-- ========== TOPOLOGY / THREE NODES ========== -->
 <section id="topology">
   <div class="section-head reveal visible">
-    <div class="kicker">· 三节点拓扑 ·</div>
-    <h2>算力分层，各司其职</h2>
-    <p>不追求单机堆料，而是按任务的隐私等级与算力需求，把工作分派到最合适的节点。</p>
+    <div class="kicker" data-i18n="pipe.section-topo-kicker">· 三节点拓扑 ·</div>
+    <h2 data-i18n="pipe.section-topo-title">算力分层，各司其职</h2>
+    <p data-i18n="pipe.section-topo-desc">不追求单机堆料，而是按任务的隐私等级与算力需求，把工作分派到最合适的节点。</p>
   </div>
 
   <div class="pin-section">
@@ -99,9 +99,9 @@
       <div class="pin-track">
 
         <div class="pin-block theme-ryzen reveal">
-          <div class="tag">节点 01 · 常驻编排层</div>
-          <h3>Geekom G3 —— Proxmox VE 调度中枢</h3>
-          <p>低功耗、7×24 常驻的家庭实验室节点。运行 Debian 13 LXC 容器化服务，n8n 工作流从 NASA RSS 源抓取文章、聚合去重，再转交 DeepSeek API 处理，最终把结构化 Markdown 写入 Samba 共享的 Obsidian 知识库。</p>
+          <div class="tag" data-i18n="pipe.node1-tag">节点 01 · 常驻编排层</div>
+          <h3 data-i18n="pipe.node1-title">Geekom G3 —— Proxmox VE 调度中枢</h3>
+          <p data-i18n="pipe.node1-desc">低功耗、7×24 常驻的家庭实验室节点。运行 Debian 13 LXC 容器化服务，n8n 工作流从 NASA RSS 源抓取文章、聚合去重，再转交 DeepSeek API 处理，最终把结构化 Markdown 写入 Samba 共享的 Obsidian 知识库。</p>
           <div class="spec-inline">
             <div><div class="k">主机</div><div class="v">极摩客 Geekom G3</div></div>
             <div><div class="k">虚拟化</div><div class="v">Proxmox VE</div></div>
@@ -111,9 +111,9 @@
         </div>
 
         <div class="pin-block theme-radeon reveal">
-          <div class="tag">节点 02 · 隐私推理层</div>
-          <h3>Mac Mini M4 —— 本地私有推理</h3>
-          <p>涉及隐私或本地专属内容的任务不出本地网络，交给这台 24GB 统一内存的 Mac Mini，通过 MLX 运行 Qwen 系列模型完成推理。同时承担视频剪辑，通过 USB4 与 AI 工作站直连。</p>
+          <div class="tag" data-i18n="pipe.node2-tag">节点 02 · 隐私推理层</div>
+          <h3 data-i18n="pipe.node2-title">Mac Mini M4 —— 本地私有推理</h3>
+          <p data-i18n="pipe.node2-desc">涉及隐私或本地专属内容的任务不出本地网络，交给这台 24GB 统一内存的 Mac Mini，通过 MLX 运行 Qwen 系列模型完成推理。同时承担视频剪辑，通过 USB4 与 AI 工作站直连。</p>
           <div class="spec-inline">
             <div><div class="k">主机</div><div class="v">Mac Mini M4 · 24GB</div></div>
             <div><div class="k">推理框架</div><div class="v">MLX</div></div>
@@ -123,9 +123,9 @@
         </div>
 
         <div class="pin-block theme-ryzen reveal">
-          <div class="tag">节点 03 · 生成核心</div>
-          <h3>RED ONE —— 重算力按需唤醒</h3>
-          <p>不常驻运行，只在需要重算力时被唤醒。承担 FLUX 图像生成、文本转语音与视频合成，由 Radeon AI PRO R9700 经 ROCm 驱动完成本地推理，完事后自动回到休眠。</p>
+          <div class="tag" data-i18n="pipe.node3-tag">节点 03 · 生成核心</div>
+          <h3 data-i18n="pipe.node3-title">RED ONE —— 重算力按需唤醒</h3>
+          <p data-i18n="pipe.node3-desc">不常驻运行，只在需要重算力时被唤醒。承担 FLUX 图像生成、文本转语音与视频合成，由 Radeon AI PRO R9700 经 ROCm 驱动完成本地推理，完事后自动回到休眠。</p>
           <div class="spec-inline">
             <div><div class="k">主机</div><div class="v">RED ONE · AM5</div></div>
             <div><div class="k">GPU</div><div class="v">AI PRO R9700 32GB</div></div>
@@ -142,45 +142,45 @@
 <!-- ========== CONTENT PIPELINE FLOW ========== -->
 <section>
   <div class="section-head reveal">
-    <div class="kicker">· 内容管线 ·</div>
-    <h2>从太空数据到可发布素材</h2>
-    <p>调度层内跑的核心 n8n 工作流 —— 每一步都是一个独立、可单独调试的节点。</p>
+    <div class="kicker" data-i18n="pipe.section-pipe-kicker">· 内容管线 ·</div>
+    <h2 data-i18n="pipe.section-pipe-title">从太空数据到可发布素材</h2>
+    <p data-i18n="pipe.section-pipe-desc">调度层内跑的核心 n8n 工作流 —— 每一步都是一个独立、可单独调试的节点。</p>
   </div>
 
   <div class="pipeline-wrap reveal">
     <div class="pipeline">
       <div class="pipe-node">
         <div class="n">STEP 01</div>
-        <h4>NASA RSS</h4>
-        <p>抓取最新航天与天文资讯条目</p>
+        <h4 data-i18n="pipe.pipe-step1">NASA RSS</h4>
+        <p data-i18n="pipe.pipe-step1-desc">抓取最新航天与天文资讯条目</p>
       </div>
       <div class="pipe-connector"></div>
       <div class="pipe-node">
         <div class="n">STEP 02</div>
-        <h4>聚合去重</h4>
-        <p>合并多源文章，按时间排序</p>
+        <h4 data-i18n="pipe.pipe-step2">聚合去重</h4>
+        <p data-i18n="pipe.pipe-step2-desc">合并多源文章，按时间排序</p>
       </div>
       <div class="pipe-connector"></div>
       <div class="pipe-node">
         <div class="n">STEP 03</div>
-        <h4>DeepSeek API</h4>
-        <p>摘要、翻译与结构化改写</p>
+        <h4 data-i18n="pipe.pipe-step3">DeepSeek API</h4>
+        <p data-i18n="pipe.pipe-step3-desc">摘要、翻译与结构化改写</p>
       </div>
       <div class="pipe-connector"></div>
       <div class="pipe-node">
         <div class="n">STEP 04</div>
-        <h4>Markdown 落盘</h4>
-        <p>按日期生成结构化笔记文件</p>
+        <h4 data-i18n="pipe.pipe-step4">Markdown 落盘</h4>
+        <p data-i18n="pipe.pipe-step4-desc">按日期生成结构化笔记文件</p>
       </div>
       <div class="pipe-connector"></div>
       <div class="pipe-node">
         <div class="n">STEP 05</div>
-        <h4>Obsidian 知识库</h4>
-        <p>经 Samba 挂载，供后续脚本调用</p>
+        <h4 data-i18n="pipe.pipe-step5">Obsidian 知识库</h4>
+        <p data-i18n="pipe.pipe-step5-desc">经 Samba 挂载，供后续脚本调用</p>
       </div>
     </div>
     <div style="text-align:center; margin-top:22px;">
-      <span class="status-chip dot">当前联调中 · DeepSeek 节点数据接收有待修复</span>
+      <span class="status-chip dot" data-i18n="pipe.pipe-status">当前联调中 · DeepSeek 节点数据接收有待修复</span>
     </div>
   </div>
 </section>
@@ -188,9 +188,9 @@
 <!-- ========== COMPONENT GRID ========== -->
 <section>
   <div class="section-head reveal">
-    <div class="kicker">· 组件清单 ·</div>
-    <h2>支撑管线的每一层</h2>
-    <p>没有实体照片可拍的部分 —— 但一样是这套系统真正的骨架。</p>
+    <div class="kicker" data-i18n="pipe.comp-section-kicker">· 组件清单 ·</div>
+    <h2 data-i18n="pipe.comp-section-title">支撑管线的每一层</h2>
+    <p data-i18n="pipe.comp-section-desc">没有实体照片可拍的部分 —— 但一样是这套系统真正的骨架。</p>
   </div>
 
   <div class="comp-grid reveal">
@@ -376,8 +376,8 @@
 <!-- ========== FULL STACK MANIFEST ========== -->
 <section id="stack">
   <div class="section-head reveal">
-    <div class="kicker">· 完整软件栈清单 ·</div>
-    <h2>每一层，各归其位</h2>
+    <div class="kicker" data-i18n="pipe.stack-kicker">· 完整软件栈清单 ·</div>
+    <h2 data-i18n="pipe.stack-title">每一层，各归其位</h2>
   </div>
 
   <div class="spec-table-wrap reveal">
@@ -436,17 +436,18 @@
   </div>
 
   <div class="directive reveal" style="max-width:900px; margin-left:auto; margin-right:auto;">
-    <div class="k">架构理念</div>
-    <div class="v">常驻服务留在低功耗节点，AI PC 只在真正需要重算力时被唤醒。</div>
+    <div class="k" data-i18n="pipe.directive-k">架构理念</div>
+    <div class="v" data-i18n="pipe.directive-v">常驻服务留在低功耗节点，AI PC 只在真正需要重算力时被唤醒。</div>
   </div>
 </section>
 
 <footer>
-  <div class="fline">驱动 <b>CosmicSpaceDiary</b>（宇宙空间日志）自动化内容创作</div>
-  <div class="fline"><a class="back-link" href="red_one.html">← 查看硬件平台 RED ONE</a></div>
+  <div class="fline" data-i18n="pipe.footer-line1">驱动 <b>CosmicSpaceDiary</b>（宇宙空间日志）自动化内容创作</div>
+  <div class="fline"><a class="back-link" href="red_one.html">← <span data-i18n="nav.red-one">RED ONE</span></a></div>
 </footer>
 
 <script src="scripts/reveal.js"></script>
+<script src="scripts/i18n.js"></script>
 
 
 

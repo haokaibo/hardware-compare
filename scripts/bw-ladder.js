@@ -1,6 +1,10 @@
 /* =============================================
    Bandwidth Ladder - Interactive Chart Logic
+   Supports i18n via global t() from scripts/i18n.js
    ============================================= */
+
+// Translation helpers — use t() if available
+function _t(key) { return typeof t === 'function' ? t(key) : key; }
 
 const DATA = [
   {g:'PCIe 3.0', label:'x2', v:1.97, c:'pcie'},
@@ -16,26 +20,27 @@ const DATA = [
   {g:'PCIe 5.0', label:'x2', v:7.88, c:'pcie'},
   {g:'PCIe 5.0', label:'x4', v:15.75, c:'pcie'},
   {g:'PCIe 5.0', label:'x8', v:31.5, c:'pcie'},
-  {g:'PCIe 5.0', label:'x16', sub:'R9700 显卡插槽', v:63, c:'pcie', mine:true},
+  {g:'PCIe 5.0', label:'x16', subKey:'bw.chart.pcie-label', v:63, c:'pcie', mine:true},
 
-  {g:'DDR5 内存（双通道）', label:'DDR5-4800', sub:'双通道', v:76.8, c:'ram'},
-  {g:'DDR5 内存（双通道）', label:'DDR5-6000', sub:'双通道 · 你的目标', v:96, c:'ram', mine:true},
-  {g:'DDR5 内存（双通道）', label:'DDR5-8400', sub:'双通道 · Tomahawk Max 上限', v:134.4, c:'ram'},
-  {g:'DDR5 内存（单通道，对照）', label:'DDR5-6000 单通道', sub:'你现在的配置', v:48, c:'ram', mine:true},
+  {gKey:'bw.chart.ddr5-dual', label:'DDR5-4800', subKey:'bw.chart.dual-channel', v:76.8, c:'ram'},
+  {gKey:'bw.chart.ddr5-dual', label:'DDR5-6000', subKey:'bw.chart.dual-target', v:96, c:'ram', mine:true},
+  {gKey:'bw.chart.ddr5-dual', label:'DDR5-8400', subKey:'bw.chart.dual-tomahawk', v:134.4, c:'ram'},
+  {gKey:'bw.chart.ddr5-single', label:'DDR5-6000 单通道', subKey:'bw.chart.single-current', v:48, c:'ram', mine:true},
 
-  {g:'存储设备', label:'HDD 机械硬盘', sub:'顺序读', v:0.18, c:'storage'},
-  {g:'存储设备', label:'SATA SSD', sub:'顺序读', v:0.55, c:'storage'},
-  {g:'存储设备', label:'NVMe Gen4', sub:'顺序读，如 Lexar Thor Pro', v:7, c:'storage', mine:true},
-  {g:'存储设备', label:'NVMe Gen5', sub:'顺序读', v:13, c:'storage'},
+  {gKey:'bw.chart.storage-hdd', label:'HDD 机械硬盘', subKey:'bw.chart.seq-read', v:0.18, c:'storage'},
+  {gKey:'bw.chart.storage-hdd', label:'SATA SSD', subKey:'bw.chart.seq-read', v:0.55, c:'storage'},
+  {gKey:'bw.chart.storage-hdd', label:'NVMe Gen4', subKey:'bw.chart.seq-read-lexar', v:7, c:'storage', mine:true},
+  {gKey:'bw.chart.storage-hdd', label:'NVMe Gen5', subKey:'bw.chart.seq-read', v:13, c:'storage'},
 
-  {g:'GPU 显存 (VRAM)', label:'RTX 5060 Ti 16GB', sub:'GDDR7', v:448, c:'vram'},
-  {g:'GPU 显存 (VRAM)', label:'R9700 32GB', sub:'GDDR6 · 你的主卡', v:640, c:'vram', mine:true},
+  {gKey:'bw.chart.vram', label:'RTX 5060 Ti 16GB', subKey:'bw.chart.gddr7', v:448, c:'vram'},
+  {gKey:'bw.chart.vram', label:'R9700 32GB', subKey:'bw.chart.gddr6-yours', v:640, c:'vram', mine:true},
 ];
 
 const MIN_LOG = Math.log10(0.1);
 const MAX_LOG = Math.log10(1000);
 const LINEAR_MAX = 700;
 let scaleMode = 'log';
+let _lang = 'zh';
 
 function pctLog(v) {
   const l = Math.log10(v);
@@ -46,6 +51,16 @@ function pctLinear(v) {
 }
 function pct(v) {
   return scaleMode === 'log' ? pctLog(v) : pctLinear(v);
+}
+
+function getGroupName(d) {
+  if (d.gKey) return _t(d.gKey);
+  return d.g;
+}
+
+function getSubText(d) {
+  if (d.subKey) return _t(d.subKey);
+  return d.sub || '';
 }
 
 const axis = document.getElementById('scaleAxis');
@@ -76,17 +91,19 @@ function renderBars() {
   container.querySelectorAll('.group-divider, .bar-row').forEach(el => el.remove());
   let lastGroup = null;
   DATA.forEach(d => {
-    if (d.g !== lastGroup) {
+    const grp = getGroupName(d);
+    if (grp !== lastGroup) {
       const gd = document.createElement('div');
       gd.className = 'group-divider';
-      gd.textContent = d.g;
+      gd.textContent = grp;
       container.appendChild(gd);
-      lastGroup = d.g;
+      lastGroup = grp;
     }
     const row = document.createElement('div');
     row.className = 'bar-row' + (d.mine ? ' mine' : '');
+    const sub = getSubText(d);
     row.innerHTML = `
-      <div class="label">${d.label}${d.mine ? '<span class="mine-badge">你的配置</span>' : ''}${d.sub ? '<small>' + d.sub + '</small>' : ''}</div>
+      <div class="label">${d.label}${d.mine ? '<span class="mine-badge">' + _t('bw.chart.your-config') + '</span>' : ''}${sub ? '<small>' + sub + '</small>' : ''}</div>
       <div class="bar-track">
         <div class="bar-fill cat-${d.c}${d.mine ? ' mine' : ''}" data-target="${pct(d.v)}"></div>
       </div>
@@ -119,10 +136,6 @@ function init() {
 
   // Mode toggle
   const modeHint = document.getElementById('modeHint');
-  const HINTS = {
-    log: '// 每格代表 ×10 —— 小数值也看得清',
-    linear: '// 真实比例，1:1 —— 小数值会被显存"碾平"'
-  };
   document.querySelectorAll('.mode-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const mode = btn.getAttribute('data-mode');
@@ -132,13 +145,24 @@ function init() {
         b.classList.toggle('active', b === btn);
         b.setAttribute('aria-selected', b === btn ? 'true' : 'false');
       });
-      modeHint.textContent = HINTS[mode];
+      modeHint.textContent = _t('bw.chart.mode-hint-' + scaleMode);
       renderAxis();
       renderBars();
       document.querySelectorAll('.bar-fill').forEach(el => { el.style.width = '0%'; });
       requestAnimationFrame(() => requestAnimationFrame(animateBars));
     });
   });
+
+  // Set initial mode hint
+  modeHint.textContent = _t('bw.chart.mode-hint-' + scaleMode);
 }
+
+// Re-render on language switch
+document.addEventListener('i18n:changed', function () {
+  renderAxis();
+  renderBars();
+  const modeHint = document.getElementById('modeHint');
+  if (modeHint) modeHint.textContent = _t('bw.chart.mode-hint-' + scaleMode);
+});
 
 document.addEventListener('DOMContentLoaded', init);

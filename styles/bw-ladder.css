@@ -52,15 +52,9 @@ main {
 
 /* --- Section labels --- */
 .section { margin-top: 72px; }
-.section-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 8px; flex-wrap: wrap; }
-.section-head h2 { font-size: 22px; font-weight: 700; color: var(--text-primary); }
-.section-head .tag {
-  font-family: var(--font-mono); font-size: 10.5px; color: var(--text-dim);
-  border: 1px solid var(--border-subtle); padding: 2px 8px; border-radius: 20px;
-}
 .section-sub {
   color: var(--text-muted); font-size: 14px;
-  margin-bottom: 28px; max-width: 640px; line-height: 1.7;
+  margin-bottom: 28px; line-height: 1.7;
 }
 
 /* --- Legend --- */

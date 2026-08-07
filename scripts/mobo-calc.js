@@ -78,4 +78,7 @@
   }
 
   calc();
+
+  // Re-render on language switch
+  document.addEventListener('i18n:changed', function () { calc(); });
 })();
