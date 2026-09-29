@@ -27,12 +27,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # enablement: true lets the workflow turn on Pages (Source = GitHub Actions)
-      # on its own if it is not already configured.
+      # Validates that Pages is enabled (Source = GitHub Actions) and exposes
+      # base path/URL metadata to later steps. Enabling Pages itself is a one-time
+      # repo setting, so it is not done here.
       - name: Setup Pages
         uses: actions/configure-pages@v5
-        with:
-          enablement: true
 
       # This project is plain static HTML/CSS/JS — no build step.
       # Stage only the files that belong to the published site so that
