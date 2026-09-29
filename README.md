@@ -4,6 +4,8 @@
 
 纯静态实现，无需构建：克隆后直接用浏览器或任意静态服务器打开即可。
 
+🌐 **在线访问**：<https://haokaibo.github.io/hardware-compare/>（由 GitHub Actions 自动部署，见 `.github/workflows/deploy-pages.yml`）
+
 ## 页面一览
 
 | 页面 | 路径 | 说明 |
