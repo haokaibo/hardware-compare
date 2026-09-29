@@ -7,10 +7,10 @@
     <meta name="description" content="消费级至数据中心级 GPU 跑分，实测文生图 / 文生视频 / LLM 推理性能表现。">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="data/gpu-dataset.js"></script>
-    <link rel="stylesheet" href="styles/theme.css">
-    <link rel="stylesheet" href="styles/base.css">
-    <link rel="stylesheet" href="styles/index.css">
+    <script src="assets/data/gpu-dataset.js"></script>
+    <link rel="stylesheet" href="assets/styles/theme.css">
+    <link rel="stylesheet" href="assets/styles/base.css">
+    <link rel="stylesheet" href="assets/styles/index.css">
 </head>
 <body>
 
@@ -19,10 +19,10 @@
         <div class="nav-logo">Hardware.ai</div>
         <div class="nav-links">
             <a href="index.html" class="active" data-i18n="nav.gpu-matrix">GPU 矩阵</a>
-            <a href="bandwidth_ladder.html" data-i18n="nav.bw-ladder">带宽阶梯</a>
-            <a href="vram-calc.html" data-i18n="nav.vram-calc">显存计算器</a>
-            <a href="motherboard_upgrade_calculator.html" data-i18n="nav.mobo-calc">换板计算</a>
-            <a href="red_one.html" data-i18n="nav.red-one">RED ONE</a>
+            <a href="pages/hardware/bandwidth_ladder.html" data-i18n="nav.bw-ladder">带宽阶梯</a>
+            <a href="pages/hardware/vram-calc.html" data-i18n="nav.vram-calc">显存计算器</a>
+            <a href="pages/hardware/motherboard_upgrade_calculator.html" data-i18n="nav.mobo-calc">换板计算</a>
+            <a href="pages/hardware/red_one.html" data-i18n="nav.red-one">RED ONE</a>
         </div>
     </div>
 </nav>
@@ -98,7 +98,7 @@
     </footer>
 </main>
 
-<script src="scripts/i18n.js"></script>
+<script src="assets/scripts/i18n.js"></script>
 <script>
     // Data loading safety check — uses t() from i18n.js
     if (typeof GPU_BENCHMARKS === 'undefined') {
