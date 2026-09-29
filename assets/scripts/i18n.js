@@ -411,7 +411,6 @@ const LANG = {
   'bw.hero-stat-types':           { zh: '类通路：PCIe / DDR5 / 显存 / 存储', en: 'path types: PCIe / DDR5 / VRAM / Storage' },
   'bw.hero-stat-scale':           { zh: '刻度，否则显存会把其他都压成一条线', en: 'scale, or VRAM flattens everything into a line' },
   'bw.hero-intro':                { zh: '同样叫"快"，PCIe 4.0 x4、双通道 DDR5 和显卡显存之间可能差出 10 倍以上。下面用对数刻度把它们摆在同一把尺子上，再看看大模型推理时，数据从显存被挤到内存、再被挤到硬盘时，速度是怎么断崖式下跌的。', en: 'They\'re all called "fast", but PCIe 4.0 x4, dual-channel DDR5, and GPU VRAM differ by 10× or more. This page lines them up on a log scale, then shows how speed collapses when data is squeezed from VRAM to RAM to SSD during LLM inference.' },
-  'bw.page-title':                { zh: '带宽阶梯 — PCIe / DDR5 / 显存 / 存储速度全景', en: 'Bandwidth Ladder — PCIe / DDR5 / VRAM / Storage' },
   'bw.section-chart-title':       { zh: '带宽阶梯',           en: 'Bandwidth Ladder' },
   'bw.section-chart-desc':        { zh: '条形长度按 log₁₀(带宽) 绘制 —— 这意味着每往右移动一段固定距离，速度是乘以 10，不是加 10。刻度线标出了 1 / 10 / 100 / 1000 GB/s 这几个"十倍"分界点。', en: 'Bar length is log₁₀(bandwidth) — each equal step right means 10× speed, not +10. Ticks mark 1 / 10 / 100 / 1000 GB/s decade boundaries.' },
   'bw.legend-pcie':               { zh: 'PCIe 插槽',           en: 'PCIe Slot' },
