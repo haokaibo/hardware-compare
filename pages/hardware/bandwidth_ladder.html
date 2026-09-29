@@ -39,18 +39,18 @@
         <svg viewBox="0 0 1350 390" xmlns="http://www.w3.org/2000/svg">
           <!-- Storage domain -->
           <rect x="30" y="30" width="360" height="330" rx="14" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1.5" stroke-dasharray="5 5"/>
-          <text x="50" y="55" class="domain-label">存储</text>
+          <text x="50" y="55" class="domain-label" data-i18n="bw.diagram-domain-storage">存储</text>
           <rect x="110" y="95" width="200" height="80" rx="10" class="node-box" style="stroke:rgba(255,93,93,0.35);"/>
           <text x="210" y="133" text-anchor="middle" class="node-title">SSD / NVMe</text>
-          <text x="210" y="153" text-anchor="middle" class="node-sub">模型文件</text>
+          <text x="210" y="153" text-anchor="middle" class="node-sub" data-i18n="bw.diagram-ssd-sub">模型文件</text>
 
           <!-- CPU domain -->
           <rect x="450" y="30" width="360" height="330" rx="14" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1.5" stroke-dasharray="5 5"/>
-          <text x="470" y="55" class="domain-label">CPU 的地盘</text>
+          <text x="470" y="55" class="domain-label" data-i18n="bw.diagram-domain-cpu">CPU 的地盘</text>
 
           <rect x="535" y="95" width="190" height="80" rx="10" class="node-box"/>
-          <text x="630" y="133" text-anchor="middle" class="node-title">DDR5 内存</text>
-          <text x="630" y="153" text-anchor="middle" class="node-sub">系统内存</text>
+          <text x="630" y="133" text-anchor="middle" class="node-title" data-i18n="bw.diagram-ddr5">DDR5 内存</text>
+          <text x="630" y="153" text-anchor="middle" class="node-sub" data-i18n="bw.diagram-ddr5-sub">系统内存</text>
 
           <rect x="535" y="250" width="190" height="80" rx="10" class="node-box"/>
           <text x="630" y="288" text-anchor="middle" class="node-title">CPU</text>
@@ -59,14 +59,14 @@
           <!-- CPU <-> DDR5 memory bus -->
           <line x1="630" y1="250" x2="630" y2="175" stroke="var(--accent-orange-soft)" stroke-width="3" stroke-dasharray="6 5" class="pulse-dot" opacity="0.6"/>
           <rect x="650" y="185" width="170" height="34" rx="6" class="bus-label-bg"/>
-          <text x="660" y="206" class="bus-label">内存总线 · 96 GB/s</text>
+          <text x="660" y="206" class="bus-label" data-i18n="bw.diagram-bus-memory">内存总线 · 96 GB/s</text>
 
           <!-- GPU domain -->
           <rect x="880" y="30" width="360" height="330" rx="14" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1.5" stroke-dasharray="5 5"/>
-          <text x="900" y="55" class="domain-label">GPU 的地盘</text>
+          <text x="900" y="55" class="domain-label" data-i18n="bw.diagram-domain-gpu">GPU 的地盘</text>
 
           <rect x="965" y="95" width="190" height="80" rx="10" class="node-box"/>
-          <text x="1060" y="133" text-anchor="middle" class="node-title">显存 VRAM</text>
+          <text x="1060" y="133" text-anchor="middle" class="node-title" data-i18n="bw.diagram-vram">显存 VRAM</text>
           <text x="1060" y="153" text-anchor="middle" class="node-sub">GDDR6</text>
 
           <rect x="965" y="250" width="190" height="80" rx="10" class="node-box"/>
@@ -76,23 +76,23 @@
           <!-- GPU <-> VRAM memory bus -->
           <line x1="1060" y1="250" x2="1060" y2="175" stroke="var(--accent-orange-soft)" stroke-width="3" stroke-dasharray="6 5" class="pulse-dot" opacity="0.6"/>
           <rect x="1080" y="185" width="170" height="34" rx="6" class="bus-label-bg"/>
-          <text x="1090" y="206" class="bus-label">显存总线 · 640 GB/s</text>
+          <text x="1090" y="206" class="bus-label" data-i18n="bw.diagram-bus-vram">显存总线 · 640 GB/s</text>
 
           <!-- Data chain: SSD → DDR5 → VRAM (all via PCIe DMA) -->
           <line x1="310" y1="135" x2="535" y2="135" stroke="var(--accent-orange)" stroke-width="3" stroke-dasharray="8 6" class="pulse-dot" opacity="0.5"/>
-          <rect x="335" y="160" width="170" height="30" rx="6" class="bus-label-bg"/>
-          <text x="420" y="180" text-anchor="middle" class="bus-label">SSD → 内存 DMA · 约 8 GB/s</text>
+          <rect x="320" y="160" width="200" height="30" rx="6" class="bus-label-bg"/>
+          <text x="420" y="180" text-anchor="middle" class="bus-label" data-i18n="bw.diagram-bus-ssd-dma">SSD → 内存 DMA · 约 8 GB/s</text>
 
           <line x1="725" y1="135" x2="965" y2="135" stroke="var(--accent-orange)" stroke-width="3" stroke-dasharray="8 6" class="pulse-dot" opacity="0.5"/>
-          <rect x="760" y="160" width="170" height="30" rx="6" class="bus-label-bg"/>
-          <text x="845" y="180" text-anchor="middle" class="bus-label">内存 → 显存 DMA · 63 GB/s</text>
+          <rect x="745" y="160" width="200" height="30" rx="6" class="bus-label-bg"/>
+          <text x="845" y="180" text-anchor="middle" class="bus-label" data-i18n="bw.diagram-bus-ram-dma">内存 → 显存 DMA · 63 GB/s</text>
 
-          <rect x="555" y="78" width="150" height="24" rx="12" class="bus-label-bg"/>
-          <text x="630" y="95" text-anchor="middle" class="bus-note">PCIe 桥接 · 链路</text>
+          <rect x="545" y="78" width="170" height="24" rx="12" class="bus-label-bg"/>
+          <text x="630" y="95" text-anchor="middle" class="bus-note" data-i18n="bw.diagram-bus-pcie">PCIe 桥接 · 链路</text>
 
           <!-- CPU as DMA controller -->
-          <rect x="540" y="320" width="180" height="22" rx="6" class="bus-label-bg"/>
-          <text x="630" y="335" text-anchor="middle" class="bus-label" font-size="10.5">CPU 是"指挥者"，不直接搬数据</text>
+          <rect x="520" y="320" width="220" height="22" rx="6" class="bus-label-bg"/>
+          <text x="630" y="335" text-anchor="middle" class="bus-label" font-size="10.5" data-i18n="bw.diagram-note-cpu">CPU 是"指挥者"，不直接搬数据</text>
         </svg>
       </div>
     </div>
