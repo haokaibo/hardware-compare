@@ -27,6 +27,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # enablement: true lets the workflow turn on Pages (Source = GitHub Actions)
+      # on its own if it is not already configured.
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
       # This project is plain static HTML/CSS/JS — no build step.
       # Stage only the files that belong to the published site so that
       # docs/tooling (README, tasks.md, .github, resources/) are not deployed.
