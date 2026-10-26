@@ -1,49 +1,51 @@
 # hardware-compare · Hardware.ai
 
-面向 **本地 AI（Local AI）硬件选型** 的静态站点集合，包含 GPU 跑分榜、显存/带宽计算器、装机清单，以及一组讲清「权重与上下文如何吃显存」的原理科普页。
+**English** | [中文](README.zh-CN.md)
 
-纯静态实现，无需构建：克隆后直接用浏览器或任意静态服务器打开即可。
+A collection of static pages for **choosing hardware for local AI**: a GPU benchmark leaderboard, VRAM and bandwidth calculators, a real workstation build list, and a set of explainers on how model weights and context consume VRAM.
 
-🌐 **在线访问**：<https://haokaibo.github.io/hardware-compare/>（由 GitHub Actions 自动部署，见 `.github/workflows/deploy-pages.yml`）
+Everything is plain static HTML — no build step. Clone the repo and open it in a browser or serve it with any static file server.
 
-## 页面一览
+🌐 **Live site**: <https://haokaibo.github.io/hardware-compare/> (deployed automatically by GitHub Actions, see `.github/workflows/deploy-pages.yml`)
 
-| 页面 | 路径 | 说明 |
+## Pages
+
+| Page | Path | Description |
 | --- | --- | --- |
-| AI 生产力 GPU 跑分榜 | `index.html` | 主页面。表格 + Chart.js 象限图（LLM 推理速度 vs 价格） |
-| LLM 显存计算器 | `pages/hardware/vram-calc.html` | 按模型/量化/上下文估算显存占用 |
-| 带宽阶梯 | `pages/hardware/bandwidth_ladder.html` | PCIe 与显存带宽对比 |
-| 换板成本计算器 | `pages/hardware/motherboard_upgrade_calculator.html` | 主板升级的隐性成本核算 |
-| RED ONE | `pages/hardware/red_one.html` | 一台本地 AI 工作站的实际配置单（含硬件实拍） |
-| 权重与上下文计算器 | `pages/concepts/calculator.html` | 权重 / KV Cache 空间计算 |
-| 计算原理 | `pages/concepts/context-math.html` | 上面那个计算器背后的数学推导 |
-| 推理生命周期 | `pages/concepts/lifecycle.html` | 一次对话从输入到输出的完整处理过程 |
-| PIPELINE ZERO | `pages/concepts/pipeline.html` | 软件栈架构、拓扑与组件矩阵 |
+| AI GPU Benchmark | `index.html` | Main page. Filterable table plus a Chart.js scatter plot (LLM inference speed vs. price) |
+| LLM VRAM Calculator | `pages/hardware/vram-calc.html` | Estimates VRAM usage from model size, precision, MoE active params and context length; covers inference, full training and LoRA fine-tuning |
+| Bandwidth Ladder | `pages/hardware/bandwidth_ladder.html` | Compares PCIe, DDR5, VRAM and storage bandwidth, with log/linear scale switching |
+| Motherboard Upgrade Calculator | `pages/hardware/motherboard_upgrade_calculator.html` | Works out the net cost of a staged motherboard upgrade path |
+| RED ONE | `pages/hardware/red_one.html` | The actual parts list of a local AI workstation, with hardware photos |
+| Weights & Context Calculator | `pages/concepts/calculator.html` | Calculates weights vs. KV cache space |
+| The Math Behind It | `pages/concepts/context-math.html` | The math behind the calculator above, step by step |
+| Inference Lifecycle | `pages/concepts/lifecycle.html` | A full request from input to output, broken into six stages with a time breakdown |
+| PIPELINE ZERO | `pages/concepts/pipeline.html` | Software stack architecture, node topology and component matrix |
 
-页面分为两组：`pages/hardware/`（硬件/选型，导航互通）与 `pages/concepts/`（AI 原理科普，导航互通），两组通过 `red_one.html` 相互连接。
+Pages are split into two groups: `pages/hardware/` (hardware and buying decisions, cross-linked navigation) and `pages/concepts/` (AI fundamentals, cross-linked navigation). The two groups are connected through `red_one.html`.
 
-## 目录结构
+## Repository layout
 
 ```text
 hardware-compare/
-├── index.html                          # 主页面（保持在根目录，便于静态托管）
+├── index.html                          # Main page (kept at repo root for static hosting)
 ├── favicon.svg
 ├── pages/
-│   ├── hardware/                       # 硬件 / 选型
+│   ├── hardware/                       # Hardware / buying decisions
 │   │   ├── vram-calc.html
 │   │   ├── bandwidth_ladder.html
 │   │   ├── motherboard_upgrade_calculator.html
 │   │   └── red_one.html
-│   └── concepts/                       # AI 原理科普
+│   └── concepts/                       # AI fundamentals
 │       ├── calculator.html
 │       ├── context-math.html
 │       ├── lifecycle.html
 │       └── pipeline.html
 ├── assets/
 │   ├── styles/
-│   │   ├── theme.css                   # 公共主题变量（品牌色等）
-│   │   ├── base.css                    # 公共基础样式
-│   │   ├── index.css                   # 以下为各页面专属样式
+│   │   ├── theme.css                   # Shared theme tokens (brand colors, etc.)
+│   │   ├── base.css                    # Shared base styles
+│   │   ├── index.css                   # Page-specific styles below
 │   │   ├── vram-calc.css
 │   │   ├── bw-ladder.css
 │   │   ├── mobo-calc.css
@@ -52,50 +54,56 @@ hardware-compare/
 │   │   ├── lifecycle.css
 │   │   └── pipeline.css
 │   ├── scripts/
-│   │   ├── i18n.js                     # 公共：中英文切换
-│   │   ├── reveal.js                   # 公共：滚动渐显动画
+│   │   ├── i18n.js                     # Shared: EN / ZH language switching
+│   │   ├── reveal.js                   # Shared: scroll reveal animations
 │   │   ├── vram-calc.js
 │   │   ├── bw-ladder.js
 │   │   ├── mobo-calc.js
 │   │   └── red-one.js
-│   ├── images/                         # red_one.html 的硬件实拍图
+│   ├── images/                         # Hardware photos used by red_one.html
 │   └── data/
-│       └── gpu-dataset.js              # 共享 GPU 数据集
+│       └── gpu-dataset.js              # Shared GPU dataset
 ├── resources/
-│   └── fiveserver.js                   # 编辑器 Live Server 注入，非项目代码
-├── README.md
-├── tasks.md                            # 结构说明 + 待办
+│   └── fiveserver.js                   # Editor Live Server injection, not project code
+├── README.md                           # This file (English)
+├── README.zh-CN.md                     # Chinese version
+├── tasks.md                            # Structure notes + todo list
 ├── LICENSE
 └── .github/  .claude/  .vscode/
 ```
 
-## 本地运行
+## Run locally
 
-任选一种：
+Pick either:
 
 ```bash
-# Python 自带
+# Python built-in server
 python3 -m http.server 8000
-# 然后打开 http://localhost:8000/
+# then open http://localhost:8000/
 
-# 或 Node
+# or Node
 npx serve .
 ```
 
-也可以直接用编辑器插件（VS Code / VSCodium 的 Live Server / Five Server）打开 `index.html`。
+You can also open `index.html` directly with an editor extension such as Live Server / Five Server in VS Code / VSCodium.
 
-## 数据来源
+## Data source
 
-- 共享数据集位于 `assets/data/gpu-dataset.js`，导出 `GPU_BENCHMARKS`（跑分榜）与 `GPU_VRAM_LIST`（显存计算器）两套数组，`index.html` 与 `vram-calc.html` 共同引用。
-- 新增显卡只需改这一个文件。
-- ⚠️ 当前数值为整理用的参考/示意数据，**非官方实测**，引用前请自行核实。
+- The shared dataset lives in `assets/data/gpu-dataset.js` and exports two arrays: `GPU_BENCHMARKS` (21 GPUs for the leaderboard) and `GPU_VRAM_LIST` (VRAM specs for the calculator). Both `index.html` and `vram-calc.html` use it.
+- Adding a GPU only requires editing this one file.
+- ⚠️ The numbers are reference/illustrative data, **not official measurements**. Verify them before citing.
 
-## 技术栈
+## Tech stack
 
-- 纯 HTML + CSS + 原生 JavaScript，无构建步骤。
-- 图表：[Chart.js](https://www.chartjs.org/)（通过 CDN 引入）。
-- 国际化：`assets/scripts/i18n.js`，约 400 条中英文字典，语言选择存于 `localStorage`。
+- Plain HTML + CSS + vanilla JavaScript, no build step.
+- Charts: [Chart.js](https://www.chartjs.org/) loaded from a CDN.
+- i18n: `assets/scripts/i18n.js` with roughly 440 EN/ZH dictionary entries. The EN / 中 toggle is injected into the navbar automatically, and the choice is persisted in `localStorage` under `hw-compare-lang` (English is the default).
+- Shared theme and layout tokens in `assets/styles/theme.css` and `assets/styles/base.css`; scroll animations in `assets/scripts/reveal.js`.
 
-## 许可
+## Deployment
 
-见 [LICENSE](LICENSE)。
+Pushes to `main` that touch `index.html`, `favicon.svg`, `pages/**`, `assets/**` or the workflow file trigger `.github/workflows/deploy-pages.yml`. It stages only the published site files (`index.html`, `favicon.svg`, `pages/`, `assets/`) into `dist/`, adds `.nojekyll`, and deploys to GitHub Pages. Documentation and tooling such as `README.md`, `tasks.md`, `.github/` and `resources/` are not published.
+
+## License
+
+See [LICENSE](LICENSE) (Apache License 2.0).
